@@ -5,6 +5,7 @@ const {authenticate} = require('@google-cloud/local-auth');
 const {google} = require('googleapis');
 const identifiers = require('./identifiers.json');
 const base64url = require('base64url');
+const extractionRegex = require('./extractionRegex');
 const express = require('express');
 
 const app = express();
@@ -85,23 +86,30 @@ function decodeBase64Url(str) {
   return buffer
 }
 
-function stringToData(inputString){
+function stringToData(inputString, regexName, subject){
   const keyValue = inputString.split(/:(.*)/s).map(str => str.trim());
-  if(keyValue.length === 1){
-    const keyValueSplit = keyValue[0].split(/(\s+)/).filter(function(str) {
-      return /\S/.test(str);
-    });
-    const check = ["sent", "money", "to", "using"].map(x => {
-      return keyValueSplit.includes(x);
-    })
-    if(check.every(v => v === true)){
+  if(keyValue.length === 1){ // Runs when inputString is not an object type
+    const keyValueSplit = keyValue[0].split(/(\s+)/).filter((str) => /\S/.test(str));
+    if(subject == "You have sent money via PayNow"){
       const outputObject = {};
-      outputObject["PayNow name"] = keyValueSplit.slice(3, -1).join(' ');
-      return outputObject
+      outputObject["Recipient"] = keyValueSplit.slice(3, -1).join(' ');
+      return outputObject;
     }
   }else{
     const outputObject = {};
-    outputObject[keyValue[0]] = keyValue[1];
+    switch(regexName){
+      case "Date of Transfer":
+        const dateString = keyValue[1];
+        const dateParts = dateString.split(" "); // split the string into an array of ["21", "Feb", "2023"]
+        const year = dateParts[2];
+        const month = new Date(Date.parse(dateParts[1] + " 1, 2022")).getMonth() + 1; // convert the month name to a month number using Date.parse()
+        const day = dateParts[0].padStart(2, "0"); // pad the day with a leading zero if necessary
+        const formattedDate = `${year}-${month.toString().padStart(2, "0")}-${day}`;
+        outputObject[regexName] = formattedDate;
+        break;
+      default:
+        outputObject[regexName] = keyValue[1];
+    }
     return outputObject;
   }
 }
@@ -120,33 +128,10 @@ async function getTransactionDetails(auth, id) {
 }
 
 async function allThreads(auth) {
-  const allRegex = {
-    "Successful NETS Payment": {
-      "Merchant Name": /Merchant Name\s+:\s+([^\n]+)\s/,
-      "Date of Transfer": /Date of Transfer\s+:\s+(\d+\s\w+\s\d{4})\s/,
-      "Time of Transfer": /Time of Transfer\s+:\s+(\d+:\d+\w+)\s/,
-      "Amount": /Amount\s+:\s+(SGD\s[\d.]+)\s/,
-      "Account": /From your account\s+:\s+([^\n]+)\s/
-    },
-    "You have sent money via OCBC Pay Anyone": {
-      "PayNow name": /PayNow name\s+:\s+([^\n]+)\s/,
-      "Date of transfer": /Date of transfer\s+:\s+(\d+\s\w+\s\d{4})\s/,
-      "Time of transfer": /Time of transfer\s+:\s+(\d+.\d+\w+)\s/,
-      "Amount": /Amount\s+:\s+(SGD\s[\d.]+)\s/,
-      "Account": /From your account\s+:\s+([^\n]+)\s/
-    },
-    "You have sent money via PayNow": {
-      "You have sent money to": /sent money to\s+(\w+\s+)+\busing/,
-      "Date of Transfer": /Date of Transfer\s+:\s+(\d+\s\w+\s\d{4})\s/,
-      "Time of Transfer": /Time of Transfer\s+:\s+(\d+:\d+\w+)\s/,
-      "Amount": /Amount\s+:\s+(SGD\s[\d.]+)\s/,
-      "Account": /From your account\s+:\s+([^\n]+)\s/
-    }
-  }
   const gmail = google.gmail({version: 'v1', auth});
   try {
     const res = await gmail.users.threads.list({
-      userId: 'me', maxResults: 200
+      userId: 'me', maxResults: 220
     });
     const allThreads = res.data.threads;
     if (!allThreads || allThreads.length === 0) {
@@ -160,22 +145,15 @@ async function allThreads(auth) {
       allResponses = allResponses.map((res) => {
         const headers = res.data.payload.headers;
         const subject = headers.find(header => header.name === 'Subject').value;
-        if(Object.keys(allRegex).includes(subject)){
-          let message;
-          switch (subject) {
-            case "You have sent money via PayNow":
-              message = res.data.payload.parts[0].parts[0].body.data
-              break;
-            default:
-              message = res.data.payload.body.data;
-          }
-          const data = decodeBase64Url(message)
-          let details = {}
-          for(const regexKey of Object.keys(allRegex[subject])){
-            if(data.match(allRegex[subject][regexKey])){
-              details = {...details, ...stringToData(data.match(allRegex[subject][regexKey])[0])}
+        if(Object.keys(extractionRegex).includes(subject)){
+          const data = decodeBase64Url(extractionRegex[subject].emailBody(res));
+          let details = {};
+          for(const regexKey of Object.keys(extractionRegex[subject])){
+            if(data.match(extractionRegex[subject][regexKey])){
+              details = {...details, ...stringToData(data.match(extractionRegex[subject][regexKey])[0], regexKey, subject)};
             }
           }
+          details = {"Transaction method": subject, ...details};
           return details;
         }else{
           return null;
