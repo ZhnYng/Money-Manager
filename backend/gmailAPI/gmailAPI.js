@@ -3,7 +3,6 @@ const path = require('path');
 const process = require('process');
 const {authenticate} = require('@google-cloud/local-auth');
 const {google} = require('googleapis');
-const identifiers = require('./identifiers.json');
 const base64url = require('base64url');
 const extractionRegex = require('./extractionRegex');
 const express = require('express');
@@ -98,7 +97,7 @@ function stringToData(inputString, regexName, subject){
   }else{
     const outputObject = {};
     switch(regexName){
-      case "Date of Transfer":
+      case "Date_of_Transfer":
         const dateString = keyValue[1];
         const dateParts = dateString.split(" "); // split the string into an array of ["21", "Feb", "2023"]
         const year = dateParts[2];
@@ -106,6 +105,13 @@ function stringToData(inputString, regexName, subject){
         const day = dateParts[0].padStart(2, "0"); // pad the day with a leading zero if necessary
         const formattedDate = `${year}-${month.toString().padStart(2, "0")}-${day}`;
         outputObject[regexName] = formattedDate;
+        break;
+      case "Time_of_Transfer":
+        let timeString = keyValue[1].slice(0, -2) + ' ' + keyValue[1].slice(-2);
+        timeString = timeString.replace('.', ':')
+        let time = new Date(`1970-01-01 ${timeString}`);
+        let formattedTime = time.toLocaleTimeString("en-UK", {hour12: false});
+        outputObject[regexName] = formattedTime;
         break;
       default:
         outputObject[regexName] = keyValue[1];
@@ -153,7 +159,7 @@ async function allThreads(auth) {
               details = {...details, ...stringToData(data.match(extractionRegex[subject][regexKey])[0], regexKey, subject)};
             }
           }
-          details = {"Transaction method": subject, ...details};
+          details = {"Transaction_method": subject, ...details};
           return details;
         }else{
           return null;
