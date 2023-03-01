@@ -1,5 +1,10 @@
 const db = require('../db/db');
-const gmailAPI = require('../gmailAPI/gmailAPI')
+const gmailAPI = require('../gmailAPI/gmailAPI');
+const pgp = require('pg-promise')(/* options */);
+
+pgp.pg.types.setTypeParser(1082, function (value) {
+    return value
+})
 
 const transactionDb = {
     updateTransactions: async function(userId, callback){
@@ -33,7 +38,8 @@ const transactionDb = {
             AND ($2 IS NULL OR to_char(date_of_transfer, 'MM-YYYY') = $2)
             ORDER BY date_of_transfer DESC;`, 
         [parseInt(userId), period])
-            .then(data => callback(null, data))
+            .then(data => {
+                callback(null, data)})
             .catch(error => callback(error, null));
     },
 
