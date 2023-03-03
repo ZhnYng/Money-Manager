@@ -123,7 +123,7 @@ function stringToData(inputString, regexName, subject){
 async function getTransactionDetails(auth, id) {
   const gmail = google.gmail({version: 'v1', auth});
   try {
-    const res = await gmail.users.messages.get({ 
+    const res = await gmail.users.threads.get({ 
       userId: 'me', 
       id: id
     });
@@ -149,22 +149,27 @@ async function allThreads(auth) {
       }
       allResponses = await Promise.all(allResponses)
       allResponses = allResponses.map((res) => {
-        const headers = res.data.payload.headers;
-        const subject = headers.find(header => header.name === 'Subject').value;
-        if(Object.keys(extractionRegex).includes(subject)){
-          const data = decodeBase64Url(extractionRegex[subject].emailBody(res));
-          let details = {};
-          for(const regexKey of Object.keys(extractionRegex[subject])){
-            if(data.match(extractionRegex[subject][regexKey])){
-              details = {...details, ...stringToData(data.match(extractionRegex[subject][regexKey])[0], regexKey, subject)};
+        let messages = [];
+        for(const message of res.data.messages){
+          const headers = message.payload.headers;
+          const subject = headers.find(header => header.name === 'Subject').value;
+          if(Object.keys(extractionRegex).includes(subject)){
+            const data = decodeBase64Url(extractionRegex[subject].emailBody(message));
+            let details = {};
+            for(const regexKey of Object.keys(extractionRegex[subject])){
+              if(data.match(extractionRegex[subject][regexKey])){
+                details = {...details, ...stringToData(data.match(extractionRegex[subject][regexKey])[0], regexKey, subject)};
+              }
             }
+            details = {"Transaction_method": subject, ...details};
+            messages.push(details);
+          }else{
+            messages.push(null);
           }
-          details = {"Transaction_method": subject, ...details};
-          return details;
-        }else{
-          return null;
         }
+        return messages;
       })
+      allResponses = allResponses.flat();
       allResponses = allResponses.filter(x => x != null);
       return allResponses;
     }
@@ -177,6 +182,12 @@ const gmailAPI = {
   allTransactionDetails: async function() {
     const auth = await authorize();
     const value = await allThreads(auth);
+    return value;
+  },
+
+  getDetails: async function(id){
+    const auth = await authorize();
+    const value = await getTransactionDetails(auth, id);
     return value;
   }
 }

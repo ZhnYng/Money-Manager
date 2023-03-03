@@ -4,6 +4,7 @@ const transactionDb = require('../model/transactionDB');
 const userDb = require('../model/userDB');
 const cors = require('cors');
 const budgetDB = require('../model/budgetDB');
+const base64url = require('base64url');
 const authenticateJWT = require('../middleware/authentication');
 
 const app = express();
@@ -21,6 +22,19 @@ app.get('/allTransactionDetails', async (req, res) => {
         res.status(result.response.data.error.code).send(result.response.data.error.message);
     }else{
         res.status(200).send(result);
+    }
+})
+
+app.get('/getDetails/:id', async (req, res) => {
+    const result = await gmailAPI.getDetails(req.params.id);
+    function decodeBase64Url(str) {
+        let buffer = Buffer.from(base64url.toBase64(str), 'base64');
+        buffer = buffer.toString('utf-8');
+        return buffer
+    }
+    for(const message of result.data.messages){
+        const decoded = decodeBase64Url(message.payload.body.data)
+        res.status(200).send(decoded);
     }
 })
 
