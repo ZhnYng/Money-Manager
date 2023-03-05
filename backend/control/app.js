@@ -25,18 +25,18 @@ app.get('/allTransactionDetails', async (req, res) => {
     }
 })
 
-app.get('/getDetails/:id', async (req, res) => {
-    const result = await gmailAPI.getDetails(req.params.id);
-    function decodeBase64Url(str) {
-        let buffer = Buffer.from(base64url.toBase64(str), 'base64');
-        buffer = buffer.toString('utf-8');
-        return buffer
-    }
-    for(const message of result.data.messages){
-        const decoded = decodeBase64Url(message.payload.body.data)
-        res.status(200).send(decoded);
-    }
-})
+// app.get('/getDetails/:id', async (req, res) => {
+//     const result = await gmailAPI.getDetails(req.params.id);
+//     function decodeBase64Url(str) {
+//         let buffer = Buffer.from(base64url.toBase64(str), 'base64');
+//         buffer = buffer.toString('utf-8');
+//         return buffer
+//     }
+//     for(const message of result.data.messages){
+//         const decoded = decodeBase64Url(message.payload.body.data)
+//         res.status(200).send(decoded);
+//     }
+// })
 
 app.put('/updateTransactions/:userId', (req, res) => {
     transactionDb.updateTransactions(req.params.userId, (err, result) => {
@@ -49,6 +49,24 @@ app.put('/updateTransactions/:userId', (req, res) => {
     })
 })
 
+app.post('/addTransaction', authenticateJWT, (req, res) => {
+    userDb.getIdByUser(req.user.email, (err, result) => {
+        if(err){
+            console.log(err);
+            res.status(500).send();
+        }else{
+            transactionDb.addTransaction(result.user_id, req.body, (err, result) => {
+                if(err){
+                    console.log(err);
+                    res.status(500).send();
+                }else{
+                    res.status(201).send(result);
+                }
+            })
+        }
+    })
+})
+
 app.get('/getTransactions/:userId', (req, res) => {
     transactionDb.getTransactions(req.params.userId, req.query.period, (err, result) => {
         if(err?.message === "No data returned from the query."){
@@ -57,6 +75,7 @@ app.get('/getTransactions/:userId', (req, res) => {
             console.log(err);
             res.status(500).send();
         }else{
+            console.log(result)
             res.status(200).send(result);
         }
     })

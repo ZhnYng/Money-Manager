@@ -25,9 +25,7 @@ function App() {
   ]);
 
   return (
-    ReactDOM.createRoot(document.getElementById("root")).render(
-      <RouterProvider router={router} />
-    )
+    <RouterProvider router={router} />
   );
 }
 

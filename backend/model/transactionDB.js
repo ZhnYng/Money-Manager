@@ -49,6 +49,18 @@ const transactionDb = {
             .catch(err => callback(err, null));
     },
 
+    addTransaction: function(userId, transactionDetails, callback){
+        transactionDetails["userId"] = userId;
+        db.none(
+            'INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account, category) \
+            VALUES(${userId}, ${method}, ${recipient}, ${date_of_transfer}, ${time_of_transfer}, ${amount}, ${account}, ${category})\
+            ON CONFLICT (user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account) DO NOTHING;',
+            transactionDetails
+        )
+            .then(data => data ? callback(null, "Unsuccessful") : callback(null, "Successful"))
+            .catch(err => callback(err, null));
+    },
+
     updateCategory: function(transactionId, email, category, callback){
         db.one('SELECT email FROM transactions, users WHERE transactions.user_id = users.user_id AND transaction_id = $1', [transactionId])
             .then(data => {
