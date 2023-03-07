@@ -2,9 +2,10 @@ import React from 'react';
 import axios from 'axios';
 
 export default function TransferData({details}){
-  const [category, setCategory] = React.useState(details.category)
+  const [deleteTransaction, setDeleteTransaction] = React.useState(false);
+  const [category, setCategory] = React.useState(details.category);
   if(details.category === null || details.category === "null"){
-    details.category = "none"
+    details.category = "none";
   }
   
   const categoryColors = {
@@ -37,6 +38,16 @@ export default function TransferData({details}){
       .catch(err => console.log(err));
   }
 
+  function handleDelete(){
+    if(!deleteTransaction) setDeleteTransaction(true);
+    else{
+      axios.delete(`/deleteTransaction/${details.transaction_id}`, 
+        {headers: {authorization: `Bearer ${localStorage.getItem('token')}`}})
+        .then(result => console.log(result))
+        .catch(err => console.log(err));
+    }
+  }
+
   function convertDate(date){
     if(date !== "NaN"){
       const dateParts = date.split('-');
@@ -64,6 +75,7 @@ export default function TransferData({details}){
 
   return (
     <>
+    {/* Start of transaction modal */}
     <input type="checkbox" id={`transaction-modal-${details.transaction_id}`} className="modal-toggle" />
     <label htmlFor={`transaction-modal-${details.transaction_id}`} className="modal cursor-pointer">
       <div className={`card w-11/12 ${categoryColors[category]?.bgColor} text-white my-2`}>
@@ -72,7 +84,7 @@ export default function TransferData({details}){
             <p className='text-2xl underline font-bold'>{details.recipient}</p>
           </div>
           <h2 className="card-title text-xl font-bold">Date: {convertDate(details.date_of_transfer)}</h2>
-          <h2 className="card-title text-xl font-bold">Amount: {details.amount}</h2>
+          <h2 className="card-title text-xl font-bold">Amount: {details.transaction_type === "income" ? "+" : "-"}{details.amount}</h2>
           <h2 className="card-title text-xl font-bold">Time: {details.time_of_transfer}</h2>
           <h2 className="card-title text-xl font-bold">Method: {details.method}</h2>
           <h2 className="card-title text-xl font-bold">Account: {details.account}</h2>
@@ -88,9 +100,14 @@ export default function TransferData({details}){
             <option value='entertainment'>Entertainment</option>
             <option value='apparel'>Apparel</option>
           </select>
+          {details.recorded_with === "MANUAL" && <button className="btn btn-error text-lg w-full border-2 border-red-900 self-end"
+            onClick={handleDelete} onBlur={() => setDeleteTransaction(false)}
+            >{deleteTransaction ? 'CONFIRM DELETE' : 'DELETE'}
+          </button>}
         </div>
       </div>
     </label>
+    {/* End of transaction modal */}
     <label htmlFor={`transaction-modal-${details.transaction_id}`}>
       <div className={`card w-96 ${categoryColors[category]?.bgColor} text-white my-2`}>
         <div className={`badge bg-white ${categoryColors[category]?.textColor} font-bold border-none self-end mt-2 mr-2`}>{category?.toUpperCase()}</div>
@@ -99,7 +116,7 @@ export default function TransferData({details}){
             <p className='text-xl font-bold'>{details.recipient}</p>
             <h2 className="card-title text-xl">{convertDate(details.date_of_transfer)}</h2>
           </div>
-          <h2 className="card-title text-2xl font-bold col-span-5">{details.amount}</h2>
+          <h2 className="card-title text-2xl font-bold col-span-5">{details.transaction_type === "income" ? "+" : "-"}{details.amount}</h2>
         </div>
       </div>
     </label>

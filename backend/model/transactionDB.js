@@ -7,7 +7,7 @@ pgp.pg.types.setTypeParser(1082, function (value) {
 })
 
 const transactionDb = {
-    updateTransactions: async function(userId, callback){
+    gmailUpdateTransactions: async function(userId, callback){
         const result = await gmailAPI.allTransactionDetails();
         if(result.response?.data.error){
             return callback(null, result.response.data.error.message);
@@ -15,9 +15,9 @@ const transactionDb = {
             db.tx(t => {
                 const queries = result.map(l => {
                     l['userId'] = userId;
-                    return t.none('INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account) \
-                        VALUES(${userId}, ${Transaction_method}, ${Recipient}, ${Date_of_Transfer}, ${Time_of_Transfer}, ${Amount}, ${Account})\
-                        ON CONFLICT (user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account) DO NOTHING;', l);
+                    return t.none("INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account, transaction_type, recorded_with) \
+                        VALUES(${userId}, ${Transaction_method}, ${Recipient}, ${Date_of_Transfer}, ${Time_of_Transfer}, ${Amount}, ${Account}, 'expense', 'GmailAPI')\
+                        ON CONFLICT (user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account) DO NOTHING;", l);
                 });
                 return t.batch(queries);
             })
@@ -36,7 +36,7 @@ const transactionDb = {
             FROM transactions
             WHERE user_id = $1
             AND ($2 IS NULL OR to_char(date_of_transfer, 'MM-YYYY') = $2)
-            ORDER BY date_of_transfer DESC;`, 
+            ORDER BY date_of_transfer DESC, time_of_transfer DESC;`, 
         [parseInt(userId), period])
             .then(data => {
                 callback(null, data)})
@@ -52,12 +52,30 @@ const transactionDb = {
     addTransaction: function(userId, transactionDetails, callback){
         transactionDetails["userId"] = userId;
         db.none(
-            'INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account, category) \
-            VALUES(${userId}, ${method}, ${recipient}, ${date_of_transfer}, ${time_of_transfer}, ${amount}, ${account}, ${category})\
-            ON CONFLICT (user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account) DO NOTHING;',
+            "INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account, category, transaction_type, recorded_with) \
+            VALUES(${userId}, ${method}, ${recipient}, ${date_of_transfer}, ${time_of_transfer}, ${amount}, ${account}, ${category}, ${transaction_type}, 'MANUAL')\
+            ON CONFLICT (user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account) DO NOTHING;",
             transactionDetails
         )
             .then(data => data ? callback(null, "Unsuccessful") : callback(null, "Successful"))
+            .catch(err => callback(err, null));
+    },
+
+    deleteTransaction: function(transactionId, email, callback){
+        db.one('SELECT email, recorded_with FROM transactions, users WHERE transactions.user_id = users.user_id AND transaction_id = $1', [transactionId])
+            .then(data => {
+                if(data.email === email){
+                    if(data.recorded_with === "MANUAL"){
+                        db.none('DELETE FROM transactions WHERE transaction_id = $1;', [parseInt(transactionId)])
+                            .then(() => callback(null, "Success"))
+                            .catch(err => callback(err, null));
+                    }else{
+                        return callback("Forbidden", null);
+                    }
+                }else{
+                    return callback("Unauthorized", null);
+                }
+            })
             .catch(err => callback(err, null));
     },
 

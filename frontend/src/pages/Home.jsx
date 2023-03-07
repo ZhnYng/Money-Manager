@@ -18,7 +18,7 @@ export default function Home(){
   // React.useEffect(() => {
   //   axios.get(`/getIdByUser/${jwtDecode(localStorage.getItem('token')).email}`)
   //     .then(result => {
-  //       axios.put(`/updateTransactions/${result.data.user_id}`)
+  //       axios.put(`/gmailUpdateTransactions/${result.data.user_id}`)
   //         .then((res) => console.log(res))
   //         .catch((err) => console.log('Data not synced'));
   //     })

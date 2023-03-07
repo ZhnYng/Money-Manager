@@ -1,6 +1,9 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import BottomNavbar from './components/BottomNavbar';
 import Home from './pages/Home';
+import Profile from "./pages/Profile";
+import Budget from "./pages/Settings/Budget";
+import Statistics from "./pages/Statistics";
 
 function AppLayout(){
   return(
@@ -19,6 +22,18 @@ function App() {
         {
           path: "/",
           element: <Home />
+        },
+        {
+          path: "/statistics",
+          element: <Statistics />
+        },
+        {
+          path: "/profile",
+          element: <Profile />
+        },
+        {
+          path: "/settings/budget",
+          element: <Budget />
         },
       ]
     }

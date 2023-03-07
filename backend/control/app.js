@@ -38,8 +38,8 @@ app.get('/allTransactionDetails', async (req, res) => {
 //     }
 // })
 
-app.put('/updateTransactions/:userId', (req, res) => {
-    transactionDb.updateTransactions(req.params.userId, (err, result) => {
+app.put('/gmailUpdateTransactions/:userId', (req, res) => {
+    transactionDb.gmailUpdateTransactions(req.params.userId, (err, result) => {
         if(err){
             console.log(err);
             res.status(500).send();
@@ -67,6 +67,21 @@ app.post('/addTransaction', authenticateJWT, (req, res) => {
     })
 })
 
+app.delete('/deleteTransaction/:transaction_id', authenticateJWT, (req, res) => {
+    transactionDb.deleteTransaction(req.params.transaction_id, req.user.email, (err, result) => {
+        if(err === "Unauthorized"){
+            res.status(401).send();
+        }else if(err === "Forbidden"){
+            res.status(403).send();
+        }else if(err){
+            console.log(err);
+            res.status(500).send();
+        }else{
+            res.status(204).send(result)
+        }
+    })
+})
+
 app.get('/getTransactions/:userId', (req, res) => {
     transactionDb.getTransactions(req.params.userId, req.query.period, (err, result) => {
         if(err?.message === "No data returned from the query."){
@@ -75,7 +90,6 @@ app.get('/getTransactions/:userId', (req, res) => {
             console.log(err);
             res.status(500).send();
         }else{
-            console.log(result)
             res.status(200).send(result);
         }
     })

@@ -19,6 +19,8 @@ CREATE TABLE transactions (
   amount VARCHAR(20) NOT NULL,
   account VARCHAR(100) NOT NULL,
   category VARCHAR(30),
+  transaction_type VARCHAR(20) NOT NULL DEFAULT 'expense', --income or expense
+  recorded_with VARCHAR(20) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   CONSTRAINT unique_transaction UNIQUE (user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account)
 );
