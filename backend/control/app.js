@@ -117,9 +117,11 @@ app.post('/addUser', (req, res) => {
     })
 })
 
-app.get('/getUserBudget/:email', (req, res) => {
-    budgetDB.getUserBudget(req.params.email, (err, result) => {
-        if(err){
+app.get('/getCurrentBudget/:email', (req, res) => {
+    budgetDB.getCurrentBudget(req.params.email, (err, result) => {
+        if(err?.message === "No data returned from the query."){
+            res.status(200).send("Email not in database")
+        }else if(err){
             console.log(err);
             res.status(500).send();
         }else{
@@ -128,12 +130,25 @@ app.get('/getUserBudget/:email', (req, res) => {
     })
 })
 
+app.get('/getBudgetByMonth/:email', (req, res) => {
+    budgetDB.getBudgetByMonth(req.params.email, (err, result) => {
+        if(err?.message === "No data returned from the query."){
+            res.status(200).send("No record found")
+        }else if(err){
+            console.log(err);
+            res.status(500).send();
+        }else{
+            res.status(200).send(result);
+        }
+    }, req.query.month, req.query.year)
+})
+
 app.post('/addBudget', authenticateJWT, (req, res) => {
     req.body = {...req.body, email: req.user.email}
     budgetDB.addBudget(req.body, (err, result) => {
         if(err){
             console.log(err);
-            res.status(500).send();
+            res.status(500).send("Error");
         }else{
             res.status(201).send(result)
         }
@@ -149,6 +164,32 @@ app.get('/getTransactionById/:transactionId', authenticateJWT, (req, res) => {
             res.status(200).send(result);
         }
     })
+})
+
+app.get('/getExpenses/:userId', (req, res) => {
+    transactionDb.getExpenses(req.params.userId, (err, result) => {
+        if(err?.message === "No data returned from the query."){
+            res.status(200).send("No expenses");
+        }else if(err){
+            console.log(err);
+            res.status(500).send();
+        }else{
+            res.status(200).send(result);
+        }
+    }, req.query.period, req.query.year)
+})
+
+app.get('/getIncome/:userId', (req, res) => {
+    transactionDb.getIncome(req.params.userId, (err, result) => {
+        if(err?.message === "No data returned from the query."){
+            res.status(200).send("No income");
+        }else if(err){
+            console.log(err);
+            res.status(500).send();
+        }else{
+            res.status(200).send(result);
+        }
+    }, req.query.period, req.query.year)
 })
 
 app.put('/updateCategory/:transactionId/:category', authenticateJWT, (req, res) => {

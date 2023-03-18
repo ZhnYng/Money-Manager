@@ -30,7 +30,7 @@ DROP TABLE IF EXISTS budget CASCADE;
 CREATE TABLE budget (
   budget_id SERIAL PRIMARY KEY,
   email VARCHAR(100) NOT NULL REFERENCES users(email),
-  budget NUMERIC(10, 2) NOT NULL,
+  amount NUMERIC(10, 2) NOT NULL,
   frequency VARCHAR(50) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );

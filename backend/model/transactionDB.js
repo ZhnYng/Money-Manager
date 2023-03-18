@@ -2,6 +2,7 @@ const db = require('../db/db');
 const gmailAPI = require('../gmailAPI/gmailAPI');
 const pgp = require('pg-promise')(/* options */);
 
+// This solves the issue of returned dates being one day behind time
 pgp.pg.types.setTypeParser(1082, function (value) {
     return value
 })
@@ -91,6 +92,49 @@ const transactionDb = {
                 }
             })
             .catch(err => callback(err, null));
+    },
+
+    getTransactions: function(userId, period=null, callback){
+        db.many(`
+            SELECT *
+            FROM transactions
+            WHERE user_id = $1
+            AND ($2 IS NULL OR to_char(date_of_transfer, 'MM-YYYY') = $2)
+            ORDER BY date_of_transfer DESC, time_of_transfer DESC;`, 
+        [parseInt(userId), period])
+            .then(data => {
+                callback(null, data)})
+            .catch(error => callback(error, null));
+    },
+
+    getExpenses: function(userId, callback, period=null, year=null){
+        db.many(`
+            SELECT COALESCE(SUM(NULLIF(regexp_replace(amount, '[^0-9.]*','','g'), '')::numeric), 0) AS total_expenses
+            FROM transactions
+            WHERE user_id = $1
+            AND transaction_type = 'expense'
+            AND ($2 IS NULL OR to_char(date_of_transfer, 'MM-YYYY') = $2)
+            AND ($3 IS NULL OR to_char(date_of_transfer, 'YYYY') = $3)
+        ;`, 
+        [parseInt(userId), period, year])
+            .then(data => {
+                callback(null, data)})
+            .catch(error => callback(error, null));
+    },
+
+    getIncome: function(userId, callback, period=null, year=null){
+        db.many(`
+            SELECT COALESCE(SUM(NULLIF(regexp_replace(amount, '[^0-9.]*','','g'), '')::numeric), 0) AS total_income
+            FROM transactions
+            WHERE user_id = $1
+            AND transaction_type = 'income'
+            AND ($2 IS NULL OR to_char(date_of_transfer, 'MM-YYYY') = $2)
+            AND ($3 IS NULL OR to_char(date_of_transfer, 'YYYY') = $3)
+        ;`, 
+        [parseInt(userId), period, year])
+            .then(data => {
+                callback(null, data)})
+            .catch(error => callback(error, null));
     }
 }
 

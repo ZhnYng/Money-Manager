@@ -11,7 +11,7 @@ export default function CreateTransaction(){
   
   const [error, setError] = React.useState();
   const [transactionDetails, setTransactionDetails] = React.useState({
-    transaction_type: "",
+    transaction_type: "expense",
     recipient: "",
     amount: "",
     date_of_transfer: currentDate,

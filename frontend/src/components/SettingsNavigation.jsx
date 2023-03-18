@@ -1,8 +1,14 @@
 import React from 'react';
 
 export default function SettingsNavigation({icon, title}){
+  const [showing, setShowing] = React.useState(false);
+
+  function handleToggle(){
+    setShowing(!showing);
+  }
+
   return (
-    <div className='flex flex-row justify-between text-green-900 my-6'>
+    <div className='flex flex-row justify-between text-green-900 my-6' onClick={handleToggle}>
       <div className='flex flex-row'>
         {icon}
         <p className='text-xl font-medium ml-3'>{title}</p>

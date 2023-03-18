@@ -2,7 +2,9 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import BottomNavbar from './components/BottomNavbar';
 import Home from './pages/Home';
 import Profile from "./pages/Profile";
+import Account from "./pages/Settings/Account";
 import Budget from "./pages/Settings/Budget";
+import Notifications from "./pages/Settings/Notifications";
 import Statistics from "./pages/Statistics";
 
 function AppLayout(){
@@ -34,6 +36,14 @@ function App() {
         {
           path: "/settings/budget",
           element: <Budget />
+        },
+        {
+          path: "/settings/account",
+          element: <Account />
+        },
+        {
+          path: "/settings/notifications",
+          element: <Notifications />
         },
       ]
     }
