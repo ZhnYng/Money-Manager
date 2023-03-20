@@ -54,7 +54,7 @@ const transactionDb = {
         transactionDetails["userId"] = userId;
         db.none(
             "INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account, category, transaction_type, recorded_with) \
-            VALUES(${userId}, ${method}, ${recipient}, ${date_of_transfer}, ${time_of_transfer}, ${amount}, ${account}, ${category}, ${transaction_type}, 'MANUAL')\
+            VALUES(${userId}, ${method}, ${recipient}, ${date_of_transfer}, ${time_of_transfer}, ${amount}, ${account}, ${category}, ${transaction_type}, ${recorded_with})\
             ON CONFLICT (user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account) DO NOTHING;",
             transactionDetails
         )

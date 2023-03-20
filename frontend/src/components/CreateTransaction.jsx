@@ -18,7 +18,8 @@ export default function CreateTransaction(){
     time_of_transfer: currentTime,
     category: "none",
     account: "",
-    method: ""
+    method: "",
+    recorded_with: "MANUAL"
   });
 
   function handleChange(e){

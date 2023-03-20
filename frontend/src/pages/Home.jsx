@@ -15,15 +15,15 @@ export default function Home(){
     category: "none"
   }]);
 
-  // React.useEffect(() => {
-  //   axios.get(`/getIdByUser/${jwtDecode(localStorage.getItem('token')).email}`)
-  //     .then(result => {
-  //       axios.put(`/gmailUpdateTransactions/${result.data.user_id}`)
-  //         .then((res) => console.log(res))
-  //         .catch((err) => console.log('Data not synced'));
-  //     })
-  //     .catch(err => console.log(err));
-  // }, [])
+  React.useEffect(() => {
+    axios.get(`/getIdByUser/${jwtDecode(localStorage.getItem('token')).email}`)
+      .then(result => {
+        axios.put(`/gmailUpdateTransactions/${result.data.user_id}`)
+          .then((res) => console.log(res))
+          .catch((err) => console.log('Data not synced'));
+      })
+      .catch(err => console.log(err));
+  }, [])
 
   return (
     <div className='bg-green-300 min-h-screen'>

@@ -8,6 +8,14 @@ export default function Budget(){
   const [budgetDetails, setBudgetDetails] = React.useState({
     amount: '',
     frequency: 'monthly',
+    start_date: null,
+    end_date: null,
+    method: '',
+    recipient: 'budget',
+    account: '',
+    category: 'none',
+    transaction_type: 'expense',
+    recorded_with: 'RECURRING'
   });
   const [submitStatus, setSubmitStatus] = React.useState(null);
 
@@ -16,8 +24,8 @@ export default function Budget(){
   }
 
   function handleSubmit(){
-    axios.post('/addBudget', budgetDetails, {headers: {authorization: `Bearer ${localStorage.getItem('token')}`}})
-      .then(res => setSubmitStatus(true))
+    axios.post('/addRecurringTransaction', budgetDetails, {headers: {authorization: `Bearer ${localStorage.getItem('token')}`}})
+      .then(res => {setSubmitStatus(true); console.log(res);})
       .catch(err => {
         setSubmitStatus(false);
         console.log(err);
@@ -25,7 +33,7 @@ export default function Budget(){
   }
 
   React.useEffect(() => {
-    axios.get(`/getCurrentBudget/${location.state.user.email}`)
+    axios.get(`/getUserBudget/${location.state.user.email}`)
       .then(res => setBudgetDetails(res.data))
       .catch(err => console.log(err));
   }, [])
@@ -71,7 +79,7 @@ export default function Budget(){
                 type="number" 
                 placeholder="$0.00" 
                 name="amount"
-                className="text-lg w-40 input font-medium md:max-w-xs bg-gray-200 text-gray-800"
+                className="text-lg w-48 input font-medium md:max-w-xs bg-gray-200 text-gray-800"
                 onChange={handleChange}
                 value={budgetDetails.amount}
               />
@@ -80,7 +88,8 @@ export default function Budget(){
           <div className='flex items-center justify-between my-5'>
             <p className='text-xl text-green-900 font-medium'>Frequency</p>
             <select 
-              className="select md:max-w-xs w-40 bg-gray-200 text-gray-800 text-lg" 
+              className={`select text-gray-800 w-48 bg-white
+              border border-gray-500 font-medium text-xl my-2`}
               value={budgetDetails.frequency}
               name="frequency"
               onChange={handleChange}
@@ -89,6 +98,47 @@ export default function Budget(){
               <option value='monthly'>Monthly</option>
               <option value="weekly">Weekly</option>
               <option value="daily">Daily</option>
+            </select>
+          </div>
+          <div className='flex items-center justify-between my-5'>
+            <p className='text-xl text-green-900 font-medium'>Method</p>
+            <div className="form-control">
+              <input 
+                type="text" 
+                placeholder="E.g. PayNow" 
+                name="method"
+                className="text-lg w-48 input font-medium md:max-w-xs bg-gray-200 text-gray-800"
+                onChange={handleChange}
+                value={budgetDetails.method}
+              />
+            </div>
+          </div>
+          <div className='flex items-center justify-between my-5'>
+            <p className='text-xl text-green-900 font-medium'>Account</p>
+            <div className="form-control">
+              <input 
+                type="text" 
+                placeholder="E.g. FRANK Account" 
+                name="account"
+                className="text-lg w-48 input font-medium md:max-w-xs bg-gray-200 text-gray-800"
+                onChange={handleChange}
+                value={budgetDetails.account}
+              />
+            </div>
+          </div>
+          <div className='flex items-center justify-between my-5'>
+            <p className='text-xl text-green-900 font-medium'>Category</p>
+            <select 
+              className={`select text-gray-800 w-48 bg-white
+              border border-gray-500 font-medium text-xl my-2`}
+              value={budgetDetails.category} 
+              onChange={handleChange}
+              name="category"
+            >
+              <option value='none'>Category</option>
+              <option value='food'>Food</option>
+              <option value='entertainment'>Entertainment</option>
+              <option value='apparel'>Apparel</option>
             </select>
           </div>
         </div>

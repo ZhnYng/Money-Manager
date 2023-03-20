@@ -6,6 +6,7 @@ const cors = require('cors');
 const budgetDB = require('../model/budgetDB');
 const base64url = require('base64url');
 const authenticateJWT = require('../middleware/authentication');
+const recurringTransactionsDB = require('../model/recurringTransactionsDB');
 
 const app = express();
 
@@ -201,6 +202,55 @@ app.put('/updateCategory/:transactionId/:category', authenticateJWT, (req, res) 
             res.status(500).send();
         }else{
             res.status(200).send(result);
+        }
+    })
+})
+
+app.get('/getRecurringTransaction/:email', (req, res) => {
+    recurringTransactionsDB.getRecurringTransactions(req.params.email, (err, result) => {
+        if(err){
+            console.log(err);
+            res.status(500).send(err);
+        }else{
+            res.status(200).send(result);
+        }
+    })
+})
+
+app.post('/addRecurringTransaction', authenticateJWT, (req, res) => {
+    req.body = {email: req.user.email, ...req.body};
+    if(!req.body.amount){
+        res.status(400).send("Amount is empty");
+    }else{
+        recurringTransactionsDB.addRecurringTransaction(req.body, (err, result) => {
+            if(err){
+                console.log(err);
+                res.status(500).send(err);
+            }else{
+                res.status(201).send(result);
+            }
+        })
+    }
+})
+
+app.get('/getUserBudget/:email', (req, res) => {
+    recurringTransactionsDB.getUserBudget(req.params.email, (err, result) => {
+        if(err){
+            console.log(err);
+            res.status(500).send(err);
+        }else{
+            res.status(200).send(result);
+        }
+    })
+})
+
+app.post('/syncRecurringToTransaction/:email', (req, res) => {
+    recurringTransactionsDB.syncRecurringToTransaction(req.params.email, (err, result) => {
+        if(err){
+            console.log(err);
+            res.status(500).send();
+        }else{
+            res.status(201).send();
         }
     })
 })

@@ -12,12 +12,12 @@ DROP TABLE IF EXISTS transactions CASCADE;
 CREATE TABLE transactions (
   transaction_id SERIAL PRIMARY KEY,
   user_id INTEGER NOT NULL REFERENCES users(user_id),
-  method VARCHAR(100) NOT NULL,
+  method VARCHAR(100),
   recipient VARCHAR(100) NOT NULL,
   date_of_transfer DATE NOT NULL,
   time_of_transfer TIME NOT NULL,
-  amount VARCHAR(20) NOT NULL,
-  account VARCHAR(100) NOT NULL,
+  amount NUMERIC(10, 2) NOT NULL,
+  account VARCHAR(100),
   category VARCHAR(30),
   transaction_type VARCHAR(20) NOT NULL DEFAULT 'expense', --income or expense
   recorded_with VARCHAR(20) NOT NULL,
@@ -25,12 +25,21 @@ CREATE TABLE transactions (
   CONSTRAINT unique_transaction UNIQUE (user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account)
 );
 
-DROP TABLE IF EXISTS budget CASCADE;
+DROP TABLE IF EXISTS recurring_transactions CASCADE;
 
-CREATE TABLE budget (
-  budget_id SERIAL PRIMARY KEY,
+CREATE TABLE recurring_transactions (
+  recurring_transactions_id SERIAL PRIMARY KEY,
   email VARCHAR(100) NOT NULL REFERENCES users(email),
   amount NUMERIC(10, 2) NOT NULL,
   frequency VARCHAR(50) NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+  start_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  end_date DATE,
+  method VARCHAR(100),
+  recipient VARCHAR(100) NOT NULL,
+  account VARCHAR(100),
+  category VARCHAR(30),
+  transaction_type VARCHAR(20) NOT NULL DEFAULT 'expense', --income or expense
+  recorded_with VARCHAR(20) NOT NULL DEFAULT 'RECURRING',
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  CONSTRAINT unique_user_recurring UNIQUE (email, recipient)
 );
