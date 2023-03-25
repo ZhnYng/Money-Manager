@@ -29,7 +29,7 @@ export default function Home(){
           .then((res) => {console.log(res); setChangesMade("new automated transaction added")})
           .catch((err) => console.log('Data not synced'));
       })
-      .catch(err => console.log(err));
+      .catch(err => {console.log(err)});
 
     axios.post(`/syncRecurringToTransaction/${jwtDecode(localStorage.getItem('token')).email}`)
       .then(result => {

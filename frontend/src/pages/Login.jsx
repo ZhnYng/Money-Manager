@@ -1,13 +1,19 @@
 import React from 'react';
 import { FaPiggyBank } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import jwtDecode from 'jwt-decode';
 
 export default function Login(){
   const navigate = useNavigate();
 
   function handleCallbackResponse(response){
-    localStorage.setItem("token", response.credential)
-    navigate('/')
+    axios.post('/addUser', {email: jwtDecode(response.credential).email})
+    .then(() => {
+      localStorage.setItem("token", response.credential);
+      navigate('/');
+    })
+    .catch(err => console.log(err));
   }
 
   React.useEffect(() => {

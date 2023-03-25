@@ -10,18 +10,16 @@ const recurringTransactionsDB = {
     addRecurringTransaction: function(transactionDetails, callback){
         if (!transactionDetails.start_date) {
             transactionDetails.start_date = new Date()
-        }else if(!transactionDetails.end_date){
-            transactionDetails.end_date = null;
         }
         db.none(
-            'INSERT INTO recurring_transactions (email, amount, frequency, start_date, \
+            "INSERT INTO recurring_transactions (email, amount, frequency, start_date, \
             end_date, method, recipient, account, category, transaction_type, recorded_with) \
-            VALUES (${email}, ${amount}, ${frequency}, ${start_date}, ${end_date}, ${method}, \
+            VALUES (${email}, ${amount}, ${frequency}, ${start_date}, NULLIF(${end_date}, '')::date, ${method}, \
             ${recipient}, ${account}, ${category}, ${transaction_type}, ${recorded_with})\
             ON CONFLICT (email, recipient) DO UPDATE SET amount=${amount}, frequency=${frequency},\
-            start_date=${start_date}, end_date=${end_date}, method=${method}, recipient=${recipient},\
+            start_date=${start_date}, end_date=NULLIF(${end_date}, '')::date, method=${method}, recipient=${recipient},\
             account=${account}, category=${category}, transaction_type=${transaction_type}, \
-            recorded_with=${recorded_with};'
+            recorded_with=${recorded_with};"
             , transactionDetails
         )
             .then(() => callback(null, "Success"))
