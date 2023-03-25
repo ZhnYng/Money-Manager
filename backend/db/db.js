@@ -6,6 +6,11 @@ const db = pgp('postgres://money_manager_admin:c3PaaP9l8cnnGH8mdxP5gbf55YAeaVtX@
 
 module.exports = db;
 
-
+// To edit postgresql DB
+// Server [localhost]: dpg-cgf9miseoogqfc44q2d0-a.singapore-postgres.render.com
+// Database [postgres]: money_manager_x0zs
+// Port [5432]: 
+// Username [postgres]: money_manager_admin
+// Password for user money_manager_admin: c3PaaP9l8cnnGH8mdxP5gbf55YAeaVtX
 
 // postgres://USER:PASSWORD@EXTERNAL_HOST:PORT/DATABASE
