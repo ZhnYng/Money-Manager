@@ -43,6 +43,9 @@ export default function Home(){
       <Header setTransactionDetails={setTransactionDetails} changesMade={changesMade}/>
       <div className='flex flex-col items-center py-32'>
         {transactionDetails.map(detail => {
+          if(detail.category === null || detail.category === "null"){
+            detail.category = "none";
+          }
           return <TransferData key={detail.transaction_id} details={detail} setChangesMade={setChangesMade}/>
         })}
       </div>

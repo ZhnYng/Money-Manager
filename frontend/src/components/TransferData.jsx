@@ -4,9 +4,6 @@ import axios from 'axios';
 export default function TransferData({details, setChangesMade}){
   const [deleteTransaction, setDeleteTransaction] = React.useState(false);
   const [category, setCategory] = React.useState(details.category);
-  if(details.category === null || details.category === "null"){
-    details.category = "none";
-  }
   
   const categoryColors = {
     "none": {
