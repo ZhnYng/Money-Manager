@@ -18,7 +18,7 @@ const transactionDb = {
                     l['userId'] = userId;
                     return t.none("INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account, transaction_type, recorded_with) \
                         VALUES(${userId}, ${Transaction_method}, ${Recipient}, ${Date_of_Transfer}, ${Time_of_Transfer}, ${Amount}, ${Account}, 'expense', 'GmailAPI')\
-                        ON CONFLICT (user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account) DO NOTHING;", l);
+                        ON CONFLICT (user_id, recipient, date_of_transfer, time_of_transfer, amount) DO NOTHING;", l);
                 });
                 return t.batch(queries);
             })
@@ -55,7 +55,7 @@ const transactionDb = {
         db.none(
             "INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account, category, transaction_type, recorded_with) \
             VALUES(${userId}, ${method}, ${recipient}, ${date_of_transfer}, ${time_of_transfer}, ${amount}, ${account}, ${category}, ${transaction_type}, ${recorded_with})\
-            ON CONFLICT (user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account) DO NOTHING;",
+            ON CONFLICT (user_id, recipient, date_of_transfer, time_of_transfer, amount) DO NOTHING;",
             transactionDetails
         )
             .then(data => data ? callback(null, "Unsuccessful") : callback(null, "Successful"))
@@ -66,7 +66,7 @@ const transactionDb = {
         db.one('SELECT email, recorded_with FROM transactions, users WHERE transactions.user_id = users.user_id AND transaction_id = $1', [transactionId])
             .then(data => {
                 if(data.email === email){
-                    if(data.recorded_with === "MANUAL"){
+                    if(data.recorded_with === "MANUAL" || data.recorded_with === "RECURRING"){
                         db.none('DELETE FROM transactions WHERE transaction_id = $1;', [parseInt(transactionId)])
                             .then(() => callback(null, "Success"))
                             .catch(err => callback(err, null));
@@ -107,31 +107,31 @@ const transactionDb = {
             .catch(error => callback(error, null));
     },
 
-    getExpenses: function(userId, callback, period=null, year=null){
+    getExpenses: function(userId, callback, month=null, year=null){
         db.many(`
             SELECT COALESCE(SUM(NULLIF(regexp_replace(amount, '[^0-9.]*','','g'), '')::numeric), 0) AS total_expenses
             FROM transactions
             WHERE user_id = $1
             AND transaction_type = 'expense'
-            AND ($2 IS NULL OR to_char(date_of_transfer, 'MM-YYYY') = $2)
+            AND ($2 IS NULL OR to_char(date_of_transfer, 'MM') = $2)
             AND ($3 IS NULL OR to_char(date_of_transfer, 'YYYY') = $3)
         ;`, 
-        [parseInt(userId), period, year])
+        [parseInt(userId), month, year])
             .then(data => {
                 callback(null, data)})
             .catch(error => callback(error, null));
     },
 
-    getIncome: function(userId, callback, period=null, year=null){
+    getIncome: function(userId, callback, month=null, year=null){
         db.many(`
             SELECT COALESCE(SUM(NULLIF(regexp_replace(amount, '[^0-9.]*','','g'), '')::numeric), 0) AS total_income
             FROM transactions
             WHERE user_id = $1
             AND transaction_type = 'income'
-            AND ($2 IS NULL OR to_char(date_of_transfer, 'MM-YYYY') = $2)
+            AND ($2 IS NULL OR to_char(date_of_transfer, 'MM') = $2)
             AND ($3 IS NULL OR to_char(date_of_transfer, 'YYYY') = $3)
         ;`, 
-        [parseInt(userId), period, year])
+        [parseInt(userId), month, year])
             .then(data => {
                 callback(null, data)})
             .catch(error => callback(error, null));

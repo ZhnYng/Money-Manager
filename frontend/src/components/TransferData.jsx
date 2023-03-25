@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
-export default function TransferData({details}){
+export default function TransferData({details, setChangesMade}){
   const [deleteTransaction, setDeleteTransaction] = React.useState(false);
   const [category, setCategory] = React.useState(details.category);
   if(details.category === null || details.category === "null"){
@@ -10,8 +10,8 @@ export default function TransferData({details}){
   
   const categoryColors = {
     "none": {
-      bgColor: "bg-green-500",
-      textColor: "text-green-500",
+      bgColor: "bg-gray-700",
+      textColor: "text-gray-700",
     },
     "food": {
       bgColor: "bg-red-500",
@@ -43,7 +43,7 @@ export default function TransferData({details}){
     else{
       axios.delete(`/deleteTransaction/${details.transaction_id}`, 
         {headers: {authorization: `Bearer ${localStorage.getItem('token')}`}})
-        .then(result => console.log(result))
+        .then(result => {console.log(result); setChangesMade("transaction deleted")})
         .catch(err => console.log(err));
     }
   }
@@ -100,7 +100,7 @@ export default function TransferData({details}){
             <option value='entertainment'>Entertainment</option>
             <option value='apparel'>Apparel</option>
           </select>
-          {details.recorded_with === "MANUAL" && <button className="btn btn-error text-lg w-full border-2 border-red-900 self-end"
+          {(details.recorded_with === "MANUAL" || details.recorded_with === "RECURRING") && <button className="btn btn-error text-lg w-full border-2 border-red-900 self-end"
             onClick={handleDelete} onBlur={() => setDeleteTransaction(false)}
             >{deleteTransaction ? 'CONFIRM DELETE' : 'DELETE'}
           </button>}

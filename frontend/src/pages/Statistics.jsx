@@ -1,10 +1,13 @@
 import axios from 'axios';
 import React from 'react';
 import Header from '../components/Header';
+import jwtDecode from 'jwt-decode';
 
 export default function Statistics(){
   const [income, setIncome] = React.useState('');
   const [expenses, setExpenses] = React.useState('');
+  const [yearlyIncome, setYearlyIncome] = React.useState('');
+  const [yearlyExpenses, setYearlyExpenses] = React.useState('');
   const [budget, setBudget] = React.useState('');
   
   // React.useEffect(() => {
@@ -29,7 +32,7 @@ export default function Statistics(){
 
   return (
     <div className='bg-green-300 min-h-screen absolute w-screen'>
-      <Header statisticsIncome={setIncome} statisticsExpenses={setExpenses} statisticsBudget={setBudget}/>
+      <Header statisticsIncome={setIncome} statisticsExpenses={setExpenses} statisticsBudget={setBudget} statisticsExpensesByYear={setYearlyExpenses} statisticsIncomeByYear={setYearlyIncome}/>
       <div className='py-32'>
         <div className="card card-side text-white shadow-xl flex items-center m-5 border-4 border-green-500 bg-green-50">
           <div className="flex flex-shrink-0 items-center justify-center h-16 w-16 rounded ml-6">
@@ -44,7 +47,7 @@ export default function Statistics(){
             <h2 className="card-title text-2xl font-bold">SGD ${parseFloat(income+budget).toFixed(2)}</h2>
             <div className='flex justify-between text-gray-400 font-medium'>
               <p>Income in this month</p>
-              <p>+12%</p>
+              {/* <p>+12%</p> */}
             </div>
           </div>
         </div>
@@ -59,7 +62,7 @@ export default function Statistics(){
             <h2 className="card-title text-2xl font-bold">SGD ${parseFloat(expenses).toFixed(2)}</h2>
             <div className='flex text-gray-400 font-medium'>
               <p>Expense in this month</p>
-              <p>+8%</p>
+              {/* <p>+8%</p> */}
             </div>
           </div>
         </div>
@@ -78,10 +81,10 @@ export default function Statistics(){
             </svg>
           </div>
           <div className="card-body text-white">
-            <h2 className="card-title text-2xl font-bold">SGD +$30.00</h2>
+            <h2 className="card-title text-2xl font-bold">SGD ${(yearlyIncome-yearlyExpenses).toFixed(2)}</h2>
             <div className='flex justify-between text-gray-400 font-medium'>
               <p>Net amount this year</p>
-              <p>+12%</p>
+              {/* <p>+12%</p> */}
             </div>
           </div>
         </div>

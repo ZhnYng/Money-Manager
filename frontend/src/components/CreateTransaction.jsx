@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React from 'react';
 
-export default function CreateTransaction(){
+export default function CreateTransaction({setChangesMade}){
   const date = new Date();
   const currentDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
   const currentTime = (
@@ -33,15 +33,17 @@ export default function CreateTransaction(){
 
   function handleSubmit(e){
     e.preventDefault();
+    const numeric_amount = transactionDetails.amount;
     transactionDetails.amount = `SGD ${parseFloat(transactionDetails.amount).toFixed(2)}`;
     if(!transactionDetails.recipient || !transactionDetails.amount){
       setError(true)
     }else{
       axios.post('/addTransaction', transactionDetails, 
         {headers: {authorization: `Bearer ${localStorage.getItem('token')}`}})
-        .then(result => console.log(result))
+        .then(result => {console.log(result); setChangesMade("new manual transaction added")})
         .catch(err => console.log(err));
     }
+    transactionDetails.amount = numeric_amount;
   }
 
   return (

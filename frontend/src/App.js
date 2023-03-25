@@ -5,6 +5,7 @@ import Profile from "./pages/Profile";
 import Account from "./pages/Settings/Account";
 import Budget from "./pages/Settings/Budget";
 import Notifications from "./pages/Settings/Notifications";
+import Login from "./pages/Login";
 import Statistics from "./pages/Statistics";
 
 function AppLayout(){
@@ -45,7 +46,11 @@ function App() {
           path: "/settings/notifications",
           element: <Notifications />
         },
-      ]
+      ],
+    },
+    {
+      path: "/login",
+      element: <Login />
     }
   ]);
 

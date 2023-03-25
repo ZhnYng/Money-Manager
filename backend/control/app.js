@@ -177,7 +177,7 @@ app.get('/getExpenses/:userId', (req, res) => {
         }else{
             res.status(200).send(result);
         }
-    }, req.query.period, req.query.year)
+    }, req.query.month, req.query.year)
 })
 
 app.get('/getIncome/:userId', (req, res) => {
@@ -190,7 +190,7 @@ app.get('/getIncome/:userId', (req, res) => {
         }else{
             res.status(200).send(result);
         }
-    }, req.query.period, req.query.year)
+    }, req.query.month, req.query.year)
 })
 
 app.put('/updateCategory/:transactionId/:category', authenticateJWT, (req, res) => {
@@ -235,7 +235,9 @@ app.post('/addRecurringTransaction', authenticateJWT, (req, res) => {
 
 app.get('/getUserBudget/:email', (req, res) => {
     recurringTransactionsDB.getUserBudget(req.params.email, (err, result) => {
-        if(err){
+        if(err?.message === "No data returned from the query."){
+            res.status(400).send("No existing records")
+        }else if(err){
             console.log(err);
             res.status(500).send(err);
         }else{

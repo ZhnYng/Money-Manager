@@ -16,13 +16,13 @@ CREATE TABLE transactions (
   recipient VARCHAR(100) NOT NULL,
   date_of_transfer DATE NOT NULL,
   time_of_transfer TIME NOT NULL,
-  amount NUMERIC(10, 2) NOT NULL,
+  amount VARCHAR(20) NOT NULL,
   account VARCHAR(100),
   category VARCHAR(30),
   transaction_type VARCHAR(20) NOT NULL DEFAULT 'expense', --income or expense
   recorded_with VARCHAR(20) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  CONSTRAINT unique_transaction UNIQUE (user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account)
+  CONSTRAINT unique_transaction UNIQUE (user_id, recipient, date_of_transfer, time_of_transfer, amount)
 );
 
 DROP TABLE IF EXISTS recurring_transactions CASCADE;
@@ -30,7 +30,7 @@ DROP TABLE IF EXISTS recurring_transactions CASCADE;
 CREATE TABLE recurring_transactions (
   recurring_transactions_id SERIAL PRIMARY KEY,
   email VARCHAR(100) NOT NULL REFERENCES users(email),
-  amount NUMERIC(10, 2) NOT NULL,
+  amount VARCHAR(20) NOT NULL,
   frequency VARCHAR(50) NOT NULL,
   start_date DATE NOT NULL DEFAULT CURRENT_DATE,
   end_date DATE,

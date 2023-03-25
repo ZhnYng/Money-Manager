@@ -4,17 +4,18 @@ import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 export default function Budget(){
+  const currency = 'SGD';
   const location = useLocation();
   const [budgetDetails, setBudgetDetails] = React.useState({
     amount: '',
     frequency: 'monthly',
-    start_date: null,
-    end_date: null,
+    start_date: '',
+    end_date: '',
     method: '',
-    recipient: 'budget',
+    recipient: 'BUDGET',
     account: '',
     category: 'none',
-    transaction_type: 'expense',
+    transaction_type: 'income',
     recorded_with: 'RECURRING'
   });
   const [submitStatus, setSubmitStatus] = React.useState(null);
@@ -24,17 +25,23 @@ export default function Budget(){
   }
 
   function handleSubmit(){
+    const numeric_amount = budgetDetails.amount;
+    budgetDetails.amount = `${currency} ${parseFloat(budgetDetails.amount).toFixed(2)}`;
     axios.post('/addRecurringTransaction', budgetDetails, {headers: {authorization: `Bearer ${localStorage.getItem('token')}`}})
       .then(res => {setSubmitStatus(true); console.log(res);})
       .catch(err => {
         setSubmitStatus(false);
         console.log(err);
       })
+    budgetDetails.amount = numeric_amount;
   }
 
   React.useEffect(() => {
     axios.get(`/getUserBudget/${location.state.user.email}`)
-      .then(res => setBudgetDetails(res.data))
+      .then(res => {
+        res.data.amount = res.data.amount.split(" ")[1];
+        setBudgetDetails(res.data)
+      })
       .catch(err => console.log(err));
   }, [])
 
@@ -74,12 +81,13 @@ export default function Budget(){
           <span className="label-text text-green-600 text-lg font-medium uppercase mb-36">BUDGET Preferences</span>
           <div className='flex items-center justify-between my-5'>
             <p className='text-xl text-green-900 font-medium'>Amount</p>
-            <div className="form-control">
+            <div className="form-control flex flex-row items-center">
+              <p className='font-bold text-gray-600 text-lg mr-1'>{currency}($)</p>
               <input 
                 type="number" 
-                placeholder="$0.00" 
+                placeholder="0.00" 
                 name="amount"
-                className="text-lg w-48 input font-medium md:max-w-xs bg-gray-200 text-gray-800"
+                className="text-lg w-32 input font-medium md:max-w-xs bg-gray-200 text-gray-800"
                 onChange={handleChange}
                 value={budgetDetails.amount}
               />
@@ -88,11 +96,12 @@ export default function Budget(){
           <div className='flex items-center justify-between my-5'>
             <p className='text-xl text-green-900 font-medium'>Frequency</p>
             <select 
-              className={`select text-gray-800 w-48 bg-white
-              border border-gray-500 font-medium text-xl my-2`}
+              className={`select text-white w-48 bg-white
+              border border-gray-500 font-medium text-xl`}
               value={budgetDetails.frequency}
               name="frequency"
               onChange={handleChange}
+              disabled
             >
               <option disabled>Budget renewal frequency</option>
               <option value='monthly'>Monthly</option>
@@ -130,7 +139,7 @@ export default function Budget(){
             <p className='text-xl text-green-900 font-medium'>Category</p>
             <select 
               className={`select text-gray-800 w-48 bg-white
-              border border-gray-500 font-medium text-xl my-2`}
+              border border-gray-500 font-medium text-xl`}
               value={budgetDetails.category} 
               onChange={handleChange}
               name="category"
@@ -140,6 +149,34 @@ export default function Budget(){
               <option value='entertainment'>Entertainment</option>
               <option value='apparel'>Apparel</option>
             </select>
+          </div>
+          <div className='flex items-center justify-between my-5'>
+            <p className='text-xl text-green-900 font-medium'>Start Date</p>
+            <div className="form-control">
+              <input 
+                type="text" 
+                placeholder="YYYY-MM-DD" 
+                name="start_date"
+                className="text-lg w-48 input font-medium md:max-w-xs bg-gray-200 text-gray-800"
+                onChange={handleChange}
+                value={budgetDetails.start_date}
+              />
+              <label className='text-gray-500 font-medium self-end'>E.g. YYYY-MM-DD</label>
+            </div>
+          </div>
+          <div className='flex items-center justify-between my-5'>
+            <p className='text-xl text-green-900 font-medium'>End Date</p>
+            <div className="form-control">
+              <input 
+                type="text" 
+                placeholder="YYYY-MM-DD" 
+                name="end_date"
+                className="text-lg w-48 input font-medium md:max-w-xs bg-gray-200 text-gray-800"
+                onChange={handleChange}
+                value={budgetDetails.end_date}
+              />
+              <label className='text-gray-500 font-medium self-end'>E.g. YYYY-MM-DD</label>
+            </div>
           </div>
         </div>
       </div>

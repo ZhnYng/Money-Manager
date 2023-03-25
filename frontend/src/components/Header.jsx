@@ -3,11 +3,10 @@ import { FaPiggyBank, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 
-function Header({setTransactionDetails, statisticsIncome, statisticsExpenses, statisticsBudget}) {
+function Header({setTransactionDetails, statisticsIncome, statisticsExpenses, statisticsIncomeByYear, statisticsExpensesByYear, changesMade}) {
   const currentDate = new Date();
   const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth());
   const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
-  const [budget, setBudget] = React.useState('');
   const [income, setIncome] = React.useState('');
   const [expenses, setExpenses] = React.useState('');
 
@@ -34,9 +33,10 @@ function Header({setTransactionDetails, statisticsIncome, statisticsExpenses, st
             }
           });
         
+        // Get expenses and income by month AND year
         axios.get(
           `/getExpenses/${result.data.user_id}`,
-          {params: {period: `${(currentMonth+1).toString().padStart(2, '0')}-${currentYear}`}}
+          {params: {month: `${(currentMonth+1).toString().padStart(2, '0')}`, year: currentYear}}
         )
           .then(result => {
             setExpenses(parseFloat(result.data[0].total_expenses))
@@ -46,26 +46,35 @@ function Header({setTransactionDetails, statisticsIncome, statisticsExpenses, st
 
         axios.get(
           `/getIncome/${result.data.user_id}`,
-          {params: {period: `${(currentMonth+1).toString().padStart(2, '0')}-${currentYear}`}}
+          {params: {month: `${(currentMonth+1).toString().padStart(2, '0')}`, year: currentYear}}
         )
           .then(result => {
             setIncome(parseFloat(result.data[0].total_income))
             statisticsIncome(parseFloat(result.data[0].total_income))
           })
           .catch(err => console.log(err));
-        
+          
+        // Get expenses and income by year ONLY
         axios.get(
-          `/getCurrentBudget/${jwtDecode(localStorage.getItem('token')).email}`,
-          {params: {period: `${(currentMonth+1).toString().padStart(2, '0')}-${currentYear}`}}
+          `/getExpenses/${result.data.user_id}`,
+          {params: {year: currentYear}}
         )
           .then(result => {
-            setBudget(parseFloat(result.data.amount))
-            statisticsBudget(parseFloat(result.data.amount))
+            statisticsExpensesByYear(parseFloat(result.data[0].total_expenses))
+          })
+          .catch(err => console.log(err));
+
+        axios.get(
+          `/getIncome/${result.data.user_id}`,
+          {params: {year: currentYear}}
+        )
+          .then(result => {
+            statisticsIncomeByYear(parseFloat(result.data[0].total_income))
           })
           .catch(err => console.log(err));
       })
       .catch(err => console.log(err));
-  }, [currentMonth, currentYear])
+  }, [currentMonth, currentYear, changesMade])
 
   const months = [
     'January',
@@ -125,7 +134,7 @@ function Header({setTransactionDetails, statisticsIncome, statisticsExpenses, st
           </div>
         </div>
         <div className="text-center text-2xl py-2">
-          <div className={`font-bold ${parseFloat(budget-expenses+income).toFixed(2) >= 0 ? 'text-white' : 'text-red-500'}`}>Remaining: ${parseFloat(budget-expenses+income).toFixed(2)}</div>
+          <div className={`font-bold ${parseFloat(income-expenses).toFixed(2) >= 0 ? 'text-white' : 'text-red-600'}`}>Remaining: ${parseFloat(income-expenses).toFixed(2)}</div>
         </div>
       </div>
     </div>
