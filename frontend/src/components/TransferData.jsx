@@ -75,7 +75,7 @@ export default function TransferData({details, setChangesMade}){
     {/* Start of transaction modal */}
     <input type="checkbox" id={`transaction-modal-${details.transaction_id}`} className="modal-toggle" />
     <label htmlFor={`transaction-modal-${details.transaction_id}`} className="modal cursor-pointer">
-      <div className={`card w-11/12 ${categoryColors[category]?.bgColor} text-white my-2`}>
+      <div className={`card w-10/12 ${categoryColors[category]?.bgColor} text-white my-2`}>
         <div className="card-body">
           <div className='flex items-center justify-between'>
             <p className='text-2xl underline font-bold'>{details.recipient}</p>
@@ -106,14 +106,14 @@ export default function TransferData({details, setChangesMade}){
     </label>
     {/* End of transaction modal */}
     <label htmlFor={`transaction-modal-${details.transaction_id}`}>
-      <div className={`card w-96 ${categoryColors[category]?.bgColor} text-white my-2`}>
+      <div className={`card w-80 ${categoryColors[category]?.bgColor} text-white my-2`}>
         <div className={`badge bg-white ${categoryColors[category]?.textColor} font-bold border-none self-end mt-2 mr-2`}>{category?.toUpperCase()}</div>
         <div className="card-body flex-row justify-between pt-0 grid-cols-12 grid">
           <div className='col-span-6'>
             <p className='text-xl font-bold'>{details.recipient}</p>
             <h2 className="card-title text-xl">{convertDate(details.date_of_transfer)}</h2>
           </div>
-          <h2 className="card-title text-2xl font-bold col-span-6 text-center justify-self-center">{details.transaction_type === "income" ? "+" : "-"}{details.amount}</h2>
+          <h2 className="card-title text-xl font-bold col-span-6 text-center justify-self-center">{details.transaction_type === "income" ? "+" : "-"}{details.amount}</h2>
         </div>
       </div>
     </label>
