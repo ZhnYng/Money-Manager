@@ -143,7 +143,7 @@ async function allThreads(auth) {
   const gmail = google.gmail({version: 'v1', auth});
   try {
     const res = await gmail.users.threads.list({
-      userId: 'me', maxResults: 20
+      userId: 'me', maxResults: 220
     });
     const allThreads = res.data.threads;
     if (!allThreads || allThreads.length === 0) {
