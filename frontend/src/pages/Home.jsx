@@ -7,7 +7,7 @@ import CreateTransaction from '../components/CreateTransaction';
 import { useNavigate } from 'react-router-dom';
 
 export default function Home(){
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [changesMade, setChangesMade] = React.useState();
   const [transactionDetails, setTransactionDetails] = React.useState([{
     transaction_id: null,
@@ -36,7 +36,7 @@ export default function Home(){
         console.log(result);
       })
       .catch(err => console.log(err));
-  }, [])
+}, [navigate])
 
   return (
     <div className='bg-green-300 min-h-screen'>
@@ -50,7 +50,7 @@ export default function Home(){
         })}
       </div>
       <CreateTransaction setChangesMade={setChangesMade}/>
-      <label htmlFor="create-transaction-modal" className="btn btn-circle fixed right-4 bottom-24">
+      <label htmlFor="create-transaction-modal" className="btn btn-circle fixed right-4 bottom-14">
         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-plus" viewBox="0 0 16 16">
           <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
         </svg>

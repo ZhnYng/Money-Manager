@@ -1,6 +1,6 @@
 import React from 'react';
-import { FaPiggyBank, FaUserCircle } from 'react-icons/fa';
-import { Link, NavLink } from 'react-router-dom';
+import { FaUserCircle } from 'react-icons/fa';
+import { NavLink } from 'react-router-dom';
 
 export default function BottomNavbar(){
   return (
