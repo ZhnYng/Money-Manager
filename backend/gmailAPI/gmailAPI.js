@@ -127,6 +127,12 @@ async function getTransactionDetails(auth, id) {
       userId: 'me', 
       id: id
     });
+    // function decodeBase64Url(str) {
+    //   let buffer = Buffer.from(base64url.toBase64(str), 'base64');
+    //   buffer = buffer.toString('utf-8');
+    //   return buffer
+    // }
+    // console.log(decodeBase64Url(res.data.messages[0].payload.parts[0].body.data))
     return res;
   } catch(err) {
     return err;
@@ -137,7 +143,7 @@ async function allThreads(auth) {
   const gmail = google.gmail({version: 'v1', auth});
   try {
     const res = await gmail.users.threads.list({
-      userId: 'me', maxResults: 220
+      userId: 'me', maxResults: 20
     });
     const allThreads = res.data.threads;
     if (!allThreads || allThreads.length === 0) {

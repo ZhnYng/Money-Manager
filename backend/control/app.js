@@ -26,18 +26,15 @@ app.get('/allTransactionDetails', async (req, res) => {
     }
 })
 
-// app.get('/getDetails/:id', async (req, res) => {
-//     const result = await gmailAPI.getDetails(req.params.id);
-//     function decodeBase64Url(str) {
-//         let buffer = Buffer.from(base64url.toBase64(str), 'base64');
-//         buffer = buffer.toString('utf-8');
-//         return buffer
-//     }
-//     for(const message of result.data.messages){
-//         const decoded = decodeBase64Url(message.payload.body.data)
-//         res.status(200).send(decoded);
-//     }
-// })
+app.get('/getDetails/:id', async (req, res) => {
+    const result = await gmailAPI.getDetails(req.params.id);
+    
+    // for(const message of result.data.messages){
+    //     const decoded = decodeBase64Url(message.payload.parts[0].body.data)
+    //     res.status(200).send(decoded);
+    // }
+    res.status(200).send(result);
+})
 
 app.put('/gmailUpdateTransactions/:userId', (req, res) => {
     transactionDb.gmailUpdateTransactions(req.params.userId, (err, result) => {
