@@ -17,8 +17,6 @@ export default function Login(){
   }
 
   React.useEffect(() => {
-    if(localStorage.getItem('token')) navigate('/')
-
     /* global google */
     google.accounts.id.initialize({
       client_id: "430806173435-041j4g6133jfj4noqg676ppr6pkpdjg0.apps.googleusercontent.com",
