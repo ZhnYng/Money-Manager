@@ -9,7 +9,7 @@ export default function Login(){
 
   function handleCallbackResponse(response){
     const email = jwtDecode(response.credential).email;
-    axios.post('/getAuthorization', {email: email})
+    axios.post("https://money-manager-backend-no0w.onrender.com/getAuthorization")      
       .then(res => {
         if(res.data === "Authorization successful"){
           axios.post('/addUser', {email: email})

@@ -23,6 +23,7 @@ app.get('/', (req, res) => {
 
 app.post('/getAuthorization', async (req, res) => {
     const authorization = await gmailAPI.getAuthorization(req.body.email);
+    console.log(authorization)
     if(authorization){
         res.status(200).send("Authorization successful");
     }else{
