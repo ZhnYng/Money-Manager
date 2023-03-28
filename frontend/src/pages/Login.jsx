@@ -5,24 +5,12 @@ import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 
 export default function Login(){
+  const backendURL = "https://money-manager-backend-no0w.onrender.com"
   const navigate = useNavigate();
 
   function handleCallbackResponse(response){
     const email = jwtDecode(response.credential).email;
-    axios.post("https://money-manager-backend-no0w.onrender.com/getAuthorization")      
-      .then(res => {
-        if(res.data === "Authorization successful"){
-          axios.post('/addUser', {email: email})
-            .then(() => {
-              localStorage.setItem("token", response.credential);
-              navigate('/');
-            })
-            .catch(err => console.log(err));
-        }else{
-          console.log(res.data);
-        }
-      })
-      .catch(err => console.log(err));
+    window.location.replace(`${backendURL}/login`);
   }
 
   React.useEffect(() => {

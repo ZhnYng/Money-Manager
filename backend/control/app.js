@@ -6,6 +6,7 @@ const cors = require('cors');
 const budgetDB = require('../model/budgetDB');
 const base64url = require('base64url');
 const authenticateJWT = require('../middleware/authentication');
+var path = require('path');
 const recurringTransactionsDB = require('../model/recurringTransactionsDB');
 
 const app = express();
@@ -18,12 +19,15 @@ app.use(
 app.use(express.json())
 
 app.get('/', (req, res) => {
-    res.send("Listening on 5000");
+    res.send("Listening");
+})
+
+app.get('/login', (req, res) => {
+    res.sendFile(path.resolve('pages/login.html'));
 })
 
 app.post('/getAuthorization', async (req, res) => {
     const authorization = await gmailAPI.getAuthorization(req.body.email);
-    console.log(authorization)
     if(authorization){
         res.status(200).send("Authorization successful");
     }else{
