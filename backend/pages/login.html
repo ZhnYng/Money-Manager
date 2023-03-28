@@ -7,10 +7,11 @@
     <title>Login</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        axios.post('/getAuthorization', {email: "zzhenyyang@gmail.com"})
+        const backendURL = "https://money-manager-backend-no0w.onrender.com"
+        axios.post(`${backendURL}/getAuthorization`, {email: "zzhenyyang@gmail.com"})
             .then(res => {
                 if(res.data === "Authorization successful"){
-                    axios.post('/addUser', {email: email})
+                    axios.post(`${backendURL}/addUser`, {email: email})
                         .then(() => {
                             localStorage.setItem("token", response.credential);
                             window.location.replace("https://moneymanagerclient.netlify.app/")
