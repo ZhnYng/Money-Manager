@@ -9,6 +9,7 @@
     <script>
         axios.post(`/getAuthorization`, {email: "zzhenyyang@gmail.com"})
             .then(res => {
+                console.log("Here?")
                 if(res.data === "Authorization successful"){
                     axios.post('/addUser', {email: email})
                         .then(() => {

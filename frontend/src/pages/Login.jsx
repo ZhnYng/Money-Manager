@@ -5,8 +5,8 @@ import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 
 export default function Login(){
-  const backendURL = "https://money-manager-backend-no0w.onrender.com"
-  // const backendURL = "http://localhost:5000"
+  // const backendURL = "https://money-manager-backend-no0w.onrender.com"
+  const backendURL = "http://localhost:5000"
   const navigate = useNavigate();
 
   function handleCallbackResponse(response){
