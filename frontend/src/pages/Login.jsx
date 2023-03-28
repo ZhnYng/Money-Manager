@@ -8,12 +8,21 @@ export default function Login(){
   const navigate = useNavigate();
 
   function handleCallbackResponse(response){
-    axios.post('/addUser', {email: jwtDecode(response.credential).email})
-    .then(() => {
-      localStorage.setItem("token", response.credential);
-      navigate('/');
-    })
-    .catch(err => console.log(err));
+    const email = jwtDecode(response.credential).email;
+    axios.post('/getAuthorization', {email: email})
+      .then(res => {
+        if(res.data === "Authorization successful"){
+          axios.post('/addUser', {email: email})
+            .then(() => {
+              localStorage.setItem("token", response.credential);
+              navigate('/');
+            })
+            .catch(err => console.log(err));
+        }else{
+          console.log(res.data);
+        }
+      })
+      .catch(err => console.log(err));
   }
 
   React.useEffect(() => {

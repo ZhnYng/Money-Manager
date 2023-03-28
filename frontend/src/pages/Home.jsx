@@ -25,7 +25,7 @@ export default function Home(){
     // For syncing gmail transactions to DB
     axios.get(`/getIdByUser/${jwtDecode(localStorage.getItem('token')).email}`)
       .then(result => {
-        axios.put(`/gmailUpdateTransactions/${result.data.user_id}`)
+        axios.put(`/gmailUpdateTransactions/${result.data.user_id}/${jwtDecode(localStorage.getItem('token')).email}`)
           .then((res) => {console.log(res); setChangesMade("new automated transaction added")})
           .catch((err) => console.log('Data not synced'));
       })

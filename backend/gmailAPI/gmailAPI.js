@@ -5,9 +5,6 @@ const {authenticate} = require('@google-cloud/local-auth');
 const {google} = require('googleapis');
 const base64url = require('base64url');
 const extractionRegex = require('./extractionRegex');
-const express = require('express');
-
-const app = express();
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
@@ -24,11 +21,16 @@ const CREDENTIALS_PATH = path.join(process.cwd(), './gmailAPI/credentials.json')
  *
  * @return {Promise<OAuth2Client|null>}
  */
-async function loadSavedCredentialsIfExist() {
+async function loadSavedCredentialsIfExist(email) {
   try {
     const content = await fs.readFile(TOKEN_PATH);
-    const credentials = JSON.parse(content);
-    return google.auth.fromJSON(credentials);
+    const email_credentials = JSON.parse(content);
+    for await (const email_credential of email_credentials){
+      if(email_credential.email === email){
+        delete email_credential.email;
+        return google.auth.fromJSON(email_credential);
+      }
+    }
   } catch (err) {
     return null;
   }
@@ -40,34 +42,43 @@ async function loadSavedCredentialsIfExist() {
  * @param {OAuth2Client} client
  * @return {Promise<void>}
  */
-async function saveCredentials(client) {
+async function saveCredentials(client, email) {
   const content = await fs.readFile(CREDENTIALS_PATH);
   const keys = JSON.parse(content);
   const key = keys.installed || keys.web;
-  const payload = JSON.stringify({
+  const payload = {
+    email: email,
     type: 'authorized_user',
     client_id: key.client_id,
     client_secret: key.client_secret,
     refresh_token: client.credentials.refresh_token,
-  });
-  await fs.writeFile(TOKEN_PATH, payload);
+  };
+  try{
+    const token_content = await fs.readFile(TOKEN_PATH);
+    const user_credentials = JSON.parse(token_content);
+    const fileContent = JSON.stringify([...user_credentials, payload]);
+    await fs.writeFile(TOKEN_PATH, fileContent);
+  } catch (err) {
+    const fileContent = JSON.stringify([payload]);
+    await fs.writeFile(TOKEN_PATH, fileContent);
+  }
 }
 
 /**
  * Load or request or authorization to call APIs.
  *
  */
-async function authorize() {
-  let client = await loadSavedCredentialsIfExist();
+async function authorize(email) {
+  let client = await loadSavedCredentialsIfExist(email);
   if (client) {
     return client;
   }
   client = await authenticate({
     scopes: SCOPES,
-    keyfilePath: CREDENTIALS_PATH,
+    keyfilePath: CREDENTIALS_PATH
   });
   if (client.credentials) {
-    await saveCredentials(client);
+    await saveCredentials(client, email);
   }
   return client;
 }
@@ -185,14 +196,18 @@ async function allThreads(auth) {
 }
 
 const gmailAPI = {
-  allTransactionDetails: async function() {
-    const auth = await authorize();
+  getAuthorization: async function(email){
+    return await authorize(email);
+  },
+
+  allTransactionDetails: async function(email) {
+    const auth = await authorize(email);
     const value = await allThreads(auth);
     return value;
   },
 
-  getDetails: async function(id){
-    const auth = await authorize();
+  getDetails: async function(id, email){
+    const auth = await authorize(email);
     const value = await getTransactionDetails(auth, id);
     return value;
   }

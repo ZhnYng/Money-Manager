@@ -17,8 +17,21 @@ app.use(
 )
 app.use(express.json())
 
-app.get('/allTransactionDetails', async (req, res) => {
-    const result = await gmailAPI.allTransactionDetails();
+app.get('/', (req, res) => {
+    res.send("Listening on 5000");
+})
+
+app.post('/getAuthorization', async (req, res) => {
+    const authorization = await gmailAPI.getAuthorization(req.body.email);
+    if(authorization){
+        res.status(200).send("Authorization successful");
+    }else{
+        res.status(500).send("Authorization failed");
+    }
+})
+
+app.get('/allTransactionDetails/:email', async (req, res) => {
+    const result = await gmailAPI.allTransactionDetails(req.params.email);
     if(result.response?.data.error){
         res.status(result.response.data.error.code).send(result.response.data.error.message);
     }else{
@@ -26,8 +39,8 @@ app.get('/allTransactionDetails', async (req, res) => {
     }
 })
 
-app.get('/getDetails/:id', async (req, res) => {
-    const result = await gmailAPI.getDetails(req.params.id);
+app.get('/getDetails/:id/:email', async (req, res) => {
+    const result = await gmailAPI.getDetails(req.params.id, req.params.email);
     
     // for(const message of result.data.messages){
     //     const decoded = decodeBase64Url(message.payload.parts[0].body.data)
@@ -36,8 +49,8 @@ app.get('/getDetails/:id', async (req, res) => {
     res.status(200).send(result);
 })
 
-app.put('/gmailUpdateTransactions/:userId', (req, res) => {
-    transactionDb.gmailUpdateTransactions(req.params.userId, (err, result) => {
+app.put('/gmailUpdateTransactions/:userId/:email', (req, res) => {
+    transactionDb.gmailUpdateTransactions(req.params.userId, req.params.email, (err, result) => {
         if(err){
             console.log(err);
             res.status(500).send();
