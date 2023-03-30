@@ -4,34 +4,35 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 
-export default function Login(){
-  // const backendURL = "https://money-manager-backend-no0w.onrender.com"
-  const backendURL = "http://localhost:5000"
-  const navigate = useNavigate();
+export default function Login() {
+  var client;
+  /*global google*/
+  client = google.accounts.oauth2.initCodeClient({
+    client_id: '430806173435-041j4g6133jfj4noqg676ppr6pkpdjg0.apps.googleusercontent.com',
+    scope: 'https://www.googleapis.com/auth/gmail.readonly',
+    ux_mode: 'popup',
+    callback: (response) => {
+      // Send auth code to your backend platform
+      console.log(response)
+      axios.post('/getAuthorization', { code: response.code })
+        .then(res => console.log(res))
+        .catch(err => console.log(err))
+    },
+  });
 
-  function handleCallbackResponse(response){
-    const email = jwtDecode(response.credential).email;
-    window.location.replace(`${backendURL}/login`);
+  function getAuthCode() {
+    // Request authorization code and obtain user consent
+    client.requestCode();
   }
-
-  React.useEffect(() => {
-    /* global google */
-    google.accounts.id.initialize({
-      client_id: "430806173435-041j4g6133jfj4noqg676ppr6pkpdjg0.apps.googleusercontent.com",
-      callback: handleCallbackResponse
-    });
-
-    google.accounts.id.renderButton(
-      document.getElementById("signInDiv"),
-      {theme: 'outline', size: "large"}
-    )
-  }, [])
-
-  return(
-    <div className='bg-green-400 min-h-screen flex flex-col items-center justify-center'>
-      <FaPiggyBank size={70} color={"white"}/>
-      <p className='text-white font-bold text-xl justify-self-end my-2'>MoneyManager</p>
-      <div id='signInDiv' className='mt-6'></div>
-    </div>
+  function getMessages() {
+    axios.get('/allTransactionDetails')
+      .then(res => console.log(res))
+      .catch(err => console.log(err))
+  }
+  return (
+    <>
+    <button onClick={getAuthCode} className="bg-black p-10">AUTHEN</button>
+    <button onClick={getMessages} className="bg-black p-10">MESSAGES</button>
+    </>
   )
 }

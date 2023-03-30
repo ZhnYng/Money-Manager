@@ -1,28 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<html>
+  <head>
+    <script src="https://accounts.google.com/gsi/client" onload="initClient()" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" async defer></script>
+  </head>
+  <body>
     <script>
-        axios.post(`/getAuthorization`, {email: "zzhenyyang@gmail.com"})
-            .then(res => {
-                console.log("Here?")
-                if(res.data === "Authorization successful"){
-                    axios.post('/addUser', {email: email})
-                        .then(() => {
-                            localStorage.setItem("token", response.credential);
-                            window.location.replace("https://moneymanagerclient.netlify.app/")
-                        })
-                        .catch(err => console.log(err));
-                }
-            })
-            .catch(err => console.log(err))
+      var client;
+      function initClient() {
+        client = google.accounts.oauth2.initCodeClient({
+          client_id: '430806173435-041j4g6133jfj4noqg676ppr6pkpdjg0.apps.googleusercontent.com',
+          scope: 'https://www.googleapis.com/auth/gmail.readonly',
+          ux_mode: 'popup',
+          callback: (response) => {
+            // Send auth code to your backend platform
+            console.log(response)
+            axios.post('/getAuthorization', {code: response.code})
+              .then(res => console.log(res))
+              .catch(err => console.log(err))
+          },
+        });
+      }
+      function getAuthCode() {
+        // Request authorization code and obtain user consent
+        client.requestCode();
+      }
+      function getMessages(){
+        axios.get('/allTransactionDetails')
+          .then(res => console.log(res))
+          .catch(err => console.log(err))
+      }
     </script>
-</head>
-<body>
-    <h1 onclick='window.location.replace("https://moneymanagerclient.netlify.app/")'>Return to Money Manager</h1>
-</body>
+    <button onclick="getAuthCode()">Authenticate Here</button>
+    <button onclick="getMessages()">Get messages</button>
+  </body>
 </html>

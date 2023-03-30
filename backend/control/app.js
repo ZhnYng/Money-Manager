@@ -4,7 +4,9 @@ const transactionDb = require('../model/transactionDB');
 const userDb = require('../model/userDB');
 const cors = require('cors');
 const budgetDB = require('../model/budgetDB');
+const gmailAuthorization = require('../gmailAPI/authorization')
 const base64url = require('base64url');
+const authorization = require('../gmailAPI/authorization');
 const authenticateJWT = require('../middleware/authentication');
 var path = require('path');
 const recurringTransactionsDB = require('../model/recurringTransactionsDB');
@@ -26,17 +28,25 @@ app.get('/login', (req, res) => {
     res.sendFile(path.resolve('pages/login.html'));
 })
 
-app.post('/getAuthorization', async (req, res) => {
-    const authorization = await gmailAPI.getAuthorization(req.body.email);
-    if(authorization){
-        res.status(200).send("Authorization successful");
-    }else{
-        res.status(500).send("Authorization failed");
-    }
+// This was the API used to import the js file into 'login.html'
+app.get('/gmailAPI/authorization.js', (req, res) => {
+    res.sendFile(path.resolve('gmailAPI/authorization.js'));
 })
 
-app.get('/allTransactionDetails/:email', async (req, res) => {
-    const result = await gmailAPI.allTransactionDetails(req.params.email);
+app.post('/getAuthorization', async (req, res) => {
+    const code = req.body;
+    authorization.getToken(code, (err, result) => {
+        if(err){
+            res.status(500).send(err);
+        }else{
+            res.status(200).send(result);
+        }
+    })
+})
+
+app.get('/allTransactionDetails', async (req, res) => {
+    const result = await gmailAPI.allTransactionDetails(authorization.oauth2Client);
+    console.log(result)
     if(result.response?.data.error){
         res.status(result.response.data.error.code).send(result.response.data.error.message);
     }else{

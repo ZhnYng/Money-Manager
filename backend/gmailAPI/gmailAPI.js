@@ -196,18 +196,12 @@ async function allThreads(auth) {
 }
 
 const gmailAPI = {
-  getAuthorization: async function(email){
-    return await authorize(email);
-  },
-
-  allTransactionDetails: async function(email) {
-    const auth = await authorize(email);
+  allTransactionDetails: async function(auth) {
     const value = await allThreads(auth);
     return value;
   },
 
-  getDetails: async function(id, email){
-    const auth = await authorize(email);
+  getDetails: async function(auth, id){
     const value = await getTransactionDetails(auth, id);
     return value;
   }
