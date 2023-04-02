@@ -44,8 +44,20 @@ app.post('/getAuthorization', async (req, res) => {
     })
 })
 
+app.post('/authCode', (req, res) => {
+    const code = req.body.code;
+    gmailAPI.getAuthToken(code, (err, result) => {
+        if(err){
+            console.log(err);
+            res.status(500).send(err);
+        }else{
+            res.status(200).send(result);
+        }
+    })
+})
+
 app.get('/allTransactionDetails', async (req, res) => {
-    const result = await gmailAPI.allTransactionDetails(authorization.oauth2Client);
+    const result = await gmailAPI.allTransactionDetails();
     console.log(result)
     if(result.response?.data.error){
         res.status(result.response.data.error.code).send(result.response.data.error.message);
