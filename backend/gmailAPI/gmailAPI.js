@@ -9,8 +9,8 @@ const extractionRegex = require('./extractionRegex');
 let oauth2Client = new google.auth.OAuth2(
   "430806173435-041j4g6133jfj4noqg676ppr6pkpdjg0.apps.googleusercontent.com",
   "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",
-  "http://localhost:3000" //frontend url
-  // "https://moneymanagerclient.netlify.app/" //frontend url
+  // "http://localhost:3000" //frontend url
+  "https://moneymanagerclient.netlify.app/" //frontend url
 )
 
 // // If modifying these scopes, delete token.json.
