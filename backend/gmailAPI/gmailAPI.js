@@ -205,7 +205,9 @@ async function allThreads(auth) {
 
 const gmailAPI = {
   getAuthToken: async function(code, callback){
+    console.log({code: code})
     let { tokens } = await oauth2Client.getToken(code);
+    console.log({tokens: tokens})
     if (tokens){
       oauth2Client.setCredentials(tokens)
       return callback(null, tokens);
