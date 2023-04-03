@@ -44,6 +44,18 @@ app.post('/getAuthorization', async (req, res) => {
     })
 })
 
+app.get('/getAllThreads', async (req, res) => {
+    console.log("HERE")
+    await axios.get('https://gmail.googleapis.com/gmail/v1/users/me/threads', 
+        {headers: {Authorization: `Bearer ${req.headers.Authorization}`}})
+        .then(result => {
+            res.status(200).send(result)
+        })
+        .catch(err => {
+            res.status(500).send(err)
+        })
+})
+
 app.post('/authCode', (req, res) => {
     const code = req.body.code;
     gmailAPI.getAuthToken(code, (err, result) => {
@@ -57,7 +69,7 @@ app.post('/authCode', (req, res) => {
 })
 
 app.get('/allTransactionDetails', async (req, res) => {
-    const result = await gmailAPI.allTransactionDetails();
+    const result = await gmailAPI.allTransactionDetails(req.headers.authorization.split(' ')[1]);
     console.log(result)
     if(result.response?.data.error){
         res.status(result.response.data.error.code).send(result.response.data.error.message);

@@ -5,6 +5,7 @@ const {authenticate} = require('@google-cloud/local-auth');
 const {google} = require('googleapis');
 const base64url = require('base64url');
 const extractionRegex = require('./extractionRegex');
+const axios = require('axios');
 
 let oauth2Client = new google.auth.OAuth2(
   "430806173435-041j4g6133jfj4noqg676ppr6pkpdjg0.apps.googleusercontent.com",
@@ -138,69 +139,80 @@ function stringToData(inputString, regexName, subject){
   }
 }
 
-async function getTransactionDetails(auth, id) {
-  const gmail = google.gmail({version: 'v1', auth});
-  try {
-    const res = await gmail.users.threads.get({ 
-      userId: 'me', 
-      id: id
-    });
-    // function decodeBase64Url(str) {
-    //   let buffer = Buffer.from(base64url.toBase64(str), 'base64');
-    //   buffer = buffer.toString('utf-8');
-    //   return buffer
-    // }
-    // console.log(decodeBase64Url(res.data.messages[0].payload.parts[0].body.data))
-    return res;
-  } catch(err) {
-    return err;
-  }
+function getTransactionDetails(accessToken, id) {
+  // const gmail = google.gmail({version: 'v1', auth});
+  return axios.get(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${id}`, {headers: {Authorization: `Bearer ${accessToken}`}})
+    .then(res => {
+      return res;
+    })
+    .catch(err => {
+      return err;
+    })
+  // try {
+  //   // const res = await gmail.users.threads.get({ 
+  //   //   userId: 'me', 
+  //   //   id: id
+  //   // });
+  //   // function decodeBase64Url(str) {
+  //   //   let buffer = Buffer.from(base64url.toBase64(str), 'base64');
+  //   //   buffer = buffer.toString('utf-8');
+  //   //   return buffer
+  //   // }
+  //   // console.log(decodeBase64Url(res.data.messages[0].payload.parts[0].body.data))
+  //   return res;
+  // } catch(err) {
+  //   return err;
+  // }
 }
 
-async function allThreads(auth) {
-  console.log(auth)
-  const gmail = google.gmail({version: 'v1', auth});
-  try {
-    const res = await gmail.users.threads.list({
-      userId: 'me', maxResults: 220
-    });
-    const allThreads = res.data.threads;
-    if (!allThreads || allThreads.length === 0) {
-      return 'No threads found.';
-    } else {
-      let allResponses = [];
-      for (const thread of allThreads) {
-        allResponses.push(getTransactionDetails(auth, thread.id));
-      }
-      allResponses = await Promise.all(allResponses)
-      allResponses = allResponses.map((res) => {
-        let messages = [];
-        for(const message of res.data.messages){
-          const headers = message.payload.headers;
-          const subject = headers.find(header => header.name === 'Subject').value;
-          if(Object.keys(extractionRegex).includes(subject)){
-            const data = decodeBase64Url(extractionRegex[subject].emailBody(message));
-            let details = {};
-            for(const regexKey of Object.keys(extractionRegex[subject])){
-              if(data.match(extractionRegex[subject][regexKey])){
-                details = {...details, ...stringToData(data.match(extractionRegex[subject][regexKey])[0], regexKey, subject)};
-              }
-            }
-            details = {"Transaction_method": subject, ...details};
-            messages.push(details);
-          }else{
-            messages.push(null);
-          }
+async function allThreads(accessToken) {
+  return axios.get('https://gmail.googleapis.com/gmail/v1/users/me/threads', {headers: {Authorization: `Bearer ${accessToken}`}})
+    .then(async res => {
+      const allThreads = res.data.threads;
+      if (!allThreads || allThreads.length === 0) {
+        return 'No threads found.';
+      } else {
+        let allResponses = [];
+        for (const thread of allThreads) {
+          allResponses.push(getTransactionDetails(accessToken, thread.id));
         }
-        return messages;
-      })
-      allResponses = allResponses.flat();
-      allResponses = allResponses.filter(x => x != null);
-      return allResponses;
-    }
-  } catch (err) {
-    return err;
-  }
+        allResponses = await Promise.all(allResponses)
+        allResponses = allResponses.map((res) => {
+          let messages = [];
+          for(const message of res.data.messages){
+            const headers = message.payload.headers;
+            const subject = headers.find(header => header.name === 'Subject').value;
+            if(Object.keys(extractionRegex).includes(subject)){
+              const data = decodeBase64Url(extractionRegex[subject].emailBody(message));
+              let details = {};
+              for(const regexKey of Object.keys(extractionRegex[subject])){
+                if(data.match(extractionRegex[subject][regexKey])){
+                  details = {...details, ...stringToData(data.match(extractionRegex[subject][regexKey])[0], regexKey, subject)};
+                }
+              }
+              details = {"Transaction_method": subject, ...details};
+              messages.push(details);
+            }else{
+              messages.push(null);
+            }
+          }
+          return messages;
+        })
+        allResponses = allResponses.flat();
+        allResponses = allResponses.filter(x => x != null);
+        return allResponses;
+      }
+    })
+    .catch(err => console.log(err));
+
+  // const gmail = google.gmail({version: 'v1', auth});
+  // try {
+    // const res = await gmail.users.threads.list({
+    //   userId: 'me', maxResults: 220
+    // });
+  // } catch (err) {
+  //   return err;
+  // }
 }
 
 const gmailAPI = {
@@ -216,13 +228,13 @@ const gmailAPI = {
     }
   },
 
-  allTransactionDetails: async function() {
-    const value = await allThreads(oauth2Client);
+  allTransactionDetails: async function(accessToken) {
+    const value = await allThreads(accessToken);
     return value;
   },
 
-  getDetails: async function(auth, id){
-    const value = await getTransactionDetails(auth, id);
+  getDetails: async function(id){
+    const value = await getTransactionDetails(client, id);
     return value;
   }
 }

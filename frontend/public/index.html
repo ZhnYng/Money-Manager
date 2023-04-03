@@ -23,8 +23,27 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
   <title>Money Manager</title>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <!-- <script src="https://apis.google.com/js/api.js" async defer></script> -->
+  <script src="https://accounts.google.com/gsi/client" onload="initClient()" async defer></script>
+  <script>
+    // var oauth2Client = new google.auth.OAuth2(
+    //   "430806173435-041j4g6133jfj4noqg676ppr6pkpdjg0.apps.googleusercontent.com",
+    //   "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",
+    //   // "http://localhost:3000" //frontend url
+    //   "https://moneymanagerclient.netlify.app/login" //frontend url
+    // )
+    var client;
+    var access_token;
+
+    function initClient() {
+      client = google.accounts.oauth2.initTokenClient({
+        client_id: '430806173435-041j4g6133jfj4noqg676ppr6pkpdjg0.apps.googleusercontent.com',
+        scope: 'https://www.googleapis.com/auth/gmail.readonly',
+        callback: (tokenResponse) => {
+          access_token = tokenResponse.access_token;
+        },
+      });
+    }
+  </script>
 </head>
 
 <body>
