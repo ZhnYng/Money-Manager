@@ -30,9 +30,13 @@ export default function Login() {
 
   return (
     <>
-    <button onClick={getAuthCode} className="bg-black p-10">AUTHEN</button>
-    <button onClick={revokeToken} className="bg-black p-10">revokeToken</button>
-    <button onClick={getMessages} className="bg-black p-10">MESSAGES</button>
+    <div className='bg-green-400 min-h-screen flex justify-center flex-col items-center'>
+      <FaPiggyBank size={70} color='white'/>
+      <h1 className='text-4xl font-bold text-white my-4'>Money Manager</h1>
+      <button onClick={getAuthCode} className="btn btn-primary btn-lg">Sign in with google</button>
+    </div>
+    {/* <button onClick={revokeToken} className="bg-black p-10">revokeToken</button>
+    <button onClick={getMessages} className="bg-black p-10">MESSAGES</button> */}
     </>
   )
 }
