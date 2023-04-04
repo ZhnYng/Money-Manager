@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { FaPiggyBank, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import axios from 'axios';
-import jwtDecode from 'jwt-decode';
 
 function Header({setTransactionDetails, statisticsIncome, statisticsExpenses, statisticsIncomeByYear, statisticsExpensesByYear, changesMade}) {
   const currentDate = new Date();
@@ -11,7 +10,8 @@ function Header({setTransactionDetails, statisticsIncome, statisticsExpenses, st
   const [expenses, setExpenses] = React.useState('');
 
   React.useEffect(() => {
-    axios.get(`/getIdByUser/${jwtDecode(localStorage.getItem('token')).email}`)
+    const email = JSON.parse(localStorage.getItem('profile')).email;
+    axios.get(`/getIdByUser/${email}`)
       .then(result => {
         axios.get(
           `/getTransactions/${result.data.user_id}`, 

@@ -39,7 +39,7 @@ export default function CreateTransaction({setChangesMade}){
       setError(true)
     }else{
       axios.post('/addTransaction', transactionDetails, 
-        {headers: {authorization: `Bearer ${localStorage.getItem('token')}`}})
+        {headers: {authorization: `Bearer ${localStorage.getItem('access_token')}`}})
         .then(result => {console.log(result); setChangesMade("new manual transaction added")})
         .catch(err => console.log(err));
     }

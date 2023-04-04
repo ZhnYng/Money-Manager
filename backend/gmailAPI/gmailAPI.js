@@ -7,96 +7,6 @@ const base64url = require('base64url');
 const extractionRegex = require('./extractionRegex');
 const axios = require('axios');
 
-let oauth2Client = new google.auth.OAuth2(
-  "430806173435-041j4g6133jfj4noqg676ppr6pkpdjg0.apps.googleusercontent.com",
-  "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",
-  // "http://localhost:3000" //frontend url
-  "https://moneymanagerclient.netlify.app/login" //frontend url
-)
-
-// // If modifying these scopes, delete token.json.
-// const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
-// // The file token.json stores the user's access and refresh tokens, and is
-// // created automatically when the authorization flow completes for the first
-// // time.
-// const TOKEN_PATH = path.join(process.cwd(), './gmailAPI/token.json');
-// const CREDENTIALS_PATH = path.join(process.cwd(), './gmailAPI/credentials.json');
-// // const TOKEN_PATH = path.join(process.cwd(), 'token.json');
-// // const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
-
-// /**
-//  * Reads previously authorized credentials from the save file.
-//  *
-//  * @return {Promise<OAuth2Client|null>}
-//  */
-// async function loadSavedCredentialsIfExist(email) {
-//   try {
-//     const content = await fs.readFile(TOKEN_PATH);
-//     const email_credentials = JSON.parse(content);
-//     for await (const email_credential of email_credentials){
-//       if(email_credential.email === email){
-//         delete email_credential.email;
-//         return google.auth.fromJSON(email_credential);
-//       }
-//     }
-//   } catch (err) {
-//     return null;
-//   }
-// }
-
-// /**
-//  * Serializes credentials to a file comptible with GoogleAUth.fromJSON.
-//  *
-//  * @param {OAuth2Client} client
-//  * @return {Promise<void>}
-//  */
-// async function saveCredentials(client, email) {
-//   const content = await fs.readFile(CREDENTIALS_PATH);
-//   const keys = JSON.parse(content);
-//   const key = keys.installed || keys.web;
-//   const payload = {
-//     email: email,
-//     type: 'authorized_user',
-//     client_id: key.client_id,
-//     client_secret: key.client_secret,
-//     refresh_token: client.credentials.refresh_token,
-//   };
-//   try{
-//     const token_content = await fs.readFile(TOKEN_PATH);
-//     const user_credentials = JSON.parse(token_content);
-//     const fileContent = JSON.stringify([...user_credentials, payload]);
-//     await fs.writeFile(TOKEN_PATH, fileContent);
-//   } catch (err) {
-//     const fileContent = JSON.stringify([payload]);
-//     await fs.writeFile(TOKEN_PATH, fileContent);
-//   }
-// }
-
-// /**
-//  * Load or request or authorization to call APIs.
-//  *
-//  */
-// async function authorize(email) {
-//   let client = await loadSavedCredentialsIfExist(email);
-//   if (client) {
-//     return client;
-//   }
-//   client = await authenticate({
-//     scopes: SCOPES,
-//     keyfilePath: CREDENTIALS_PATH
-//   });
-//   if (client.credentials) {
-//     await saveCredentials(client, email);
-//   }
-//   return client;
-// }
-
-// /**
-//  * Lists the labels in the user's account.
-//  *
-//  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
-//  */
-
 // // Decode a base64url-encoded string to a plaintext string
 function decodeBase64Url(str) {
   let buffer = Buffer.from(base64url.toBase64(str), 'base64');
@@ -148,21 +58,6 @@ function getTransactionDetails(accessToken, id) {
     .catch(err => {
       return err;
     })
-  // try {
-  //   // const res = await gmail.users.threads.get({ 
-  //   //   userId: 'me', 
-  //   //   id: id
-  //   // });
-  //   // function decodeBase64Url(str) {
-  //   //   let buffer = Buffer.from(base64url.toBase64(str), 'base64');
-  //   //   buffer = buffer.toString('utf-8');
-  //   //   return buffer
-  //   // }
-  //   // console.log(decodeBase64Url(res.data.messages[0].payload.parts[0].body.data))
-  //   return res;
-  // } catch(err) {
-  //   return err;
-  // }
 }
 
 async function allThreads(accessToken) {
@@ -204,30 +99,9 @@ async function allThreads(accessToken) {
       }
     })
     .catch(err => console.log(err));
-
-  // const gmail = google.gmail({version: 'v1', auth});
-  // try {
-    // const res = await gmail.users.threads.list({
-    //   userId: 'me', maxResults: 220
-    // });
-  // } catch (err) {
-  //   return err;
-  // }
 }
 
 const gmailAPI = {
-  getAuthToken: async function(code, callback){
-    console.log({code: code})
-    let { tokens } = await oauth2Client.getToken(code);
-    console.log({tokens: tokens})
-    if (tokens){
-      oauth2Client.setCredentials(tokens)
-      return callback(null, tokens);
-    }else{
-      return callback("Error", null);
-    }
-  },
-
   allTransactionDetails: async function(accessToken) {
     const value = await allThreads(accessToken);
     return value;
@@ -236,6 +110,15 @@ const gmailAPI = {
   getDetails: async function(id){
     const value = await getTransactionDetails(client, id);
     return value;
+  },
+
+  getUserProfile: function(accessToken, callback){
+    axios.get('https://gmail.googleapis.com/gmail/v1/users/me/profile',
+      {headers: {Authorization: `Bearer ${accessToken}`}})
+      .then(res => {
+        return callback(null, res.data.emailAddress);
+      })
+      .catch(err => callback(err, null));
   }
 }
 

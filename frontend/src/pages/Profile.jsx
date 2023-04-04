@@ -2,18 +2,20 @@ import React from 'react';
 import jwtDecode from 'jwt-decode';
 import SettingsNavigation from '../components/SettingsNavigation';
 import {Link, useNavigate} from 'react-router-dom';
+import axios from 'axios';
 
 export default function Profile(){
   const navigate = useNavigate();
   const [user, setUser] = React.useState()
 
   React.useEffect(() => {
-    setUser(jwtDecode(localStorage.getItem('token')))    
+    setUser(JSON.parse(localStorage.getItem('profile')));
   }, [])
 
   function handleLogOut(){
-    localStorage.removeItem('token');
-    navigate('/login')
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('profile');
+    navigate('/login');
   }
 
   return (

@@ -30,7 +30,7 @@ export default function TransferData({details, setChangesMade}){
 
   function handleCategorySubmit(){
     axios.put(`/updateCategory/${details.transaction_id}/${category}`, [],
-      {headers: {authorization: `Bearer ${localStorage.getItem('token')}`}})
+      {headers: {authorization: `Bearer ${localStorage.getItem('access_token')}`}})
       .then(result => console.log(result))
       .catch(err => console.log(err));
   }
@@ -39,7 +39,7 @@ export default function TransferData({details, setChangesMade}){
     if(!deleteTransaction) setDeleteTransaction(true);
     else{
       axios.delete(`/deleteTransaction/${details.transaction_id}`, 
-        {headers: {authorization: `Bearer ${localStorage.getItem('token')}`}})
+        {headers: {authorization: `Bearer ${localStorage.getItem('access_token')}`}})
         .then(result => {console.log(result); setChangesMade("transaction deleted")})
         .catch(err => console.log(err));
     }

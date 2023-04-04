@@ -2,7 +2,6 @@ import axios from 'axios';
 import React from 'react';
 import Header from '../components/Header';
 import TransferData from '../components/TransferData';
-import jwtDecode from 'jwt-decode';
 import CreateTransaction from '../components/CreateTransaction';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,25 +17,28 @@ export default function Home(){
     category: "none"
   }]);
 
-  
   React.useEffect(() => {
-    if(!localStorage.getItem('token')) navigate('/login');
-
+    if(!localStorage.getItem('access_token')) navigate('/login');
     // For syncing gmail transactions to DB
-    axios.get(`/getIdByUser/${jwtDecode(localStorage.getItem('token')).email}`)
+    /* global client */
+    /* global access_token */
+    const email = JSON.parse(localStorage.getItem('profile')).email;
+    axios.get(`/getIdByUser/${email}`)
       .then(result => {
-        axios.put(`/gmailUpdateTransactions/${result.data.user_id}/${jwtDecode(localStorage.getItem('token')).email}`)
+        const userId = result.data.user_id;
+        axios.put(`/gmailUpdateTransactions/${userId}/${email}`, [], 
+          {headers: {authorization: `Bearer ${localStorage.getItem('access_token')}`}})
           .then((res) => {console.log(res); setChangesMade("new automated transaction added")})
           .catch((err) => console.log('Data not synced'));
       })
       .catch(err => {console.log(err)});
 
-    axios.post(`/syncRecurringToTransaction/${jwtDecode(localStorage.getItem('token')).email}`)
+    axios.post(`/syncRecurringToTransaction/${email}`)
       .then(result => {
         console.log(result);
       })
       .catch(err => console.log(err));
-}, [navigate])
+  }, [navigate])
 
   return (
     <div className='bg-green-300 min-h-screen'>

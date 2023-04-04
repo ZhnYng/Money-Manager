@@ -24,53 +24,15 @@ app.get('/', (req, res) => {
     res.send("Listening");
 })
 
-app.get('/login', (req, res) => {
-    res.sendFile(path.resolve('pages/login.html'));
-})
-
-// This was the API used to import the js file into 'login.html'
-app.get('/gmailAPI/authorization.js', (req, res) => {
-    res.sendFile(path.resolve('gmailAPI/authorization.js'));
-})
-
-app.post('/getAuthorization', async (req, res) => {
-    const code = req.body;
-    authorization.getToken(code, (err, result) => {
-        if(err){
-            res.status(500).send(err);
-        }else{
-            res.status(200).send(result);
-        }
-    })
-})
-
-app.get('/getAllThreads', async (req, res) => {
-    console.log("HERE")
-    await axios.get('https://gmail.googleapis.com/gmail/v1/users/me/threads', 
-        {headers: {Authorization: `Bearer ${req.headers.Authorization}`}})
-        .then(result => {
-            res.status(200).send(result)
-        })
-        .catch(err => {
-            res.status(500).send(err)
-        })
-})
-
-app.post('/authCode', (req, res) => {
-    const code = req.body.code;
-    gmailAPI.getAuthToken(code, (err, result) => {
-        if(err){
-            console.log(err);
-            res.status(500).send(err);
-        }else{
-            res.status(200).send(result);
-        }
-    })
+app.get('/getUserProfile', async (req, res) => {
+    gmailAPI.getUserProfile(req.headers.authorization.split(' ')[1], (err, result) => {
+        if(err) res.status(500).send(err);
+        else res.status(200).send(result);
+    });
 })
 
 app.get('/allTransactionDetails', async (req, res) => {
     const result = await gmailAPI.allTransactionDetails(req.headers.authorization.split(' ')[1]);
-    console.log(result)
     if(result.response?.data.error){
         res.status(result.response.data.error.code).send(result.response.data.error.message);
     }else{
@@ -89,7 +51,7 @@ app.get('/getDetails/:id/:email', async (req, res) => {
 })
 
 app.put('/gmailUpdateTransactions/:userId/:email', (req, res) => {
-    transactionDb.gmailUpdateTransactions(req.params.userId, req.params.email, (err, result) => {
+    transactionDb.gmailUpdateTransactions(req.params.userId, req.params.email, req.headers.authorization.split(' ')[1], (err, result) => {
         if(err){
             console.log(err);
             res.status(500).send();

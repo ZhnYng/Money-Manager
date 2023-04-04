@@ -8,8 +8,8 @@ pgp.pg.types.setTypeParser(1082, function (value) {
 })
 
 const transactionDb = {
-    gmailUpdateTransactions: async function(userId, email, callback){
-        const result = await gmailAPI.allTransactionDetails(email);
+    gmailUpdateTransactions: async function(userId, email, accessToken, callback){
+        const result = await gmailAPI.allTransactionDetails(accessToken);
         if(result.response?.data.error){
             return callback(null, result.response.data.error.message);
         }else{
