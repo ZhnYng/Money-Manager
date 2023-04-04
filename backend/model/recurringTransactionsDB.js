@@ -73,8 +73,9 @@ const recurringTransactionsDB = {
                                     }
                             }
                         }
+                        return callback(null,  "success")
                     })
-                    .catch(err => console.log(err));
+                    .catch(err => callback(err, null));
             })
             .catch(err => callback(err, null));
     }

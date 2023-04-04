@@ -33,7 +33,9 @@ app.get('/getUserProfile', async (req, res) => {
 
 app.get('/allTransactionDetails', async (req, res) => {
     const result = await gmailAPI.allTransactionDetails(req.headers.authorization.split(' ')[1]);
-    if(result.response?.data.error){
+    if(!result){
+        res.status(403).send();
+    }else if(result?.response?.data.error){
         res.status(result.response.data.error.code).send(result.response.data.error.message);
     }else{
         res.status(200).send(result);
@@ -261,9 +263,9 @@ app.post('/syncRecurringToTransaction/:email', (req, res) => {
     recurringTransactionsDB.syncRecurringToTransaction(req.params.email, (err, result) => {
         if(err){
             console.log(err);
-            res.status(500).send();
+            res.status(500).send(err);
         }else{
-            res.status(201).send();
+            res.status(201).send(result);
         }
     })
 })

@@ -10,7 +10,9 @@ pgp.pg.types.setTypeParser(1082, function (value) {
 const transactionDb = {
     gmailUpdateTransactions: async function(userId, email, accessToken, callback){
         const result = await gmailAPI.allTransactionDetails(accessToken);
-        if(result.response?.data.error){
+        if(!result){
+            return callback("No auth token", null);
+        }else if(result.response?.data.error){
             return callback(null, result.response.data.error.message);
         }else{
             db.tx(t => {
