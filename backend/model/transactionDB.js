@@ -9,28 +9,29 @@ pgp.pg.types.setTypeParser(1082, function (value) {
 
 const transactionDb = {
     gmailUpdateTransactions: async function(userId, email, accessToken, callback){
-        const result = await gmailAPI.allTransactionDetails(accessToken);
-        if(!result){
-            return callback("No auth token", null);
-        }else if(result.response?.data.error){
-            return callback(null, result.response.data.error.message);
-        }else{
-            db.tx(t => {
-                const queries = result.map(l => {
-                    l['userId'] = userId;
-                    return t.none("INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account, transaction_type, recorded_with) \
-                        VALUES(${userId}, ${Transaction_method}, ${Recipient}, ${Date_of_Transfer}, ${Time_of_Transfer}, ${Amount}, ${Account}, 'expense', 'GmailAPI')\
-                        ON CONFLICT (user_id, recipient, date_of_transfer, time_of_transfer, amount) DO NOTHING;", l);
-                });
-                return t.batch(queries);
-            })
-                .then(data => {
-                    if(data.every(element => element === null)) return callback(null, "Success");
+        await gmailAPI.getAllEmailMessages(accessToken, (err, result) => {
+            if(err?.response?.data.error.code === 401){
+                return callback("Invalid access token", null);
+            }else if(err) {
+                return callback(err, null);
+            }else{
+                db.tx(t => {
+                    const queries = result.map(l => {
+                        l['userId'] = userId;
+                        return t.none("INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account, transaction_type, recorded_with) \
+                            VALUES(${userId}, ${Transaction_method}, ${Recipient}, ${Date_of_Transfer}, ${Time_of_Transfer}, ${Amount}, ${Account}, 'expense', 'GmailAPI')\
+                            ON CONFLICT (user_id, recipient, date_of_transfer, time_of_transfer, amount) DO NOTHING;", l);
+                    });
+                    return t.batch(queries);
                 })
-                .catch(error => {
-                    return callback(error, null);
-                });
-        }
+                    .then(data => {
+                        if(data.every(element => element === null)) return callback(null, "Success");
+                    })
+                    .catch(error => {
+                        return callback(error, null);
+                    });
+            }
+        })
     },
 
     getTransactions: function(userId, period=null, callback){

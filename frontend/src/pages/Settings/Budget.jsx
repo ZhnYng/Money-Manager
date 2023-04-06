@@ -27,7 +27,7 @@ export default function Budget(){
   function handleSubmit(){
     const numeric_amount = budgetDetails.amount;
     budgetDetails.amount = `${currency} ${parseFloat(budgetDetails.amount).toFixed(2)}`;
-    axios.post('/addRecurringTransaction', budgetDetails, {headers: {authorization: `Bearer ${localStorage.getItem('token')}`}})
+    axios.post('/addRecurringTransaction', budgetDetails, {headers: {authorization: `Bearer ${localStorage.getItem('access_token')}`}})
       .then(res => {setSubmitStatus(true); console.log(res);})
       .catch(err => {
         setSubmitStatus(false);

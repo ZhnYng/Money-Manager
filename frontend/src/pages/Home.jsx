@@ -29,7 +29,14 @@ export default function Home(){
         axios.put(`/gmailUpdateTransactions/${userId}/${email}`, [], 
           {headers: {authorization: `Bearer ${localStorage.getItem('access_token')}`}})
           .then((res) => {console.log(res); setChangesMade("new automated transaction added")})
-          .catch((err) => console.log('Data not synced'));
+          .catch((err) => {
+            if(err.response.status === 401){
+              localStorage.removeItem('access_token');
+              localStorage.removeItem('profile');
+              navigate('/login');
+            }
+            console.log('Data not synced')
+          });
       })
       .catch(err => {console.log(err)});
 
@@ -52,7 +59,7 @@ export default function Home(){
         })}
       </div>
       <CreateTransaction setChangesMade={setChangesMade}/>
-      <label htmlFor="create-transaction-modal" className="btn btn-circle fixed right-4 bottom-14">
+      <label htmlFor="create-transaction-modal" className="btn btn-circle fixed right-4 bottom-20">
         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-plus" viewBox="0 0 16 16">
           <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
         </svg>

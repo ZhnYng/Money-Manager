@@ -54,9 +54,11 @@ app.get('/getDetails/:id/:email', async (req, res) => {
 
 app.put('/gmailUpdateTransactions/:userId/:email', (req, res) => {
     transactionDb.gmailUpdateTransactions(req.params.userId, req.params.email, req.headers.authorization.split(' ')[1], (err, result) => {
-        if(err){
+        if(err === "Invalid access token"){
+            res.status(401).send();
+        }else if(err){
             console.log(err);
-            res.status(500).send();
+            res.status(500).send(err);
         }else{
             res.status(200).send(result);
         }
@@ -64,7 +66,7 @@ app.put('/gmailUpdateTransactions/:userId/:email', (req, res) => {
 })
 
 app.post('/addTransaction', authenticateJWT, (req, res) => {
-    userDb.getIdByUser(req.user.email, (err, result) => {
+    userDb.getIdByUser(req.email, (err, result) => {
         if(err){
             console.log(err);
             res.status(500).send();
@@ -82,7 +84,7 @@ app.post('/addTransaction', authenticateJWT, (req, res) => {
 })
 
 app.delete('/deleteTransaction/:transaction_id', authenticateJWT, (req, res) => {
-    transactionDb.deleteTransaction(req.params.transaction_id, req.user.email, (err, result) => {
+    transactionDb.deleteTransaction(req.params.transaction_id, req.email, (err, result) => {
         if(err === "Unauthorized"){
             res.status(401).send();
         }else if(err === "Forbidden"){
@@ -207,7 +209,7 @@ app.get('/getIncome/:userId', (req, res) => {
 })
 
 app.put('/updateCategory/:transactionId/:category', authenticateJWT, (req, res) => {
-    transactionDb.updateCategory(req.params.transactionId, req.user.email, req.params.category, (err, result) => {
+    transactionDb.updateCategory(req.params.transactionId, req.email, req.params.category, (err, result) => {
         if(err === "Unauthorized"){
             res.status(401).send(err);
         }else if(err){
@@ -231,7 +233,7 @@ app.get('/getRecurringTransaction/:email', (req, res) => {
 })
 
 app.post('/addRecurringTransaction', authenticateJWT, (req, res) => {
-    req.body = {email: req.user.email, ...req.body};
+    req.body = {email: req.email, ...req.body};
     if(!req.body.amount){
         res.status(400).send("Amount is empty");
     }else{

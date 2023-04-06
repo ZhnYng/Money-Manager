@@ -1,18 +1,25 @@
-const jwtDecode = require('jwt-decode');
+const axios = require('axios');
+const e = require('express');
 
 const authenticateJWT = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if (authHeader) {
-        const token = authHeader.split(' ')[1];
-        try {
-            const user = jwtDecode(token)
-            req.user = user;
-            next();
-        } catch (InvalidTokenError) {
-            return res.sendStatus(403);
-        }
-    } else {
-        res.sendStatus(401);
+    const authorization = req.headers.authorization;
+    if(authorization.split(' ')[0] === "Bearer"){
+        axios.get('https://gmail.googleapis.com/gmail/v1/users/me/profile',
+            {headers: {Authorization: `Bearer ${authorization.split(' ')[1]}`}})
+            .then(res => {
+                req.email = res.data.emailAddress;
+                next();
+            })
+            .catch(err => {
+                if(err.response.data.error.code === 401){
+                    res.status(401).send("Invalid access token");
+                }else{
+                    // console.log(err);
+                    res.status(500).send(err);
+                }
+            });
+    }else{
+        res.status(401).send("Invalid access token");
     }
 };
 
