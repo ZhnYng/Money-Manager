@@ -36,8 +36,13 @@ export default function TransferData({details, setChangesMade}){
   }
 
   function handleDelete(){
-    if(!deleteTransaction) setDeleteTransaction(true);
+    if(!deleteTransaction) {
+      setTimeout(() => {
+        setDeleteTransaction(true);
+      }, 300)
+    }
     else{
+
       axios.delete(`/deleteTransaction/${details.transaction_id}`, 
         {headers: {authorization: `Bearer ${localStorage.getItem('access_token')}`}})
         .then(result => {console.log(result); setChangesMade("transaction deleted")})

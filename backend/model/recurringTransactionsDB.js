@@ -73,7 +73,7 @@ const recurringTransactionsDB = {
                                     }
                             }
                         }
-                        return callback(null,  "success")
+                        return callback(null,  "Recurring transactions synced")
                     })
                     .catch(err => callback(err, null));
             })
