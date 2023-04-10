@@ -11,15 +11,15 @@ export default function TransferData({details, setChangesMade}){
       textColor: "text-gray-700",
     },
     "food": {
-      bgColor: "bg-red-500",
+      bgColor: "bg-gray-200",
       textColor: "text-red-500",
     },
     "entertainment": {
-      bgColor: "bg-purple-500",
+      bgColor: "bg-gray-200",
       textColor: "text-purple-500",
     },
     "apparel": {
-      bgColor: "bg-orange-500",
+      bgColor: "bg-gray-200",
       textColor: "text-orange-500",
     }
   }
