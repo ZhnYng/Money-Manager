@@ -1,11 +1,11 @@
 const pgp = require('pg-promise')(/* options */)
 const dotenv = require('dotenv');
 dotenv.config(); 
-var lk = process.env.LOCAL_KEY
-var er = process.env.EXTERNAL_RENDER;
+// var lk = process.env.LOCAL_KEY
+// var er = process.env.EXTERNAL_RENDER;
 var lr = process.env.LOCAL_RENDER
 
-const db = pgp(lr)
+const db = pgp('postgres://money_manager_admin:c3PaaP9l8cnnGH8mdxP5gbf55YAeaVtX@dpg-cgf9miseoogqfc44q2d0-a/money_manager_x0zs')
 
 module.exports = db;
 
