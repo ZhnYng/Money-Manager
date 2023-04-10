@@ -5,7 +5,7 @@ const userDb = {
         const {email} = userDetails;
         db.none('INSERT INTO users(email) VALUES ($1) ON CONFLICT (email) DO NOTHING;', [email])
             .then(() => {
-                return callback(null, "Success");
+                return callback(null, "User added to DB");
             })
             .catch(error => {
                 return callback(error, null);

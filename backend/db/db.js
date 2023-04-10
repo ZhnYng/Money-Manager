@@ -10,3 +10,4 @@ const db = pgp(er) //externally from Render
 // Append the following to the above to prevent the error "SSL/TLS required" ?ssl=true
 
 module.exports = db;
+

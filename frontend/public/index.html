@@ -23,9 +23,14 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
   <title>Money Manager</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" onload="initBaseURL()" async defer></script>
   <script src="https://accounts.google.com/gsi/client" onload="initClient()" async defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" async defer></script>
   <script>
+    function initBaseURL(){
+      // axios.defaults.baseURL = 'https://money-manager-backend-no0w.onrender.com';
+      axios.defaults.baseURL = 'http://localhost:5000';
+    }
+
     var client;
     var access_token;
     function initClient() {
