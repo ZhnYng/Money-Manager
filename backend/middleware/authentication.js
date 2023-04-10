@@ -1,5 +1,4 @@
 const axios = require('axios');
-const e = require('express');
 
 const authenticateJWT = (req, res, next) => {
     const authorization = req.headers.authorization;

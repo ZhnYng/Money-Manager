@@ -4,9 +4,7 @@ const transactionDb = require('../model/transactionDB');
 const userDb = require('../model/userDB');
 const cors = require('cors');
 const budgetDB = require('../model/budgetDB');
-const gmailAuthorization = require('../gmailAPI/authorization')
 const base64url = require('base64url');
-const authorization = require('../gmailAPI/authorization');
 const authenticateJWT = require('../middleware/authentication');
 var path = require('path');
 const recurringTransactionsDB = require('../model/recurringTransactionsDB');
@@ -42,8 +40,8 @@ app.get('/allTransactionDetails', async (req, res) => {
     }
 })
 
-app.get('/getDetails/:id/:email', async (req, res) => {
-    const result = await gmailAPI.getDetails(req.params.id, req.params.email);
+app.get('/getDetails/:id/', async (req, res) => {
+    const result = await gmailAPI.getDetails(req.headers.authorization.split(' ')[1], req.params.id);
     
     // for(const message of result.data.messages){
     //     const decoded = decodeBase64Url(message.payload.parts[0].body.data)
@@ -233,7 +231,7 @@ app.get('/getRecurringTransaction/:email', (req, res) => {
 })
 
 app.post('/addRecurringTransaction', authenticateJWT, (req, res) => {
-    req.body = {email: req.email, ...req.body};
+req.body = {email: req.email, ...req.body};
     if(!req.body.amount){
         res.status(400).send("Amount is empty");
     }else{

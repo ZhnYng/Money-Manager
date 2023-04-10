@@ -25,7 +25,7 @@ const transactionDb = {
                     return t.batch(queries);
                 })
                     .then(data => {
-                        if(data.every(element => element === null)) return callback(null, "Success");
+                        if(data.every(element => element === null)) return callback(null, "Gmail transaction update successful");
                     })
                     .catch(error => {
                         return callback(error, null);
