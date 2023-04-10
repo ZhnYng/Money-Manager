@@ -17,9 +17,11 @@ function Header({setTransactionDetails, statisticsIncome, statisticsExpenses, st
           `/getTransactions/${result.data.user_id}`, 
           {params: {period: `${(currentMonth+1).toString().padStart(2, '0')}-${currentYear}`}}
         )
-          .then(result => setTransactionDetails(result.data))
-          .catch(err => {
-            if(err.message === "Request failed with status code 400"){
+          .then(result => {
+            if(Array.isArray(result.data)){
+              setTransactionDetails(result.data)
+            } else {
+              console.log(result)
               setTransactionDetails([{
                 transaction_id: null,
                 recipient: "No Transactions",
@@ -31,6 +33,9 @@ function Header({setTransactionDetails, statisticsIncome, statisticsExpenses, st
                 account: "NaN"
               }])
             }
+          })
+          .catch(err => {
+            console.log(err);
           });
         
         // Get expenses and income by month AND year
