@@ -50,6 +50,7 @@
             .then(async res => {
               profile = {...profile, email: res.data.emailAddress};
               await axios.post('/addUser', {email: res.data.emailAddress})
+                
                 .then(res => console.log(res))
                 .catch(err => console.log(err));
             })
