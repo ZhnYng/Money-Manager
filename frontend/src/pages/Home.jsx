@@ -26,17 +26,17 @@ export default function Home(){
     axios.get(`/getIdByUser/${email}`)
       .then(result => {
         const userId = result.data.user_id;
-        axios.put(`/gmailUpdateTransactions/${userId}/${email}`, [], 
-          {headers: {authorization: `Bearer ${localStorage.getItem('access_token')}`}})
-          .then((res) => {console.log(res); setChangesMade("new automated transaction added")})
-          .catch((err) => {
-            if(err.response.status === 401){
-              localStorage.removeItem('access_token');
-              localStorage.removeItem('profile');
-              navigate('/login');
-            }
-            console.log('Data not synced')
-          });
+        // axios.put(`/gmailUpdateTransactions/${userId}/${email}`, [], 
+        //   {headers: {authorization: `Bearer ${localStorage.getItem('access_token')}`}})
+        //   .then((res) => {console.log(res); setChangesMade("new automated transaction added")})
+        //   .catch((err) => {
+        //     if(err.response.status === 401){
+        //       localStorage.removeItem('access_token');
+        //       localStorage.removeItem('profile');
+        //       navigate('/login');
+        //     }
+        //     console.log('Data not synced')
+        //   });
       })
       .catch(err => {console.log(err)});
 

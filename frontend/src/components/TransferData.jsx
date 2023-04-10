@@ -7,7 +7,7 @@ export default function TransferData({details, setChangesMade}){
   
   const categoryColors = {
     "none": {
-      bgColor: "bg-gray-700",
+      bgColor: "bg-gray-200",
       textColor: "text-gray-700",
     },
     "food": {
@@ -80,7 +80,7 @@ export default function TransferData({details, setChangesMade}){
     {/* Start of transaction modal */}
     <input type="checkbox" id={`transaction-modal-${details.transaction_id}`} className="modal-toggle" />
     <label htmlFor={`transaction-modal-${details.transaction_id}`} className="modal cursor-pointer">
-      <div className={`card w-10/12 ${categoryColors[category]?.bgColor} text-white my-2`}>
+      <div className={`card w-10/12 bg-gray-700 text-white my-2 border-4 border-gray-200`}>
         <div className="card-body">
           <div className='flex items-center justify-between'>
             <p className='text-2xl underline font-bold'>{details.recipient}</p>
@@ -110,9 +110,9 @@ export default function TransferData({details, setChangesMade}){
       </div>
     </label>
     {/* End of transaction modal */}
-    <label htmlFor={`transaction-modal-${details.transaction_id}`}>
-      <div className={`card w-80 ${categoryColors[category]?.bgColor} text-white my-2`}>
-        <div className={`badge bg-white ${categoryColors[category]?.textColor} font-bold border-none self-end mt-2 mr-2`}>{category?.toUpperCase()}</div>
+    <label htmlFor={`transaction-modal-${details.transaction_id}`} className='w-full flex justify-center'>
+      <div className={`card w-10/12 bg-gray-700 text-white my-2 border-4 border-gray-200`}>
+        <div className={`badge ${categoryColors[category]?.bgColor} ${categoryColors[category]?.textColor} font-bold border-none self-end mt-2 mr-2`}>{category?.toUpperCase()}</div>
         <div className="card-body flex-row justify-between pt-0 grid-cols-12 grid">
           <div className='col-span-6'>
             <p className='text-xl font-bold'>{details.recipient}</p>
