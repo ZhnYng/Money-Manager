@@ -1,6 +1,7 @@
 const pgp = require('pg-promise')(/* options */)
 
-const db = pgp(process.env.LOCAL_RENDER);
+var local_render_db_key = process.env.LOCAL_RENDER;
+const db = pgp(local_render_db_key);
 // const db = pgp('postgres://money_manager_admin:money_manager@localhost:5432/money_manager') //Local
 // const db = pgp('postgres://money_manager_admin:c3PaaP9l8cnnGH8mdxP5gbf55YAeaVtX@dpg-cgf9miseoogqfc44q2d0-a/money_manager_x0zs') //locally On Render
 // const db = pgp('postgres://money_manager_admin:c3PaaP9l8cnnGH8mdxP5gbf55YAeaVtX@dpg-cgf9miseoogqfc44q2d0-a.singapore-postgres.render.com/money_manager_x0zs?ssl=true') //externally from Render
