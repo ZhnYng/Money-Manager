@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { FaPiggyBank, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import axios from 'axios';
-import { useSwipeable } from 'react-swipeable';
 
-function Header({setTransactionDetails, statisticsIncome, statisticsExpenses, statisticsIncomeByYear, statisticsExpensesByYear, changesMade, swipeLeft, swipeRight}) {
+function Header({setTransactionDetails, statisticsIncome, statisticsExpenses, statisticsIncomeByYear, statisticsExpensesByYear, changesMade, swipe, setSwipe}) {
   const currentDate = new Date();
   const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth());
   const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
@@ -115,13 +114,18 @@ function Header({setTransactionDetails, statisticsIncome, statisticsExpenses, st
     }
   };
 
-  const handlers = useSwipeable({
-    onSwipedRight: () => handlePrevMonth(),
-    onSwipedLeft: () => handleNextMonth(),
-  });
+  React.useEffect(() => {
+    if(swipe === 'left'){
+      handleNextMonth();
+      setSwipe(null);
+    }else if(swipe === 'right'){
+      handlePrevMonth();
+      setSwipe(null);
+    }
+  }, [swipe])
 
   return (
-    <div className="bg-green-500 rounded-b-3xl fixed top-0 w-full z-50" {...handlers}>
+    <div className="bg-green-500 rounded-b-3xl fixed top-0 w-full z-50">
       <div className="container mx-auto py-4">
         <div className="flex justify-between items-center px-4">
           <div className="text-white">

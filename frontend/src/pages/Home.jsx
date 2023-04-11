@@ -4,12 +4,12 @@ import Header from '../components/Header';
 import TransferData from '../components/TransferData';
 import CreateTransaction from '../components/CreateTransaction';
 import { useNavigate } from 'react-router-dom';
+import { useSwipeable } from 'react-swipeable';
 
 export default function Home(){
   const navigate = useNavigate();
   const [changesMade, setChangesMade] = React.useState();
-  const [swipeLeft, setSwipeLeft] = React.useState(false);
-  const [swipeRight, setSwipeRight] = React.useState(false);
+  const [swipe, setSwipe] = React.useState();
   const [transactionDetails, setTransactionDetails] = React.useState([{
     transaction_id: null,
     recipient: "No Transactions",
@@ -47,9 +47,14 @@ export default function Home(){
       .catch(err => console.log(err));
   }, [navigate])
 
+  const handlers = useSwipeable({
+    onSwipedRight: () => setSwipe('right'),
+    onSwipedLeft: () => setSwipe('left')
+  });
+
   return (
-    <div className='bg-green-300 min-h-screen'>
-      <Header setTransactionDetails={setTransactionDetails} changesMade={changesMade} swipeLeft={swipeLeft} swipeRight={swipeRight}/>
+    <div className='bg-green-300 min-h-screen' {...handlers}>
+      <Header setTransactionDetails={setTransactionDetails} changesMade={changesMade} swipe={swipe} setSwipe={setSwipe}/>
       <div>
         <div className='flex flex-col items-center py-32'>
           {transactionDetails.map(detail => {
