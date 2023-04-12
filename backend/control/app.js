@@ -9,7 +9,9 @@ const authenticateJWT = require('../middleware/authentication');
 var path = require('path');
 const recurringTransactionsDB = require('../model/recurringTransactionsDB');
 
+
 const app = express();
+
 
 app.use(
     cors({

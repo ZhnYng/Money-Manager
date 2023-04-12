@@ -2,6 +2,9 @@ const base64url = require("base64url");
 const extractionRegex = require("./extractionRegex");
 const axios = require("axios");
 
+const {google} = require('googleapis');
+const pubsub = require('@google-cloud/pubsub');
+
 // // Decode a base64url-encoded string to a plaintext string
 function decodeBase64Url(str) {
   let buffer = Buffer.from(base64url.toBase64(str), "base64");
@@ -137,13 +140,53 @@ const gmailAPI = {
   getUserProfile: function (accessToken, callback) {
     axios
       .get("https://gmail.googleapis.com/gmail/v1/users/me/profile", {
-        headers: { Authorization: `Bearer ${accessToken}` },
+        headers: { Authorization: `Bearer ${accessToken}`},
       })
       .then((res) => {
         return callback(null, res.data.emailAddress);
       })
       .catch((err) => callback(err, null));
   },
+
+  
+getGmailApi:   async function (accessToken) {
+    // Set up authentication
+    const auth = new google.auth.GoogleAuth({
+      scopes: ['https://www.googleapis.com/auth/gmail.readonly', 'https://www.googleapis.com/auth/pubsub'],
+      credentials: {
+        access_token: accessToken,
+      },
+    });
+    const authClient = await auth.getClient();
+  
+    // Initialize the Gmail API client
+    const gmail = google.gmail({version: 'v1', auth: authClient});
+  
+    // Set up the Cloud Pub/Sub topic and subscription
+    const topicName = 'my-topic';
+    const subscriptionName = 'my-subscription';
+    const topic = pubsub.topic(topicName);
+    const subscription = topic.subscription(subscriptionName);
+  
+    // Set up the mailbox change notification
+    const userId = 'me';
+    const watchRequest = {
+      labelIds: ['INBOX'],
+      topicName: `projects/${projectId}/topics/${topicName}`,
+      labelFilterAction: 'include',
+      expiration: Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60, // 7 days
+    };
+    const response = await gmail.users.watch({userId, requestBody: watchRequest});
+  
+    // Listen for notifications on the subscription
+    subscription.on('message', (message) => {
+      const payload = message.data.toString();
+      console.log(`Received message: ${payload}`);
+      message.ack();
+    });
+  }
+  
+
 };
 
 module.exports = gmailAPI;
