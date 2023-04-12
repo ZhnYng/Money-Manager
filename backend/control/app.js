@@ -101,7 +101,7 @@ app.delete('/deleteTransaction/:transaction_id', authenticateJWT, (req, res) => 
 app.get('/getTransactions/:userId', (req, res) => {
     transactionDb.getTransactions(req.params.userId, req.query.period, (err, result) => {
         if(err?.message === "No data returned from the query."){
-            res.status(400).send();
+            res.status(200).send("No transactions found");
         }else if(err){
             console.log(err);
             res.status(500).send();
@@ -263,7 +263,9 @@ app.get('/getUserBudget/:email', (req, res) => {
 
 app.post('/syncRecurringToTransaction/:email', (req, res) => {
     recurringTransactionsDB.syncRecurringToTransaction(req.params.email, (err, result) => {
-        if(err){
+        if(err?.received === 0){
+            res.status(200).send("No recurring transactions found")
+        }else if(err){
             console.log(err);
             res.status(500).send(err);
         }else{

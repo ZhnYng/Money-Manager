@@ -11,16 +11,16 @@ export default function TransferData({details, setChangesMade}){
       textColor: "text-gray-700",
     },
     "food": {
-      bgColor: "bg-gray-200",
-      textColor: "text-red-500",
+      bgColor: "bg-red-500",
+      textColor: "text-white",
     },
     "entertainment": {
-      bgColor: "bg-gray-200",
-      textColor: "text-purple-500",
+      bgColor: "bg-purple-500",
+      textColor: "text-white",
     },
     "apparel": {
-      bgColor: "bg-gray-200",
-      textColor: "text-orange-500",
+      bgColor: "bg-orange-500",
+      textColor: "text-white",
     }
   }
 
@@ -91,8 +91,8 @@ export default function TransferData({details, setChangesMade}){
           <h2 className="card-title text-xl font-bold">Method: {details.method}</h2>
           <h2 className="card-title text-xl font-bold">Account: {details.account}</h2>
           <select 
-            className={`select w-full max-w-xs ${categoryColors[category]?.textColor} 
-              bg-white font-bold text-xl my-2`}
+            className={`select w-full max-w-xs ${categoryColors[category]?.bgColor} 
+              text-white border-2 border-white font-bold text-xl my-2`}
             value={category} 
             onChange={handleCategory}
             onBlur={handleCategorySubmit}

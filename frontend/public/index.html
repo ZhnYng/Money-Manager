@@ -27,8 +27,8 @@
   <script src="https://accounts.google.com/gsi/client" onload="initClient()" async defer></script>
   <script>
     function initBaseURL(){
-      // axios.defaults.baseURL = 'https://money-manager-backend-no0w.onrender.com';
-      axios.defaults.baseURL = 'http://localhost:5000';
+      axios.defaults.baseURL = 'https://money-manager-backend-no0w.onrender.com';
+      // axios.defaults.baseURL = 'http://localhost:5000';
     }
 
     var client;
@@ -50,20 +50,19 @@
             .then(async res => {
               profile = {...profile, email: res.data.emailAddress};
               await axios.post('/addUser', {email: res.data.emailAddress})
-                
-                .then(res => console.log(res))
+                .then(async res => {
+                  console.log(res);
+                  await axios.get('https://www.googleapis.com/oauth2/v1/userinfo?alt=json', {headers: {Authorization: `Bearer ${localStorage.getItem('access_token')}`}})
+                    .then(res => {
+                      profile = {...profile, ...res.data}
+                      localStorage.setItem('profile', JSON.stringify(profile))
+                      window.location.replace('/');
+                    })
+                    .catch(err => console.log(err))
+                })
                 .catch(err => console.log(err));
             })
             .catch(err => console.log(err));
-
-          await axios.get('https://www.googleapis.com/oauth2/v1/userinfo?alt=json', {headers: {Authorization: `Bearer ${localStorage.getItem('access_token')}`}})
-            .then(res => {
-              profile = {...profile, ...res.data}
-            })
-            .catch(err => console.log(err))
-            
-          localStorage.setItem('profile', JSON.stringify(profile))
-          window.location.replace('/');
         },
       });
     }
