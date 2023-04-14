@@ -2,9 +2,9 @@ const base64url = require("base64url");
 const extractionRegex = require("./extractionRegex");
 const axios = require("axios");
 
-const {google} = require('googleapis');
-const pubsub = require('@google-cloud/pubsub');
-const objectify = require("./objectify")
+const { google } = require("googleapis");
+const pubsub = require("@google-cloud/pubsub");
+const objectify = require("./objectify");
 
 // Decode a base64url-encoded string to a plaintext string
 function decodeBase64Url(str) {
@@ -12,70 +12,6 @@ function decodeBase64Url(str) {
   buffer = buffer.toString("utf-8");
   return buffer;
 }
-
-// function stringToData(inputString, regexName, subject) {
-//   const keyValue = inputString.split(/:(.*)/s).map((str) => str.trim());
-//   switch (subject) {
-
-//     // case "Fwd: iBanking Alerts":
-//     //   switch (keyValue[0]) {
-//     //     case 'Date & Time':
-//     //       let outputObject = {};
-
-//     //       // Getting the date
-//     //       let dateParts = keyValue[1].split(' ');
-//     //       const date = dateParts[0];
-//     //       const month = new Date(Date.parse(dateParts[1] + " 1, 2022")).getMonth() + 1;
-//     //       const year = Date.getFullYear();
-//     //       console.log(`${year}-${month}-${date}`)
-//     //       outputObject = {...outputObject, "Date_of_Transfer": `${year}-${month}-${date}`}
-          
-//     //       // Getting the time
-//     //       let dbsTimestamp = keyValue[2];
-//     //       let time = new Date(`1970-01-01 ${dbsTimestamp}`);
-//     //       let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
-//     //       outputObject = {...outputObject, "Time_of_Transfer": formattedTime};
-//     //       return outputObject
-//     //   }
-//   }
-//   if (keyValue.length === 1) {
-//     // Runs when inputString is not an object type
-//     const keyValueSplit = keyValue[0]
-//       .split(/(\s+)/)
-//       .filter((str) => /\S/.test(str));
-//     if (subject == "You have sent money via PayNow") {
-//       const outputObject = {};
-//       outputObject["Recipient"] = keyValueSplit.slice(3, -1).join(" ");
-//       return outputObject;
-//     }
-//   } else {
-//     const outputObject = {};
-//     switch (regexName) {
-//       case "Date_of_Transfer":
-//         const dateString = keyValue[1];
-//         const dateParts = dateString.split(" "); // split the string into an array of ["21", "Feb", "2023"]
-//         const year = dateParts[2];
-//         const month =
-//           new Date(Date.parse(dateParts[1] + " 1, 2022")).getMonth() + 1; // convert the month name to a month number using Date.parse()
-//         const day = dateParts[0].padStart(2, "0"); // pad the day with a leading zero if necessary
-//         const formattedDate = `${year}-${month
-//           .toString()
-//           .padStart(2, "0")}-${day}`;
-//         outputObject[regexName] = formattedDate;
-//         break;
-//       case "Time_of_Transfer":
-//         let timeString = keyValue[1].slice(0, -2) + " " + keyValue[1].slice(-2);
-//         timeString = timeString.replace(".", ":");
-//         let time = new Date(`1970-01-01 ${timeString}`);
-//         let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
-//         outputObject[regexName] = formattedTime;
-//         break;
-//       default:
-//         outputObject[regexName] = keyValue[1];
-//     }
-//     return outputObject;
-//   }
-// }
 
 const gmailAPI = {
   getAllEmailMessages: async function (accessToken, callback) {
@@ -102,7 +38,7 @@ const gmailAPI = {
           // Filter out the emails with the transaction details
           allResponses = allResponses.map((res) => {
             let messages = [];
-            if(res.messages){
+            if (res.messages) {
               for (const message of res.messages) {
                 const headers = message.payload.headers;
                 // Getting email subject
@@ -111,29 +47,43 @@ const gmailAPI = {
                 ).value;
                 // Getting bank name
                 let bankName;
-                const sender = headers.find(
-                  (header) => header.name === "From"
-                ).value.toUpperCase();
-                for(const supportedBanks of Object.keys(extractionRegex)){
-                  if(sender.includes(supportedBanks)){
+                const sender = headers
+                  .find((header) => header.name === "From")
+                  .value.toUpperCase();
+                for (const supportedBanks of Object.keys(extractionRegex)) {
+                  if (sender.includes(supportedBanks)) {
                     bankName = supportedBanks;
                     break;
                   }
                 }
-                
+
                 // Extraction layer
-                try{
-                  const emailBody = decodeBase64Url(extractionRegex[bankName][subject].emailBody(message));
+                try {
+                  const emailBody = decodeBase64Url(
+                    extractionRegex[bankName][subject].emailBody(message)
+                  );
                   let details = {};
-                  for (const regexName of Object.keys(extractionRegex[bankName][subject])){
-                    if(emailBody.match(extractionRegex[bankName][subject][regexName])){
+                  for (const regexName of Object.keys(
+                    extractionRegex[bankName][subject]
+                  )) {
+                    if (
+                      emailBody.match(
+                        extractionRegex[bankName][subject][regexName]
+                      )
+                    ) {
                       details = {
                         ...details,
-                        ...objectify[bankName][subject](emailBody.match(extractionRegex[bankName][subject][regexName])[0], regexName, subject)
-                      }
+                        ...objectify[bankName][subject](
+                          emailBody.match(
+                            extractionRegex[bankName][subject][regexName]
+                          )[0],
+                          regexName,
+                          subject
+                        ),
+                      };
                     }
                   }
-                  details = {Transaction_method: subject, ...details};
+                  details = { Transaction_method: subject, ...details };
                   messages.push(details);
                 } catch {
                   // console.log(message)
@@ -145,7 +95,7 @@ const gmailAPI = {
           });
           allResponses = allResponses.flat();
           allResponses = allResponses.filter((x) => x != null);
-          console.log(allResponses)
+          console.log(allResponses);
           return callback(null, allResponses);
         }
       })
@@ -170,7 +120,7 @@ const gmailAPI = {
   getUserProfile: function (accessToken, callback) {
     axios
       .get("https://gmail.googleapis.com/gmail/v1/users/me/profile", {
-        headers: { Authorization: `Bearer ${accessToken}`},
+        headers: { Authorization: `Bearer ${accessToken}` },
       })
       .then((res) => {
         return callback(null, res.data.emailAddress);
@@ -178,45 +128,48 @@ const gmailAPI = {
       .catch((err) => callback(err, null));
   },
 
-  
-getGmailApi:   async function (accessToken) {
+  getGmailApi: async function (accessToken) {
     // Set up authentication
     const auth = new google.auth.GoogleAuth({
-      scopes: ['https://www.googleapis.com/auth/gmail.readonly', 'https://www.googleapis.com/auth/pubsub'],
+      scopes: [
+        "https://www.googleapis.com/auth/gmail.readonly",
+        "https://www.googleapis.com/auth/pubsub",
+      ],
       credentials: {
         access_token: accessToken,
       },
     });
     const authClient = await auth.getClient();
-  
+
     // Initialize the Gmail API client
-    const gmail = google.gmail({version: 'v1', auth: authClient});
-  
+    const gmail = google.gmail({ version: "v1", auth: authClient });
+
     // Set up the Cloud Pub/Sub topic and subscription
-    const topicName = 'my-topic';
-    const subscriptionName = 'my-subscription';
+    const topicName = "my-topic";
+    const subscriptionName = "my-subscription";
     const topic = pubsub.topic(topicName);
     const subscription = topic.subscription(subscriptionName);
-  
+
     // Set up the mailbox change notification
-    const userId = 'me';
+    const userId = "me";
     const watchRequest = {
-      labelIds: ['INBOX'],
+      labelIds: ["INBOX"],
       topicName: `projects/${projectId}/topics/${topicName}`,
-      labelFilterAction: 'include',
+      labelFilterAction: "include",
       expiration: Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60, // 7 days
     };
-    const response = await gmail.users.watch({userId, requestBody: watchRequest});
-  
+    const response = await gmail.users.watch({
+      userId,
+      requestBody: watchRequest,
+    });
+
     // Listen for notifications on the subscription
-    subscription.on('message', (message) => {
+    subscription.on("message", (message) => {
       const payload = message.data.toString();
       console.log(`Received message: ${payload}`);
       message.ack();
     });
-  }
-  
-
+  },
 };
 
 module.exports = gmailAPI;
