@@ -32,7 +32,7 @@ const extractionRegex = {
   },
 
   DBS: {
-    "ibanking.alert@dbs.com": {
+    "Transaction Alerts": {
       "Date & Time": /Date & Time:\s+\d{2} [A-Z][a-z]{2} \d{2}:\d{2} \(SGT\)/,
       "Amount": /Amount:\s+SGD\d+\.\d+/,
       "Account": /From:\s+My Account A\/C ending \d{4}/,

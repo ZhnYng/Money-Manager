@@ -116,7 +116,7 @@ const objectify = {
   },
 
   DBS: {
-    "ibanking.alert@dbs.com": function(inputString, regexName){
+    "Transaction Alerts": function(inputString, regexName){
       const keyValue = inputString.split(/:(.*)/s).map((str) => str.trim());
       const outputObject = {};
       switch(regexName){
