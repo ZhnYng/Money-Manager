@@ -41,10 +41,7 @@ const gmailAPI = {
             if (res.messages) {
               for (const message of res.messages) {
                 const headers = message.payload.headers;
-                // Getting email subject
-                const subject = headers.find(
-                  (header) => header.name === "Subject"
-                ).value;
+
                 // Getting bank name
                 let bankName;
                 const sender = headers
@@ -54,6 +51,24 @@ const gmailAPI = {
                   if (sender.includes(supportedBanks)) {
                     bankName = supportedBanks;
                     break;
+                  }
+                }
+                if(!bankName) break;
+
+                // Getting email subject
+                let subject = headers.find(
+                  (header) => header.name === "Subject"
+                ).value;
+                for (const supportedSubject of Object.keys(extractionRegex[bankName])) {
+                  if(subject === supportedSubject) break;
+                  else {
+                    let subjectIncludesKeywords = [];
+                    for(const supportedSubjectWord of supportedSubject.split(' ')) {
+                      subjectIncludesKeywords.push(subject.includes(supportedSubjectWord));
+                    }
+                    if(subjectIncludesKeywords.every(e => e === true)){
+                      subject = supportedSubject;
+                    }
                   }
                 }
 
@@ -95,7 +110,6 @@ const gmailAPI = {
           });
           allResponses = allResponses.flat();
           allResponses = allResponses.filter((x) => x != null);
-          console.log(allResponses);
           return callback(null, allResponses);
         }
       })

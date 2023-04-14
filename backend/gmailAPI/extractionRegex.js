@@ -22,7 +22,7 @@ const extractionRegex = {
       emailBody: message => message.payload.body.data
     },
     "You have sent money via PayNow": {
-      "Recipient": /sent money to\s+(\w+\s+)+\busing/,
+      "Recipient": /sent money to\s+([\w\.]+\s+)+\busing/,
       "Date_of_Transfer": /Date of Transfer\s+:\s+(\d+\s\w+\s\d{4})\s/,
       "Time_of_Transfer": /Time of Transfer\s+:\s+(\d+:\d+\w+)\s/,
       "Amount": /Amount\s+:\s+(SGD\s[\d.]+)\s/,
