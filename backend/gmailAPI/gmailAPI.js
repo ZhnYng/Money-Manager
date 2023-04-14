@@ -1,54 +1,78 @@
 const base64url = require("base64url");
 const extractionRegex = require("./extractionRegex");
 const axios = require("axios");
+const objectify = require("./objectify")
 
-// // Decode a base64url-encoded string to a plaintext string
+// Decode a base64url-encoded string to a plaintext string
 function decodeBase64Url(str) {
   let buffer = Buffer.from(base64url.toBase64(str), "base64");
   buffer = buffer.toString("utf-8");
   return buffer;
 }
 
-function stringToData(inputString, regexName, subject) {
-  const keyValue = inputString.split(/:(.*)/s).map((str) => str.trim());
-  if (keyValue.length === 1) {
-    // Runs when inputString is not an object type
-    const keyValueSplit = keyValue[0]
-      .split(/(\s+)/)
-      .filter((str) => /\S/.test(str));
-    if (subject == "You have sent money via PayNow") {
-      const outputObject = {};
-      outputObject["Recipient"] = keyValueSplit.slice(3, -1).join(" ");
-      return outputObject;
-    }
-  } else {
-    const outputObject = {};
-    switch (regexName) {
-      case "Date_of_Transfer":
-        const dateString = keyValue[1];
-        const dateParts = dateString.split(" "); // split the string into an array of ["21", "Feb", "2023"]
-        const year = dateParts[2];
-        const month =
-          new Date(Date.parse(dateParts[1] + " 1, 2022")).getMonth() + 1; // convert the month name to a month number using Date.parse()
-        const day = dateParts[0].padStart(2, "0"); // pad the day with a leading zero if necessary
-        const formattedDate = `${year}-${month
-          .toString()
-          .padStart(2, "0")}-${day}`;
-        outputObject[regexName] = formattedDate;
-        break;
-      case "Time_of_Transfer":
-        let timeString = keyValue[1].slice(0, -2) + " " + keyValue[1].slice(-2);
-        timeString = timeString.replace(".", ":");
-        let time = new Date(`1970-01-01 ${timeString}`);
-        let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
-        outputObject[regexName] = formattedTime;
-        break;
-      default:
-        outputObject[regexName] = keyValue[1];
-    }
-    return outputObject;
-  }
-}
+// function stringToData(inputString, regexName, subject) {
+//   const keyValue = inputString.split(/:(.*)/s).map((str) => str.trim());
+//   switch (subject) {
+
+//     // case "Fwd: iBanking Alerts":
+//     //   switch (keyValue[0]) {
+//     //     case 'Date & Time':
+//     //       let outputObject = {};
+
+//     //       // Getting the date
+//     //       let dateParts = keyValue[1].split(' ');
+//     //       const date = dateParts[0];
+//     //       const month = new Date(Date.parse(dateParts[1] + " 1, 2022")).getMonth() + 1;
+//     //       const year = Date.getFullYear();
+//     //       console.log(`${year}-${month}-${date}`)
+//     //       outputObject = {...outputObject, "Date_of_Transfer": `${year}-${month}-${date}`}
+          
+//     //       // Getting the time
+//     //       let dbsTimestamp = keyValue[2];
+//     //       let time = new Date(`1970-01-01 ${dbsTimestamp}`);
+//     //       let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
+//     //       outputObject = {...outputObject, "Time_of_Transfer": formattedTime};
+//     //       return outputObject
+//     //   }
+//   }
+//   if (keyValue.length === 1) {
+//     // Runs when inputString is not an object type
+//     const keyValueSplit = keyValue[0]
+//       .split(/(\s+)/)
+//       .filter((str) => /\S/.test(str));
+//     if (subject == "You have sent money via PayNow") {
+//       const outputObject = {};
+//       outputObject["Recipient"] = keyValueSplit.slice(3, -1).join(" ");
+//       return outputObject;
+//     }
+//   } else {
+//     const outputObject = {};
+//     switch (regexName) {
+//       case "Date_of_Transfer":
+//         const dateString = keyValue[1];
+//         const dateParts = dateString.split(" "); // split the string into an array of ["21", "Feb", "2023"]
+//         const year = dateParts[2];
+//         const month =
+//           new Date(Date.parse(dateParts[1] + " 1, 2022")).getMonth() + 1; // convert the month name to a month number using Date.parse()
+//         const day = dateParts[0].padStart(2, "0"); // pad the day with a leading zero if necessary
+//         const formattedDate = `${year}-${month
+//           .toString()
+//           .padStart(2, "0")}-${day}`;
+//         outputObject[regexName] = formattedDate;
+//         break;
+//       case "Time_of_Transfer":
+//         let timeString = keyValue[1].slice(0, -2) + " " + keyValue[1].slice(-2);
+//         timeString = timeString.replace(".", ":");
+//         let time = new Date(`1970-01-01 ${timeString}`);
+//         let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
+//         outputObject[regexName] = formattedTime;
+//         break;
+//       default:
+//         outputObject[regexName] = keyValue[1];
+//     }
+//     return outputObject;
+//   }
+// }
 
 const gmailAPI = {
   getAllEmailMessages: async function (accessToken, callback) {
@@ -75,44 +99,50 @@ const gmailAPI = {
           // Filter out the emails with the transaction details
           allResponses = allResponses.map((res) => {
             let messages = [];
-            try {
+            if(res.messages){
               for (const message of res.messages) {
                 const headers = message.payload.headers;
+                // Getting email subject
                 const subject = headers.find(
                   (header) => header.name === "Subject"
                 ).value;
-                if (Object.keys(extractionRegex).includes(subject)) {
-                  const data = decodeBase64Url(
-                    extractionRegex[subject].emailBody(message)
-                  );
+                // Getting bank name
+                let bankName;
+                const sender = headers.find(
+                  (header) => header.name === "From"
+                ).value.toUpperCase();
+                for(const supportedBanks of Object.keys(extractionRegex)){
+                  if(sender.includes(supportedBanks)){
+                    bankName = supportedBanks;
+                    break;
+                  }
+                }
+                
+                // Extraction layer
+                try{
+                  const emailBody = decodeBase64Url(extractionRegex[bankName][subject].emailBody(message));
                   let details = {};
-                  for (const regexKey of Object.keys(
-                    extractionRegex[subject]
-                  )) {
-                    if (data.match(extractionRegex[subject][regexKey])) {
+                  for (const regexName of Object.keys(extractionRegex[bankName][subject])){
+                    if(emailBody.match(extractionRegex[bankName][subject][regexName])){
                       details = {
                         ...details,
-                        ...stringToData(
-                          data.match(extractionRegex[subject][regexKey])[0],
-                          regexKey,
-                          subject
-                        ),
-                      };
+                        ...objectify[bankName][subject](emailBody.match(extractionRegex[bankName][subject][regexName])[0], regexName, subject)
+                      }
                     }
                   }
-                  details = { Transaction_method: subject, ...details };
+                  details = {Transaction_method: subject, ...details};
                   messages.push(details);
-                } else {
+                } catch {
+                  // console.log(message)
                   messages.push(null);
                 }
               }
-            } catch {
-              console.log(res.messages);
             }
             return messages;
           });
           allResponses = allResponses.flat();
           allResponses = allResponses.filter((x) => x != null);
+          console.log(allResponses)
           return callback(null, allResponses);
         }
       })

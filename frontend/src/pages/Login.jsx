@@ -2,7 +2,6 @@ import React from 'react';
 import { FaPiggyBank } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import jwtDecode from 'jwt-decode';
 
 export default function Login() {
   const navigate = useNavigate();
