@@ -1,6 +1,7 @@
 
   <body>
     <h1 class="title">Money Manager</h1>
+    <h2>https://moneymanagerclient.netlify.app/<h2>
     <p>Money Manager is a web application that helps you manage your finances. With this app, you can track your income and expenses, set budgets, and visualize your spending habits.</p>
     <h2 class="subtitle">Features</h2>
     <ul>
