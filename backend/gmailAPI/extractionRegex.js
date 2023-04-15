@@ -34,17 +34,17 @@ const extractionRegex = {
   DBS: {
     "iBanking Alerts": {
       "Date & Time": /Date & Time:\s+\d{2} [A-Z][a-z]{2} \d{2}:\d{2} \(SGT\)/,
-      "Amount": /Amount:\s+SGD\d+\.\d+/,
-      "Account": /From:\s+My Account A\/C ending \d{4}/,
+      "Amount": /received\sSGD\s\d+(?:.\d+)?/,
+      "To": /to\syour\saccount/,
       "Recipient": /To:\s+[^()]+\s+\(Mobile no\. ending \d{4}\)/,
       emailBody: message => message.payload.parts[0].body.data
     },
-    "Fwd: Transaction Alerts": {
-      "Amount": /received\s\S+\s\d+(?:\.\d+)?/,
-      "Date & Time": /on \d{1,2} \w{3} \d{2}:\d{2} \(\w{3}\)/,
-      "From": /from [A-Z\s]+ to/,
-      "Account": /\byour\saccount\b/,
-      "Method": /via\s+\w+/,
+    "Transaction Alerts": {
+      "Amount": /received\s+([A-Z]{3}\d+(?:\.\d+)?)/,
+      "Date & Time": /on\s+(\d{1,2}\s+\w{3}\s+\d{2}:\d{2}\s+\(SGT\))/,
+      "From": /from\s+([\w!-]+\s+\(Mobile\s+ending\s+\d{4}\))\s+to/,
+      "Account": /\byour\s+PayLah!?\s+Wallet\b/,
+      "Method": /via\s+PayLah!/,
       emailBody: message => message.payload.parts[0].body.data
     }
   }

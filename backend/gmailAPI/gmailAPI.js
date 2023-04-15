@@ -24,6 +24,7 @@ const gmailAPI = {
         { headers: { Authorization: `Bearer ${accessToken}` } }
       )
       .then(async (res) => {
+
         const allThreads = res.data.threads;
         if (!allThreads || allThreads.length === 0) {
           return callback("No threads found", null);
@@ -53,20 +54,20 @@ const gmailAPI = {
                     break;
                   }
                 }
-                if(!bankName) break;
+                if (!bankName) break;
 
                 // Getting email subject
                 let subject = headers.find(
                   (header) => header.name === "Subject"
                 ).value;
                 for (const supportedSubject of Object.keys(extractionRegex[bankName])) {
-                  if(subject === supportedSubject) break;
+                  if (subject === supportedSubject) break;
                   else {
                     let subjectIncludesKeywords = [];
-                    for(const supportedSubjectWord of supportedSubject.split(' ')) {
+                    for (const supportedSubjectWord of supportedSubject.split(' ')) {
                       subjectIncludesKeywords.push(subject.includes(supportedSubjectWord));
                     }
-                    if(subjectIncludesKeywords.every(e => e === true)){
+                    if (subjectIncludesKeywords.every(e => e === true)) {
                       subject = supportedSubject;
                     }
                   }
