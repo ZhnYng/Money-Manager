@@ -8,6 +8,9 @@
   <meta name="theme-color" content="#000000" />
   <meta name="description" content="Web site created using create-react-app" />
   <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" /> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="mobile-web-app-capable" content="yes">
   <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -26,18 +29,6 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" onload="initBaseURL()" async defer></script>
   <script src="https://accounts.google.com/gsi/client" onload="initClient()" async defer></script>
   <script>
-    let elem = document.getElementById("root");
-
-    if (!document.fullscreenElement) {
-      elem.requestFullscreen().catch((err) => {
-        alert(
-          `Error attempting to enable fullscreen mode: ${err.message} (${err.name})`
-        );
-      });
-    } else {
-      document.exitFullscreen();
-    }
-    
     function initBaseURL(){
       axios.defaults.baseURL = 'https://money-manager-backend-no0w.onrender.com';
       // axios.defaults.baseURL = 'http://localhost:5000';
