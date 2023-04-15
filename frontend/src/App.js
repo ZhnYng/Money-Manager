@@ -7,6 +7,7 @@ import Budget from "./pages/Settings/Budget";
 import Notifications from "./pages/Settings/Notifications";
 import Login from "./pages/Login";
 import Statistics from "./pages/Statistics";
+import NotFound from "./pages/NotFound";
 
 function AppLayout(){
   return(
@@ -20,6 +21,7 @@ function AppLayout(){
 function App() {
   const router = createBrowserRouter([
     {
+      errorElement: <NotFound />,
       element: <AppLayout/>,
       children: [
         {
