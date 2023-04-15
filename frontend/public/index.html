@@ -26,6 +26,18 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" onload="initBaseURL()" async defer></script>
   <script src="https://accounts.google.com/gsi/client" onload="initClient()" async defer></script>
   <script>
+    let elem = document.getElementById("root");
+
+    if (!document.fullscreenElement) {
+      elem.requestFullscreen().catch((err) => {
+        alert(
+          `Error attempting to enable fullscreen mode: ${err.message} (${err.name})`
+        );
+      });
+    } else {
+      document.exitFullscreen();
+    }
+    
     function initBaseURL(){
       axios.defaults.baseURL = 'https://money-manager-backend-no0w.onrender.com';
       // axios.defaults.baseURL = 'http://localhost:5000';
