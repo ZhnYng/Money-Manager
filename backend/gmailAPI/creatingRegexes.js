@@ -1,15 +1,15 @@
 const { default: axios } = require("axios");
 const base64url = require("base64url");
 let accessToken =
-  "ya29.a0Ael9sCPJBva7LYVOG7r-cJ0mZw6z3UebMVVdEC-IpGqOO-bXatGqIdV-kqZQj_qO-q1_VlNHEJudxdY_t_dxi1qRWTqdZdaLyhxEVAEsbTQAE4lNIDbPISMhM1uFH5krc_zfU7NN6R-xnHs62L05pStMl9KYJAaCgYKAX8SARASFQF4udJhRF4lzQah4dWJTQ-p8od97g0165";
+  "ya29.a0Ael9sCP3q54_rFGXrr0IP6vp_Ti6mMMzAVSJo8F973FCTCpBFa5K-6srbtHbS6I34ZKkp9frdqBduQIBnwUQZcpN_yp4Dm6dd4zUBz62mugm0tffoXFYYMaFU7vQ9AHStGsu64loEnKG9ldu0m4Sbd_T_Mm7cgaCgYKAWYSARASFQF4udJhIR6TVI1mGVTWRqya1T5Bqg0165";
 
 // Step 1: Read through emails to find the EMAIL ID of the sample transaction detail emails
 // Dario DBS sample id: 187212b5eff46beb
-let sampleId = "187212b5eff46beb";
+let sampleId = "1871d4e203c35930";
 function step1() {
   axios
     .get(
-      "https://gmail.googleapis.com/gmail/v1/users/me/threads?maxResults=70",
+      "https://gmail.googleapis.com/gmail/v1/users/me/threads?maxResults=90",
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       }
@@ -33,7 +33,7 @@ function step1() {
 }
 
 // Step 2: Find the subject of the sample email
-let subject = 'Fwd: iBanking Alerts';
+let subject = 'Fwd: Transaction Alerts';
 function step2(){
   axios
     .get(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${sampleId}`, {
@@ -76,10 +76,11 @@ function step3() {
 }
 
 // Step 4: Use find the regex needed to detect the necessary information
-// Date & Time regex: /Date & Time:\s+\d{2} [A-Z][a-z]{2} \d{2}:\d{2} \(SGT\)/
-// Amount regex: /Amount:\s+SGD\d+\.\d+/
-// From regex: /From:\s+My Account A\/C ending \d{4}/
-// To regex: /To:\s+[^()]+\s+\(Mobile no\. ending \d{4}\)/
+// Amount: /received\s\S+\s\d+(?:\.\d+)?/
+// Date & Time: /on \d{1,2} \w{3} \d{2}:\d{2} \(\w{3}\)/
+// From: /from [A-Z\s]+ to/
+// Account: /\byour\saccount\b/
+// Method: /via\s+\w+/
 function step4() {
   axios
     .get(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${sampleId}`, {
@@ -98,6 +99,6 @@ function step4() {
     })
     .catch((err) => console.log(err));
 }
+step4()
 
 // Step 5: Add this new information into the extractionRegex.js
-step4()

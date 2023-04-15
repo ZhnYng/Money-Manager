@@ -32,11 +32,19 @@ const extractionRegex = {
   },
 
   DBS: {
-    "Transaction Alerts": {
+    "iBanking Alerts": {
       "Date & Time": /Date & Time:\s+\d{2} [A-Z][a-z]{2} \d{2}:\d{2} \(SGT\)/,
       "Amount": /Amount:\s+SGD\d+\.\d+/,
       "Account": /From:\s+My Account A\/C ending \d{4}/,
       "Recipient": /To:\s+[^()]+\s+\(Mobile no\. ending \d{4}\)/,
+      emailBody: message => message.payload.parts[0].body.data
+    },
+    "Fwd: Transaction Alerts": {
+      "Amount": /received\s\S+\s\d+(?:\.\d+)?/,
+      "Date & Time": /on \d{1,2} \w{3} \d{2}:\d{2} \(\w{3}\)/,
+      "From": /from [A-Z\s]+ to/,
+      "Account": /\byour\saccount\b/,
+      "Method": /via\s+\w+/,
       emailBody: message => message.payload.parts[0].body.data
     }
   }

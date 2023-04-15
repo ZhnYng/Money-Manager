@@ -1,4 +1,4 @@
-
+<html>
   <body>
     <h1 class="title">Money Manager</h1>
     <h2>https://moneymanagerclient.netlify.app/<h2>
