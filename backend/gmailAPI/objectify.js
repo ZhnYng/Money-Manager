@@ -147,7 +147,8 @@ const objectify = {
           break;
       }
       return outputObject;
-    }
+    },
+    
   }
 }
 
