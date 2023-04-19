@@ -45,37 +45,41 @@ const gmailAPI = {
 
                 // Getting bank name
                 let bankName;
-                let sender;
                 try{
-                  sender = headers
+                  const sender = headers
                     .find((header) => header.name === "From")
                     .value.toUpperCase();
-                }catch{
-                  console.log(message);
-                }
-                for (const supportedBanks of Object.keys(extractionRegex)) {
-                  if (sender.includes(supportedBanks)) {
-                    bankName = supportedBanks;
-                    break;
+                  for (const supportedBanks of Object.keys(extractionRegex)) {
+                    if (sender.includes(supportedBanks)) {
+                      bankName = supportedBanks;
+                      break;
+                    }
                   }
+                }catch{
+                  console.log(message)
                 }
                 if (!bankName) break;
 
                 // Getting email subject
-                let subject = headers.find(
-                  (header) => header.name === "Subject"
-                ).value;
-                for (const supportedSubject of Object.keys(extractionRegex[bankName])) {
-                  if (subject === supportedSubject) break;
-                  else {
-                    let subjectIncludesKeywords = [];
-                    for (const supportedSubjectWord of supportedSubject.split(' ')) {
-                      subjectIncludesKeywords.push(subject.includes(supportedSubjectWord));
-                    }
-                    if (subjectIncludesKeywords.every(e => e === true)) {
-                      subject = supportedSubject;
+                let subject;
+                try{
+                  subject = headers.find(
+                    (header) => header.name === "Subject"
+                  ).value;
+                  for (const supportedSubject of Object.keys(extractionRegex[bankName])) {
+                    if (subject === supportedSubject) break;
+                    else {
+                      let subjectIncludesKeywords = [];
+                      for (const supportedSubjectWord of supportedSubject.split(' ')) {
+                        subjectIncludesKeywords.push(subject.includes(supportedSubjectWord));
+                      }
+                      if (subjectIncludesKeywords.every(e => e === true)) {
+                        subject = supportedSubject;
+                      }
                     }
                   }
+                }catch{
+                  console.log(message);
                 }
 
                 // Extraction layer
