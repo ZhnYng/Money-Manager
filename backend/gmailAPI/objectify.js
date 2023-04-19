@@ -115,41 +115,75 @@ const objectify = {
     },
   },
 
-  DBS: {
-    "iBanking Alerts": function(inputString, regexName){
-      const keyValue = inputString.split(/:(.*)/s).map((str) => str.trim());
-      const outputObject = {};
-      switch(regexName){
-        case "Date & Time": 
-          const dateDetails = keyValue[1].split(' ').slice(0, 2);
-          const timeDetails = keyValue[1].split(' ').slice(2);
-          const currDate = new Date;
-          const year = currDate.getFullYear();
-          const month = new Date(Date.parse(dateDetails[1] + ` 1, ${year}`)).getMonth() + 1;
-          const date = dateDetails[0];
-          outputObject["Date_of_Transfer"] = `${year}-${month}-${date}`;
+  // DBS: {
+  //   "iBanking Alerts": function(inputString, regexName){
+  //     const keyValue = inputString.split(/:(.*)/s).map((str) => str.trim());
+  //     const outputObject = {};
+  //     switch(regexName){
+  //       case "Date & Time": 
+  //         const dateDetails = keyValue[1].split(' ').slice(0, 2);
+  //         const timeDetails = keyValue[1].split(' ').slice(2);
+  //         const currDate = new Date;
+  //         const year = currDate.getFullYear();
+  //         const month = new Date(Date.parse(dateDetails[1] + ` 1, ${year}`)).getMonth() + 1;
+  //         const date = dateDetails[0];
+  //         outputObject["Date_of_Transfer"] = `${year}-${month}-${date}`;
           
-          let time = new Date(`1970-01-01 ${timeDetails[0]}`);
-          let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
-          outputObject["Time_of_Transfer"] = formattedTime;
-          break;
-        case "Amount": 
-          // Splits 'SGD10.00' to 'SGD 10.00'
-          const spacedStr = keyValue[1].replace(/([a-zA-Z])(\d)/g, '$1 $2');
-          outputObject["Amount"] = spacedStr;
-          break;
-        case "Account": 
-          outputObject["Account"] = keyValue[1];
-          break;
-        case "Recipient":
-          const name = keyValue[1].split("(")[0].trim();
-          outputObject["Recipient"] = name;
-          break;
-      }
-      return outputObject;
-    },
-    
-  }
+  //         let time = new Date(`1970-01-01 ${timeDetails[0]}`);
+  //         let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
+  //         outputObject["Time_of_Transfer"] = formattedTime;
+  //         break;
+  //       case "Amount": 
+  //         // Splits 'SGD10.00' to 'SGD 10.00'
+  //         const spacedStr = keyValue[1].replace(/([a-zA-Z])(\d)/g, '$1 $2');
+  //         outputObject["Amount"] = spacedStr;
+  //         break;
+  //       case "Account": 
+  //         outputObject["Account"] = keyValue[1];
+  //         break;
+  //       case "Recipient":
+  //         const name = keyValue[1].split("(")[0].trim();
+  //         outputObject["Recipient"] = name;
+  //         break;
+  //     }
+  //     return outputObject;
+  //   },
+    // "Fwd: Transaction Alerts": function(inputString, regexName) {
+    //   const outputObject = {};
+    //   switch (regexName) {
+    //     case "Date & Time": 
+    //       const keyValue = inputString.split(' ');
+    //       const dateDetails = keyValue.slice(0, 2);
+    //       const timeDetails = keyValue.slice(2, 4);
+    //       const currDate = new Date;
+    //       const year = currDate.getFullYear();
+    //       const month = new Date(Date.parse(dateDetails[1] + ` 1, ${year}`)).getMonth() + 1;
+    //       const date = dateDetails[0];
+    //       outputObject["Date_of_Transfer"] = `${year}-${month}-${date}`;
+          
+    //       let time = new Date(`1970-01-01 ${timeDetails[0]}`);
+    //       let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
+    //       outputObject["Time_of_Transfer"] = formattedTime;
+    //       break;
+    //     case "To":
+    //       const sentTo = inputString.replace(/\r\n/g, " ");
+    //       outputObject[regexName] = sentTo;
+    //       break;
+    //     case "Type":
+    //       if(inputString == "received"){
+    //         outputObject[regexName] = "income";
+    //       }else{
+    //         outputObject[regexName] = "expense";
+    //       }
+    //       break;
+    //     default:
+    //       outputObject[regexName] = inputString;
+    //       break;
+    //   }
+    //   console.log(outputObject)
+    //   return outputObject;
+    // }
+  // }
 }
 
 module.exports = objectify;
