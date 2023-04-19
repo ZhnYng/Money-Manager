@@ -2,7 +2,7 @@ const { default: axios } = require("axios");
 const base64url = require("base64url");
 const extractionRegex = require("./extractionRegex");
 let accessToken = 
-  "ya29.a0Ael9sCO9z0s2N7miNbm6pULgUCAUSu5PQWEhAsjOtXAm-HGSQcOn6EWLrjJACODFL7g6iELNhpXKAzXPIGCl5cSblnuVrCDLyJx0TVYV-CcwISzID0Tia90vfSLofdTxSWPcQoC7xEu-kh7VHGgHQk1Q5wDevAaCgYKATwSARASFQF4udJhtBj9766wWw9GTeP5Gr51fw0165"
+  "ya29.a0Ael9sCO7zPpbmJHIZXWIICGCk1lwDkooJ52ooAoVzYIEWpK2n1mJLWuQoN130q2auIShgZxynZwt-FNOa4KHQlgCbPbDDI9YPFzYpVodL-E2oQEJyXK82rxM2_DXUkm28oiBLgXbYa1dXNqzgTJbv0s4S_dgRQaCgYKAQoSARASFQF4udJhYP3VhNJZ31oYT3_s2aYEbQ0165"
 // Step 1: Read through emails to find the EMAIL ID of the sample transaction detail emails
 // Dario DBS sample id: 187212b5eff46beb
 let sampleId = "1871d4e203c35930";

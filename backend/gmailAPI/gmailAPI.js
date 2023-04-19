@@ -45,9 +45,14 @@ const gmailAPI = {
 
                 // Getting bank name
                 let bankName;
-                const sender = headers
-                  .find((header) => header.name === "From")
-                  .value.toUpperCase();
+                let sender;
+                try{
+                  sender = headers
+                    .find((header) => header.name === "From")
+                    .value.toUpperCase();
+                }catch{
+                  console.log(message);
+                }
                 for (const supportedBanks of Object.keys(extractionRegex)) {
                   if (sender.includes(supportedBanks)) {
                     bankName = supportedBanks;
