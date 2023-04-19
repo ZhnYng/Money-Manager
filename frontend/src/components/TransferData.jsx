@@ -7,7 +7,7 @@ export default function TransferData({details, setChangesMade}){
   
   const categoryColors = {
     "none": {
-      bgColor: "bg-gray-200",
+      bgColor: "bg-gray-900",
       textColor: "text-gray-700",
     },
     "food": {
