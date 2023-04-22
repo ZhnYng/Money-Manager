@@ -1,24 +1,3 @@
-// case "Fwd: iBanking Alerts":
-//   switch (keyValue[0]) {
-//     case 'Date & Time':
-//       let outputObject = {};
-
-//       // Getting the date
-//       let dateParts = keyValue[1].split(' ');
-//       const date = dateParts[0];
-//       const month = new Date(Date.parse(dateParts[1] + " 1, 2022")).getMonth() + 1;
-//       const year = Date.getFullYear();
-//       console.log(`${year}-${month}-${date}`)
-//       outputObject = {...outputObject, "Date_of_Transfer": `${year}-${month}-${date}`}
-      
-//       // Getting the time
-//       let dbsTimestamp = keyValue[2];
-//       let time = new Date(`1970-01-01 ${dbsTimestamp}`);
-//       let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
-//       outputObject = {...outputObject, "Time_of_Transfer": formattedTime};
-//       return outputObject
-//   }
-
 const objectify = {
   OCBC: {
     "Successful NETS Payment": function (inputString, regexName, subject) {
@@ -43,6 +22,15 @@ const objectify = {
           let time = new Date(`1970-01-01 ${timeString}`);
           let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
           outputObject[regexName] = formattedTime;
+          break;
+        case "To":
+          outputObject[regexName] = keyValue[1];
+          const recipient = keyValue[1]
+          if(recipient.toUpperCase().includes("YOUR ACCOUNT")){
+            outputObject["Type"] = 'income';
+          }else{
+            outputObject["Type"] = 'expense';
+          }
           break;
         default:
           outputObject[regexName] = keyValue[1];
@@ -73,6 +61,15 @@ const objectify = {
           let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
           outputObject[regexName] = formattedTime;
           break;
+        case "To":
+          outputObject[regexName] = keyValue[1];
+          const recipient = keyValue[1]
+          if(recipient.toUpperCase().includes("YOUR ACCOUNT")){
+            outputObject["Type"] = 'income';
+          }else{
+            outputObject["Type"] = 'expense';
+          }
+          break;
         default:
           outputObject[regexName] = keyValue[1];
       }
@@ -83,12 +80,19 @@ const objectify = {
       const keyValue = inputString.split(/:(.*)/s).map((str) => str.trim());
       const outputObject = {};
       switch (regexName) {
-        case "Recipient":
+        case "To":
           const keyValueSplit = keyValue[0]
             .split(/(\s+)/)
             .filter((str) => /\S/.test(str));
-            outputObject[regexName] = keyValueSplit.slice(3, -1).join(" ");
-            break;
+            const recipient = keyValueSplit.slice(3, -1).join(" ");
+            outputObject[regexName] = recipient;
+
+          if(recipient.toUpperCase().includes("YOUR ACCOUNT")){
+            outputObject["Type"] = 'income';
+          }else{
+            outputObject["Type"] = 'expense';
+          }
+          break;
         case "Date_of_Transfer":
           const dateString = keyValue[1];
           const dateParts = dateString.split(" "); // split the string into an array of ["21", "Feb", "2023"]
@@ -115,8 +119,8 @@ const objectify = {
     },
   },
 
-  "DARIO": {
-    "Fwd: iBanking Alerts": function(inputString, regexName){
+  "LIM ZHEN YANG": {
+    "iBanking Alerts": function(inputString, regexName){
       const keyValue = inputString.split(/:(.*)/s).map((str) => str.trim());
       const outputObject = {};
       switch(regexName){
@@ -138,17 +142,22 @@ const objectify = {
           const spacedStr = keyValue[1].replace(/([a-zA-Z])(\d)/g, '$1 $2');
           outputObject["Amount"] = spacedStr;
           break;
-        case "Account": 
-          outputObject["Account"] = keyValue[1];
+        case "From": 
+          outputObject["From"] = keyValue[1];
           break;
-        case "Recipient":
+        case "To":
           const name = keyValue[1].split("(")[0].trim();
-          outputObject["Recipient"] = name;
+          outputObject["To"] = name;
+          if(name.toUpperCase().includes("YOUR ACCOUNT")){
+            outputObject["Type"] = 'income';
+          }else{
+            outputObject["Type"] = 'expense'
+          }
           break;
       }
       return outputObject;
     },
-    "Fwd: Transaction Alerts": function(inputString, regexName) {
+    "Transaction Alerts": function(inputString, regexName) {
       const outputObject = {};
       switch (regexName) {
         case "Date & Time": 
@@ -180,7 +189,6 @@ const objectify = {
           outputObject[regexName] = inputString;
           break;
       }
-      console.log(outputObject)
       return outputObject;
     }
   }

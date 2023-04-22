@@ -192,9 +192,9 @@ async function step7 (inputString, regexName){
   }
 }
 for(const key of Object.keys(strings)){
-  // step7(strings[key], key);
+  step7(strings[key], key);
 }
-// console.log(outputObject)
+console.log(outputObject)
+step7()
 
 // Step 8: Add this function to objectify.js
-step6()

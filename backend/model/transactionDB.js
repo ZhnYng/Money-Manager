@@ -19,7 +19,7 @@ const transactionDb = {
                     const queries = result.map(l => {
                         l['userId'] = userId;
                         return t.none("INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account, transaction_type, recorded_with) \
-                            VALUES(${userId}, ${Transaction_method}, ${Recipient}, ${Date_of_Transfer}, ${Time_of_Transfer}, ${Amount}, ${Account}, 'expense', 'GmailAPI')\
+                            VALUES(${userId}, ${Transaction_method}, ${To}, ${Date_of_Transfer}, ${Time_of_Transfer}, ${Amount}, ${From}, ${Type}, 'GmailAPI')\
                             ON CONFLICT (user_id, recipient, date_of_transfer, time_of_transfer, amount) DO NOTHING;", l);
                     });
                     return t.batch(queries);
