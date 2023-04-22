@@ -81,7 +81,7 @@ const gmailAPI = {
                 }catch{
                   console.log(message);
                 }
-
+                
                 // Extraction layer
                 try {
                   const emailBody = decodeBase64Url(
@@ -110,6 +110,7 @@ const gmailAPI = {
                   }
                   details = { Transaction_method: subject, ...details };
                   messages.push(details);
+                  console.log(details)
                 } catch {
                   // console.log(message)
                   messages.push(null);

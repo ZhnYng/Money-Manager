@@ -1,11 +1,14 @@
 const { default: axios } = require("axios");
 const base64url = require("base64url");
 const extractionRegex = require("./extractionRegex");
+const objectify = require("./objectify");
 let accessToken = 
-  "ya29.a0Ael9sCO7zPpbmJHIZXWIICGCk1lwDkooJ52ooAoVzYIEWpK2n1mJLWuQoN130q2auIShgZxynZwt-FNOa4KHQlgCbPbDDI9YPFzYpVodL-E2oQEJyXK82rxM2_DXUkm28oiBLgXbYa1dXNqzgTJbv0s4S_dgRQaCgYKAQoSARASFQF4udJhYP3VhNJZ31oYT3_s2aYEbQ0165"
+  "ya29.a0Ael9sCOl1WbbPt_3rErRbCxg8FXtB-NvlODPYvJgdGpsMBTT-O6mxiSvG2BtIikkfUoiEqI0wcNedooTOUqp5rl38631VCfRFegAKcOW2csUX498lJXcKH3bZfQ0gK7bShY08Hq8drc1de8Q1b9cCMGqOPq3GwaCgYKAY4SARASFQF4udJh1GJCBK7YNzd-zdhD1evBQw0165"
+
 // Step 1: Read through emails to find the EMAIL ID of the sample transaction detail emails
 // Dario DBS sample id: 187212b5eff46beb
 let sampleId = "1871d4e203c35930";
+// let sampleId = "187212b5eff46beb";
 function step1() {
   axios
     .get(
@@ -59,7 +62,7 @@ function step2(){
     })
     .catch((err) => console.log(err));
 }
-step2()
+
 // Step 3: Isolate this sample email and identify the location of its main contents
 let location = 'message.payload.parts[0].body.data'
 let emails = [];
@@ -102,10 +105,8 @@ function step4() {
           return buffer;
         }
         let data = decodeBase64Url(message.payload.parts[0].body.data);
-        // data = data.replace(/[\r\n]/gm, ' ');
-        // console.log(data.includes("your  account"))
-        // console.log(data.match(/(?<=to )\w(?= via)/)[0])
-        console.log(data.match(/received|sent/)[0])
+        console.log(data)
+        console.log(data.match(/To:\s+[^()]+\s+\(Mobile no\. ending \d{4}\)/)[0])
       }
     })
     .catch((err) => console.log(err));
@@ -114,37 +115,39 @@ function step4() {
 // Step 5: Add this new information into the extractionRegex.js
 
 // Step 6: Test if the regexes can extract out the required information
-let information = [];
-async function step6(bankName) {
+bankName = "HARI";
+async function step6() {
   await axios
-    .get(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${sampleId}`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    })
-    .then(res => {
-      for(const message of res.data.messages){
-        function decodeBase64Url(str) {
-          let buffer = Buffer.from(base64url.toBase64(str), "base64");
-          buffer = buffer.toString("utf-8");
-          return buffer;
-        }
-        const emailBody = decodeBase64Url(
-          extractionRegex[bankName][subject].emailBody(message)
-        );
-        for (const regexName of Object.keys(
-          extractionRegex[bankName][subject]
-        )) {
-          if(typeof extractionRegex[bankName][subject][regexName] === "function"){
-            continue
-          }else{
-            information.push(emailBody.match(
-              extractionRegex[bankName][subject][regexName]
-            )[0])
-          }
+  .get(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${sampleId}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  .then(res => {
+    for(const message of res.data.messages){
+      let information = [];
+      function decodeBase64Url(str) {
+        let buffer = Buffer.from(base64url.toBase64(str), "base64");
+        buffer = buffer.toString("utf-8");
+        return buffer;
+      }
+      console.log(bankName, subject)
+      const emailBody = decodeBase64Url(
+        extractionRegex[bankName][subject].emailBody(message)
+      );
+      for (const regexName of Object.keys(
+        extractionRegex[bankName][subject]
+      )) {
+        if(typeof extractionRegex[bankName][subject][regexName] === "function"){
+          continue
+        }else{
+          information.push(emailBody.match(
+            extractionRegex[bankName][subject][regexName]
+          )[0])
         }
       }
-      console.log(information);
-    })
-    .catch(err => console.log(err));
+      console.log(information)
+    }
+  })
+  .catch(err => console.log(err));
 }
 
 // Step 7: Create function to convert to an object
@@ -189,8 +192,9 @@ async function step7 (inputString, regexName){
   }
 }
 for(const key of Object.keys(strings)){
-  step7(strings[key], key);
+  // step7(strings[key], key);
 }
-console.log(outputObject)
+// console.log(outputObject)
 
 // Step 8: Add this function to objectify.js
+step6()

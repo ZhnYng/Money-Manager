@@ -31,24 +31,24 @@ const extractionRegex = {
     },
   },
 
-  // DBS: {
-  //   "iBanking Alerts": {
-  //     "Date & Time": /Date & Time:\s+\d{2} [A-Z][a-z]{2} \d{2}:\d{2} \(SGT\)/,
-  //     "Amount": /received\sSGD\s\d+(?:.\d+)?/,
-  //     "To": /to\syour\saccount/,
-  //     "Recipient": /To:\s+[^()]+\s+\(Mobile no\. ending \d{4}\)/,
-  //     emailBody: message => message.payload.parts[0].body.data
-  //   },
-  //   "Fwd: Transaction Alerts": {
-  //     "Amount": /(?<=received )[\s\S]*(?= on)/,
-  //     "Date & Time": /(?<=on ).*(?= from)/,
-  //     "From": /(?<=from )[A-Z\s]+(?= to)/,
-  //     "To": /(?<=to )[\s\S]*(?= via)/,
-  //     "Method": /(?<=via )\w*/,
-  //     "Type": /received|sent/,
-  //     emailBody: message => message.payload.parts[0].body.data
-  //   }
-  // }
+  "HARI": {
+    "Fwd: iBanking Alerts": {
+      "Date & Time": /Date & Time:\s+\d{2} [A-Z][a-z]{2} \d{2}:\d{2} \(SGT\)/,
+      "Amount": /Amount:\s+SGD\d+.\d{2}/,
+      "From": /From:\s+My Account A\/C ending \d{4}/,
+      "To": /To:\s+[^()]+\s+\(Mobile no\. ending \d{4}\)/,
+      emailBody: message => message.payload.parts[0].body.data
+    },
+    "Fwd: Transaction Alerts": {
+      "Amount": /(?<=received )[\s\S]*(?= on)/,
+      "Date & Time": /(?<=on ).*(?= from)/,
+      "From": /(?<=from )[A-Z\s]+(?= to)/,
+      "To": /(?<=to )[\s\S]*(?= via)/,
+      "Method": /(?<=via )\w*/,
+      "Type": /received|sent/,
+      emailBody: message => message.payload.parts[0].body.data
+    }
+  }
 }
 
 module.exports = extractionRegex;
