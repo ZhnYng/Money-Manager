@@ -17,7 +17,7 @@ CREATE TABLE transactions (
   date_of_transfer DATE NOT NULL,
   time_of_transfer TIME NOT NULL,
   amount VARCHAR(20) NOT NULL,
-  account VARCHAR(100),
+  sender VARCHAR(100),
   category VARCHAR(30),
   transaction_type VARCHAR(20) NOT NULL DEFAULT 'expense', --income or expense
   recorded_with VARCHAR(20) NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE recurring_transactions (
   end_date DATE,
   method VARCHAR(100),
   recipient VARCHAR(100) NOT NULL,
-  account VARCHAR(100),
+  sender VARCHAR(100),
   category VARCHAR(30),
   transaction_type VARCHAR(20) NOT NULL DEFAULT 'expense', --income or expense
   recorded_with VARCHAR(20) NOT NULL DEFAULT 'RECURRING',

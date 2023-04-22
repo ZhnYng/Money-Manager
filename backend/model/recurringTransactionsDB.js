@@ -13,12 +13,12 @@ const recurringTransactionsDB = {
         }
         db.none(
             "INSERT INTO recurring_transactions (email, amount, frequency, start_date, \
-            end_date, method, recipient, account, category, transaction_type, recorded_with) \
+            end_date, method, recipient, sender, category, transaction_type, recorded_with) \
             VALUES (${email}, ${amount}, ${frequency}, ${start_date}, NULLIF(${end_date}, '')::date, ${method}, \
             ${recipient}, ${account}, ${category}, ${transaction_type}, ${recorded_with})\
             ON CONFLICT (email, recipient) DO UPDATE SET amount=${amount}, frequency=${frequency},\
             start_date=${start_date}, end_date=NULLIF(${end_date}, '')::date, method=${method}, recipient=${recipient},\
-            account=${account}, category=${category}, transaction_type=${transaction_type}, \
+            sender=${account}, category=${category}, transaction_type=${transaction_type}, \
             recorded_with=${recorded_with};"
             , transactionDetails
         )
@@ -45,8 +45,8 @@ const recurringTransactionsDB = {
             transaction["date_of_transfer"] = next_date;
             transaction["time_of_transfer"] = '00:00:00';
             return (await db.none(
-                "INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account, category, transaction_type, recorded_with) \
-                VALUES(${userId}, ${method}, ${recipient}, ${date_of_transfer}, ${time_of_transfer}, ${amount}, ${account}, ${category}, ${transaction_type}, ${recorded_with})\
+                "INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, sender, category, transaction_type, recorded_with) \
+                VALUES(${userId}, ${method}, ${recipient}, ${date_of_transfer}, ${time_of_transfer}, ${amount}, ${sender}, ${category}, ${transaction_type}, ${recorded_with})\
                 ON CONFLICT (user_id, recipient, date_of_transfer, time_of_transfer, amount) DO NOTHING;",
                 transaction
             ))

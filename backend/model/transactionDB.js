@@ -18,7 +18,7 @@ const transactionDb = {
                 db.tx(t => {
                     const queries = result.map(l => {
                         l['userId'] = userId;
-                        return t.none("INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account, transaction_type, recorded_with) \
+                        return t.none("INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, sender, transaction_type, recorded_with) \
                             VALUES(${userId}, ${Transaction_method}, ${To}, ${Date_of_Transfer}, ${Time_of_Transfer}, ${Amount}, ${From}, ${Type}, 'GmailAPI')\
                             ON CONFLICT (user_id, recipient, date_of_transfer, time_of_transfer, amount) DO NOTHING;", l);
                     });
@@ -56,7 +56,7 @@ const transactionDb = {
     addTransaction: function(userId, transactionDetails, callback){
         transactionDetails["userId"] = userId;
         db.none(
-            "INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, account, category, transaction_type, recorded_with) \
+            "INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, sender, category, transaction_type, recorded_with) \
             VALUES(${userId}, ${method}, ${recipient}, ${date_of_transfer}, ${time_of_transfer}, ${amount}, ${account}, ${category}, ${transaction_type}, ${recorded_with})\
             ON CONFLICT (user_id, recipient, date_of_transfer, time_of_transfer, amount) DO NOTHING;",
             transactionDetails
