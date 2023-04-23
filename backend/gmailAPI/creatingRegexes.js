@@ -3,7 +3,7 @@ const base64url = require("base64url");
 const extractionRegex = require("./extractionRegex");
 const objectify = require("./objectify");
 let accessToken = 
-  "ya29.a0Ael9sCOl1WbbPt_3rErRbCxg8FXtB-NvlODPYvJgdGpsMBTT-O6mxiSvG2BtIikkfUoiEqI0wcNedooTOUqp5rl38631VCfRFegAKcOW2csUX498lJXcKH3bZfQ0gK7bShY08Hq8drc1de8Q1b9cCMGqOPq3GwaCgYKAY4SARASFQF4udJh1GJCBK7YNzd-zdhD1evBQw0165"
+  "ya29.a0Ael9sCPweHOp-C9I_tAPUJVwyasJ-ixS-_L1rfh55cZDqBVtHOd_SeKSO_ZquDNdXq_akbQiJCww3r5BApia9iMKVpucu3BpMSWk4Jp-3-s5AY2iIxbfwMeZ8G8-n9dwvhYmxyzX6Oxsn34oldRiYTscjG1PxAaCgYKAWgSARASFQF4udJh5hhWNsCbdbZyDCt5jkPPnw0165"
 
 // Step 1: Read through emails to find the EMAIL ID of the sample transaction detail emails
 // Dario DBS sample id: 187212b5eff46beb
@@ -131,8 +131,9 @@ async function step6() {
       }
       console.log(bankName, subject)
       const emailBody = decodeBase64Url(
-        extractionRegex[bankName][subject].emailBody(message)
+        extractionRegex["DBS"]["Transaction Alerts"].emailBody(message)
       );
+      console.log(emailBody)
       for (const regexName of Object.keys(
         extractionRegex[bankName][subject]
       )) {
@@ -195,6 +196,6 @@ for(const key of Object.keys(strings)){
   step7(strings[key], key);
 }
 console.log(outputObject)
-step7()
+step6()
 
 // Step 8: Add this function to objectify.js

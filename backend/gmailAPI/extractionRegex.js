@@ -46,7 +46,7 @@ const extractionRegex = {
       "To": /(?<=to\s)[\s\S]*(?= via)/,
       "Method": /(?<=via )\w*/,
       "Type": /received|sent/,
-      emailBody: message => message.payload.parts[0].body.data
+      emailBody: message => message.payload.parts[1].body.data
     }
   }
 }
