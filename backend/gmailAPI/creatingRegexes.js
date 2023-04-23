@@ -86,6 +86,7 @@ async function step3() {
     })
     .catch((err) => console.log(err));
 }
+step3()
 
 // Step 4: Use find the regex needed to detect the necessary information
 // Amount: /(?<=received ).*(?= on)/
