@@ -41,12 +41,12 @@ const extractionRegex = {
     },
     "Transaction Alerts": {
       "Amount": /(?<=received )[\s\S]*(?= on)/,
-      "Date & Time": /(?<=on ).*(?= from)/,
+      "Date & Time": /(?<=on )([a-zA-Z0-9\s\n\:\(\)]+)(?= from)/,
       "From": /(?<=from )[A-Z\s]+(?= to)/,
-      "To": /(?<=to\s)[\s\S]*(?= via)/,
+      "To": /(?<=to )([a-zA-Z0-9\s\n]+)(?= via)/,
       "Method": /(?<=via )\w*/,
       "Type": /received|sent/,
-      emailBody: message => message.payload.parts[1].body.data
+      emailBody: message => message.payload.parts[0].body.data
     }
   }
 }

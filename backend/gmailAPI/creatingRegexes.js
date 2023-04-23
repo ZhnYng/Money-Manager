@@ -3,16 +3,18 @@ const base64url = require("base64url");
 const extractionRegex = require("./extractionRegex");
 const objectify = require("./objectify");
 let accessToken = 
-  "ya29.a0Ael9sCPweHOp-C9I_tAPUJVwyasJ-ixS-_L1rfh55cZDqBVtHOd_SeKSO_ZquDNdXq_akbQiJCww3r5BApia9iMKVpucu3BpMSWk4Jp-3-s5AY2iIxbfwMeZ8G8-n9dwvhYmxyzX6Oxsn34oldRiYTscjG1PxAaCgYKAWgSARASFQF4udJh5hhWNsCbdbZyDCt5jkPPnw0165"
+  "ya29.a0Ael9sCPhz2hsGHmc5-KJ3TcjwQ710uWkDMjKaDqOXIAyRW1GS4qEYX9rZWlI9vSe7ZT50usXErVOIYU-ZnE7TVmn9-Edkt7vZuEyv_imBEFbiUyh12nqJ82XYDrLqj5nNCGkaoqe0n3LCmllsEJqasmb0_vQZwaCgYKAQsSARASFQF4udJhiTEFmf-E6DD0L29yRcnmEQ0165"
 
 // Step 1: Read through emails to find the EMAIL ID of the sample transaction detail emails
 // Dario DBS sample id: 187212b5eff46beb
-let sampleId = "1871d4e203c35930";
-// let sampleId = "187212b5eff46beb";
+// 187a85ceb7e7372e
+// 187a85afde0bf98c
+// let sampleId = "1871d4e203c35930";
+let sampleId = "187a85afde0bf98c";
 function step1() {
   axios
     .get(
-      "https://gmail.googleapis.com/gmail/v1/users/me/threads?maxResults=90",
+      "https://gmail.googleapis.com/gmail/v1/users/me/threads?maxResults=6",
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       }
@@ -36,7 +38,7 @@ function step1() {
 }
 
 // Step 2: Find the subject of the sample email
-let subject = 'Fwd: Transaction Alerts';
+let subject = 'Transaction Alerts';
 function step2(){
   axios
     .get(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${sampleId}`, {
@@ -105,8 +107,7 @@ function step4() {
           return buffer;
         }
         let data = decodeBase64Url(message.payload.parts[0].body.data);
-        console.log(data)
-        console.log(data.match(/To:\s+[^()]+\s+\(Mobile no\. ending \d{4}\)/)[0])
+        console.log(data.match(/(?<=to )([a-zA-Z0-9\s\n]+)(?= via)/)[0])
       }
     })
     .catch((err) => console.log(err));
@@ -115,7 +116,7 @@ function step4() {
 // Step 5: Add this new information into the extractionRegex.js
 
 // Step 6: Test if the regexes can extract out the required information
-bankName = "HARI";
+bankName = "DBS";
 async function step6() {
   await axios
   .get(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${sampleId}`, {
@@ -129,11 +130,9 @@ async function step6() {
         buffer = buffer.toString("utf-8");
         return buffer;
       }
-      console.log(bankName, subject)
       const emailBody = decodeBase64Url(
-        extractionRegex["DBS"]["Transaction Alerts"].emailBody(message)
+        extractionRegex[bankName][subject].emailBody(message)
       );
-      console.log(emailBody)
       for (const regexName of Object.keys(
         extractionRegex[bankName][subject]
       )) {
@@ -143,6 +142,9 @@ async function step6() {
           information.push(emailBody.match(
             extractionRegex[bankName][subject][regexName]
           )[0])
+          console.log(regexName, emailBody.match(
+            extractionRegex[bankName][subject][regexName]
+          )[0])
         }
       }
       console.log(information)
@@ -150,6 +152,7 @@ async function step6() {
   })
   .catch(err => console.log(err));
 }
+step6()
 
 // Step 7: Create function to convert to an object
 let strings = {
@@ -193,9 +196,8 @@ async function step7 (inputString, regexName){
   }
 }
 for(const key of Object.keys(strings)){
-  step7(strings[key], key);
+  // step7(strings[key], key);
 }
-console.log(outputObject)
-step6()
+// console.log(outputObject)
 
 // Step 8: Add this function to objectify.js
