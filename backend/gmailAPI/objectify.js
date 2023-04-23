@@ -175,7 +175,9 @@ const objectify = {
           outputObject["Time_of_Transfer"] = formattedTime;
           break;
         case "To":
+          console.log(inputString);
           const sentTo = inputString.replace(/\r\n/g, " ");
+          console.log(sentTo);
           outputObject[regexName] = sentTo;
           break;
         case "Type":
