@@ -43,7 +43,7 @@ const extractionRegex = {
       "Amount": /(?<=received )[\s\S]*(?= on)/,
       "Date & Time": /(?<=on ).*(?= from)/,
       "From": /(?<=from )[A-Z\s]+(?= to)/,
-      "To": /(?<=to )[\s\S]*(?= via)/,
+      "To": /(?<=to )[\s\S]*/,
       "Method": /(?<=via )\w*/,
       "Type": /received|sent/,
       emailBody: message => message.payload.parts[0].body.data
