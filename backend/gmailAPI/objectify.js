@@ -20,7 +20,7 @@ const objectify = {
           let timeString = keyValue[1].slice(0, -2) + " " + keyValue[1].slice(-2);
           timeString = timeString.replace(".", ":");
           let time = new Date(`1970-01-01 ${timeString}`);
-          let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
+          let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
           outputObject[regexName] = formattedTime;
           break;
         case "To":
@@ -58,7 +58,7 @@ const objectify = {
           let timeString = keyValue[1].slice(0, -2) + " " + keyValue[1].slice(-2);
           timeString = timeString.replace(".", ":");
           let time = new Date(`1970-01-01 ${timeString}`);
-          let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
+          let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
           outputObject[regexName] = formattedTime;
           break;
         case "To":
@@ -109,7 +109,7 @@ const objectify = {
           let timeString = keyValue[1].slice(0, -2) + " " + keyValue[1].slice(-2);
           timeString = timeString.replace(".", ":");
           let time = new Date(`1970-01-01 ${timeString}`);
-          let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
+          let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
           outputObject[regexName] = formattedTime;
           break;
         default:
@@ -134,7 +134,7 @@ const objectify = {
           outputObject["Date_of_Transfer"] = `${year}-${month}-${date}`;
           
           let time = new Date(`1970-01-01 ${timeDetails[0]}`);
-          let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
+          let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
           outputObject["Time_of_Transfer"] = formattedTime;
           break;
         case "Amount": 
@@ -171,17 +171,15 @@ const objectify = {
           outputObject["Date_of_Transfer"] = `${year}-${month}-${date}`;
           
           let time = new Date(`1970-01-01 ${timeDetails[0]}`);
-          console.log(`time: ${time}`)
-          console.log(`timeDetails[0]: ${timeDetails[0]}`)
           let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
           outputObject["Time_of_Transfer"] = formattedTime;
-          console.log(outputObject["Time_of_Transfer"]) // Error value here: 24:05:00
           break;
         case "To":
           const sentTo = inputString.replace(/\r\n/g, " ");
           outputObject[regexName] = sentTo;
           break;
         case "Type":
+          console.log(inputString)
           if(inputString == "received"){
             outputObject[regexName] = "income";
           }else{
