@@ -171,9 +171,11 @@ const objectify = {
           outputObject["Date_of_Transfer"] = `${year}-${month}-${date}`;
           
           let time = new Date(`1970-01-01 ${timeDetails[0]}`);
+          console.log(`time: ${time}`)
+          console.log(`timeDetails[0]: ${timeDetails[0]}`)
           let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
           outputObject["Time_of_Transfer"] = formattedTime;
-          console.log(outputObject["Time_of_Transfer"])
+          console.log(outputObject["Time_of_Transfer"]) // Error value here: 24:05:00
           break;
         case "To":
           const sentTo = inputString.replace(/\r\n/g, " ");
