@@ -32,13 +32,6 @@ const extractionRegex = {
   },
 
   DBS: {
-    "iBanking Alerts": {
-      "Date & Time": /Date & Time:\s+\d{2} [A-Z][a-z]{2} \d{2}:\d{2} \(SGT\)/,
-      "Amount": /received\sSGD\s\d+(?:.\d+)?/,
-      "To": /to\syour\saccount/,
-      "Recipient": /To:\s+[^()]+\s+\(Mobile no\. ending \d{4}\)/,
-      emailBody: message => message.payload.parts[0].body.data
-    },
     "Transaction Alerts": {
       "Amount": /received\s+([A-Z]{3}\d+(?:\.\d+)?)/,
       "Date & Time": /on\s+(\d{1,2}\s+\w{3}\s+\d{2}:\d{2}\s+\(SGT\))/,

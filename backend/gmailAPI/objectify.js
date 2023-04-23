@@ -10,7 +10,7 @@
 //       const year = Date.getFullYear();
 //       console.log(`${year}-${month}-${date}`)
 //       outputObject = {...outputObject, "Date_of_Transfer": `${year}-${month}-${date}`}
-      
+
 //       // Getting the time
 //       let dbsTimestamp = keyValue[2];
 //       let time = new Date(`1970-01-01 ${dbsTimestamp}`);
@@ -87,8 +87,8 @@ const objectify = {
           const keyValueSplit = keyValue[0]
             .split(/(\s+)/)
             .filter((str) => /\S/.test(str));
-            outputObject[regexName] = keyValueSplit.slice(3, -1).join(" ");
-            break;
+          outputObject[regexName] = keyValueSplit.slice(3, -1).join(" ");
+          break;
         case "Date_of_Transfer":
           const dateString = keyValue[1];
           const dateParts = dateString.split(" "); // split the string into an array of ["21", "Feb", "2023"]
@@ -116,11 +116,11 @@ const objectify = {
   },
 
   DBS: {
-    "iBanking Alerts": function(inputString, regexName){
+    "Transaction Alerts": function (inputString, regexName) {
       const keyValue = inputString.split(/:(.*)/s).map((str) => str.trim());
       const outputObject = {};
-      switch(regexName){
-        case "Date & Time": 
+      switch (regexName) {
+        case "Date & Time":
           const dateDetails = keyValue[1].split(' ').slice(0, 2);
           const timeDetails = keyValue[1].split(' ').slice(2);
           const currDate = new Date;
@@ -128,17 +128,17 @@ const objectify = {
           const month = new Date(Date.parse(dateDetails[1] + ` 1, ${year}`)).getMonth() + 1;
           const date = dateDetails[0];
           outputObject["Date_of_Transfer"] = `${year}-${month}-${date}`;
-          
+
           let time = new Date(`1970-01-01 ${timeDetails[0]}`);
           let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
           outputObject["Time_of_Transfer"] = formattedTime;
           break;
-        case "Amount": 
+        case "Amount":
           // Splits 'SGD10.00' to 'SGD 10.00'
           const spacedStr = keyValue[1].replace(/([a-zA-Z])(\d)/g, '$1 $2');
           outputObject["Amount"] = spacedStr;
           break;
-        case "Account": 
+        case "Account":
           outputObject["Account"] = keyValue[1];
           break;
         case "Recipient":
@@ -147,8 +147,8 @@ const objectify = {
           break;
       }
       return outputObject;
-    },
-    
+    }
+
   }
 }
 

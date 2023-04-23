@@ -24,6 +24,7 @@ const gmailAPI = {
         { headers: { Authorization: `Bearer ${accessToken}` } }
       )
       .then(async (res) => {
+        console.log("res" + res.data)
 
         const allThreads = res.data.threads;
         if (!allThreads || allThreads.length === 0) {
@@ -87,6 +88,7 @@ const gmailAPI = {
                         extractionRegex[bankName][subject][regexName]
                       )
                     ) {
+                    
                       details = {
                         ...details,
                         ...objectify[bankName][subject](
