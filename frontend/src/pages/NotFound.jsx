@@ -12,6 +12,10 @@ const NotFound = () => {
         <a href="/" className="underline">
           homepage
         </a>
+        {" OR "}
+        <a href="/login" className="underline">
+          login
+        </a>
       </p>
     </div>
   );
