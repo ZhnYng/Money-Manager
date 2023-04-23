@@ -15,7 +15,7 @@ const app = express();
 
 app.use(
     cors({
-        origin: ["http://localhost:3000", "https://moneymanagerclient.netlify.app", "https://money-manager-backend-test.onrender.com"]
+        origin: ["http://localhost:3000", "https://moneymanagerclient.netlify.app", "https://moneymanagerclienttest.netlify.app"]
     })
 )
 app.use(express.json())
