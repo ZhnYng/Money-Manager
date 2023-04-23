@@ -96,6 +96,7 @@ const gmailAPI = {
                         extractionRegex[bankName][subject][regexName]
                       )
                     ) {
+                      console.log(emailBody)
                       details = {
                         ...details,
                         ...objectify[bankName][subject](
