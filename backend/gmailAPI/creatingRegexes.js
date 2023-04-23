@@ -3,7 +3,7 @@ const base64url = require("base64url");
 const extractionRegex = require("./extractionRegex");
 const objectify = require("./objectify");
 let accessToken = 
-  "ya29.a0Ael9sCNwX_03OHWDDDoMSwT8TCsM4W017h2DFqrFhYYhey4dpSwH-sAWfzDF8xKNER-YUl-LLJSIsQeORWrEwLxdslvJLqvjtI7LYjBnVw0aik65WVR7utYAz5s5BuhfOrJT3UZxbZmbiX_b6eBVwNbw0poINQaCgYKAV4SARASFQF4udJhzZGa9hKGESc4ru3eLryr7A0165"
+  "ya29.a0Ael9sCNl8ttypotvfbiqnMsQkqTvqgN--UDOeNv_sFfU2eCmRLac-fne0LqRbWHT2DD4sFBG-vyUrhcPYV6xxdedL32hlAWU2bHJkXc6Yz8fXvL-T5JHq7hwTXbIxX8OHMbdh3UxYNTRKDFOx3_oT7kfDZPFfQaCgYKAb4SARASFQF4udJh6AJJ_-h756GmHcCrtVCKiQ0165"
 
 // Step 1: Read through emails to find the EMAIL ID of the sample transaction detail emails
 // Dario DBS sample id: 187212b5eff46beb
@@ -86,7 +86,6 @@ async function step3() {
     })
     .catch((err) => console.log(err));
 }
-step3()
 
 // Step 4: Use find the regex needed to detect the necessary information
 // Amount: /(?<=received ).*(?= on)/
@@ -153,12 +152,11 @@ async function step6() {
   })
   .catch(err => console.log(err));
 }
-step6()
 
 // Step 7: Create function to convert to an object
 let strings = {
   'Amount': 'SGD 7.95',
-  'Date & Time': '22 Mar 18:03 (SGT)',
+  'Date & Time': '22 Mar 24:05 (SGT)',
   'From': 'LIM ZHEN YANG',
   'To': 'your\r\naccount',
   'Method': 'PayNow',
@@ -176,7 +174,7 @@ async function step7 (inputString, regexName){
       const month = new Date(Date.parse(dateDetails[1] + ` 1, ${year}`)).getMonth() + 1;
       const date = dateDetails[0];
       outputObject["Date_of_Transfer"] = `${year}-${month}-${date}`;
-      
+      console.log(timeDetails[0])
       let time = new Date(`1970-01-01 ${timeDetails[0]}`);
       let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
       outputObject["Time_of_Transfer"] = formattedTime;
@@ -197,8 +195,8 @@ async function step7 (inputString, regexName){
   }
 }
 for(const key of Object.keys(strings)){
-  // step7(strings[key], key);
+  step7(strings[key], key);
 }
-// console.log(outputObject)
+console.log(outputObject)
 
 // Step 8: Add this function to objectify.js

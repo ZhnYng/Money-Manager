@@ -136,6 +136,7 @@ const objectify = {
           let time = new Date(`1970-01-01 ${timeDetails[0]}`);
           let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
           outputObject["Time_of_Transfer"] = formattedTime;
+          console.log(outputObject["Time_of_Transfer"])
           break;
         case "Amount": 
           // Splits 'SGD10.00' to 'SGD 10.00'
