@@ -108,7 +108,7 @@ function step4() {
           return buffer;
         }
         let data = decodeBase64Url(message.payload.parts[0].body.data);
-        console.log(data.match(/(?<=To:\s)[a-zA-Z ]+/)[0])
+        console.log(data.match(/(?<=To:\s)[a-zA-Z0-9\(\) ]+/)[0])
       }
     })
     .catch((err) => console.log(err));
