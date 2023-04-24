@@ -87,7 +87,6 @@ const gmailAPI = {
                   const emailBody = decodeBase64Url(
                     extractionRegex[bankName][subject].emailBody(message)
                   );
-                  console.log(emailBody)
                   let details = {};
                   for (const regexName of Object.keys(
                     extractionRegex[bankName][subject]
@@ -112,7 +111,10 @@ const gmailAPI = {
                   details = { Transaction_method: subject, ...details };
                   messages.push(details);
                 } catch {
-                  // console.log(message)
+                  const emailBody = decodeBase64Url(
+                    extractionRegex[bankName][subject].emailBody(message)
+                  );
+                  console.log(emailBody)
                   messages.push(null);
                 }
               }

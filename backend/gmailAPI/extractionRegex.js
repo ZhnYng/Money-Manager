@@ -40,12 +40,13 @@ const extractionRegex = {
       emailBody: message => message.payload.parts[0].body.data
     },
     "Transaction Alerts": {
-      "Amount": /(?<=received )[\s\S]*(?= on)/,
-      "Date & Time": /(?<=on )([a-zA-Z0-9\s\n\:\(\)]+)(?= from)/,
-      "From": /(?<=from )[A-Z\s]+(?= to)/,
-      "To": /(?<=to )([a-zA-Z0-9\s\n]+)(?= via)/,
-      "Method": /(?<=via )\w*/,
-      "Type": /(?<=You have )[a-zA-Z]*/,
+      // "Information type: DBS PayNow|DBS PayLah!"
+      "Amount": /(?<=received )[\s\S]*(?= on)|(?<=Amount:\s)SGD\d+.\d{2}/,
+      "Date & Time": /(?<=on )([a-zA-Z0-9\s\n\:\(\)]+)(?= from)|(?<=Date\s&\sTime:\s)\d{2} [A-Z][a-z]{2} \d{2}:\d{2} \(SGT\)/,
+      "From": /(?<=from )[A-Z\s]+(?= to)|(?<=From:\s)PayLah!\sWallet\s\(Mobile\sending\s\d{4}\)/,
+      "To": /(?<=to )([a-zA-Z0-9\s\n]+)(?= via)|(?<=To:\s)[a-zA-Z ]+/,
+      "Method": /(?<=via )\w*|(?<=From:\s)PayLah!/,
+      "Type": /(?<=You have )[a-zA-Z]*|(?<=via )\w*|(?<=From:\s)PayLah!/,
       emailBody: message => message.payload.parts[0].body.data
     }
   }

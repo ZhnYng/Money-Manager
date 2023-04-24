@@ -3,18 +3,19 @@ const base64url = require("base64url");
 const extractionRegex = require("./extractionRegex");
 const objectify = require("./objectify");
 let accessToken = 
-  "ya29.a0Ael9sCNl8ttypotvfbiqnMsQkqTvqgN--UDOeNv_sFfU2eCmRLac-fne0LqRbWHT2DD4sFBG-vyUrhcPYV6xxdedL32hlAWU2bHJkXc6Yz8fXvL-T5JHq7hwTXbIxX8OHMbdh3UxYNTRKDFOx3_oT7kfDZPFfQaCgYKAb4SARASFQF4udJh6AJJ_-h756GmHcCrtVCKiQ0165"
+  "ya29.a0Ael9sCP5v4_EdPhBItBVws-T3nv5bf08W7LU6uZW2E_QpnF91y81LQH2Q-283__m4tVjt-XETE8sOcxlRMg4LMCsrLTsGOimmxq5Z9A3KaqlxGoBzjCFg4qihLhHjiRN99Y1HAeOip5Lfi7Ay8xaXa-U338XIgaCgYKAT0SARASFQF4udJhIS0UwhvpNt3Gj2k8dzEYdA0165"
 
 // Step 1: Read through emails to find the EMAIL ID of the sample transaction detail emails
 // Dario DBS sample id: 187212b5eff46beb
+// Tim DBS sample id: 187b1d37c062edf0
 // 187a85ceb7e7372e
 // 187a85afde0bf98c
 // let sampleId = "1871d4e203c35930";
-let sampleId = "187a85afde0bf98c";
+let sampleId = "187b1d37c062edf0";
 function step1() {
   axios
     .get(
-      "https://gmail.googleapis.com/gmail/v1/users/me/threads?maxResults=6",
+      "https://gmail.googleapis.com/gmail/v1/users/me/threads?maxResults=1",
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       }
@@ -142,9 +143,6 @@ async function step6() {
           information.push(emailBody.match(
             extractionRegex[bankName][subject][regexName]
           )[0])
-          console.log(regexName, emailBody.match(
-            extractionRegex[bankName][subject][regexName]
-          )[0])
         }
       }
       console.log(information)
@@ -155,12 +153,12 @@ async function step6() {
 
 // Step 7: Create function to convert to an object
 let strings = {
-  'Amount': 'SGD 7.95',
-  'Date & Time': '22 Mar 24:05 (SGT)',
-  'From': 'LIM ZHEN YANG',
-  'To': 'your\r\naccount',
-  'Method': 'PayNow',
-  'Type': 'received'
+  'Amount': 'SGD3.20',
+  'Date & Time': '24 Apr 09:09 (SGT)',
+  'From': 'PayLah! Wallet (Mobile ending 1956)',
+  'To': 'CANOPY COFFEE CLUB',
+  'Method': 'PayLah!',
+  'Type': 'PayLah!'
 }
 let outputObject = {};
 async function step7 (inputString, regexName){
@@ -174,9 +172,8 @@ async function step7 (inputString, regexName){
       const month = new Date(Date.parse(dateDetails[1] + ` 1, ${year}`)).getMonth() + 1;
       const date = dateDetails[0];
       outputObject["Date_of_Transfer"] = `${year}-${month}-${date}`;
-      console.log(timeDetails[0])
       let time = new Date(`1970-01-01 ${timeDetails[0]}`);
-      let formattedTime = time.toLocaleTimeString("en-UK", { hour12: false });
+      let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
       outputObject["Time_of_Transfer"] = formattedTime;
       break;
     case "To":
@@ -184,7 +181,7 @@ async function step7 (inputString, regexName){
       outputObject[regexName] = sentTo;
       break;
     case "Type":
-      if(inputString == "received"){
+      if(inputString.includes(["received", "PayLah!"])){
         outputObject[regexName] = "income";
       }else{
         outputObject[regexName] = "expense";
