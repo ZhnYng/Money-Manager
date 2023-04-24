@@ -108,11 +108,12 @@ function step4() {
           return buffer;
         }
         let data = decodeBase64Url(message.payload.parts[0].body.data);
-        console.log(data.match(/(?<=to )([a-zA-Z0-9\s\n]+)(?= via)/)[0])
+        console.log(data.match(/(?<=To:\s)[a-zA-Z ]+/)[0])
       }
     })
     .catch((err) => console.log(err));
 }
+step4()
 
 // Step 5: Add this new information into the extractionRegex.js
 
