@@ -107,9 +107,9 @@ const gmailAPI = {
                           subject
                         ),
                       };
-                      console.log(details)
                     }
                   }
+                  console.log(details)
                   details = { Transaction_method: subject, ...details };
                   messages.push(details);
                 } catch {
