@@ -15,21 +15,16 @@ const transactionDb = {
             }else if(err) {
                 return callback(err, null);
             }else{
-                db.none(t => {
-                    const queries = result.map(l => {
-                        l['userId'] = userId;
-                        return t.none("INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, sender, transaction_type, recorded_with) \
-                            VALUES(${userId}, ${Transaction_method}, ${To}, ${Date_of_Transfer}, ${Time_of_Transfer}, ${Amount}, ${From}, ${Type}, 'GmailAPI')\
-                            ON CONFLICT (user_id, recipient, date_of_transfer, time_of_transfer, amount) DO NOTHING;", l);
-                    });
-                    return t.batch(queries);
-                })
-                    .then(data => {
-                        if(data.every(element => element === null)) return callback(null, "Gmail transaction update successful");
-                    })
-                    .catch(error => {
-                        return callback(error, null);
-                    });
+                for(l of result){
+                    l['userId'] = userId;
+                    db.none(
+                        "INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, sender, transaction_type, recorded_with) \
+                        VALUES(${userId}, ${Transaction_method}, ${To}, ${Date_of_Transfer}, ${Time_of_Transfer}, ${Amount}, ${From}, ${Type}, 'GmailAPI')\
+                        ON CONFLICT (user_id, recipient, date_of_transfer, time_of_transfer, amount) DO NOTHING;", l
+                    )
+                        .then(() => callback(null, "Gmail transaction update successful"))
+                        .catch(err => callback(err, null));
+                }
             }
         })
     },
