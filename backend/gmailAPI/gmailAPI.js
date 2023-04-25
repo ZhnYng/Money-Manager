@@ -83,42 +83,44 @@ const gmailAPI = {
                 }
                 
                 // Extraction layer
-                try {
-                  const emailBody = decodeBase64Url(
-                    extractionRegex[bankName][subject].emailBody(message)
-                  );
-                  console.log(emailBody)
-                  let details = {};
-                  for (const regexName of Object.keys(
-                    extractionRegex[bankName][subject]
-                  )) {
-                    if (
-                      emailBody.match(
-                        extractionRegex[bankName][subject][regexName]
-                      )
-                    ) {
-                      details = {
-                        ...details,
-                        ...objectify[bankName][subject](
-                          emailBody.match(
-                            extractionRegex[bankName][subject][regexName]
-                          )[0],
-                          regexName,
-                          subject
-                        ),
-                      };
+                if(extractionRegex[bankName][subject]){
+                  try {
+                    const emailBody = decodeBase64Url(
+                      extractionRegex[bankName][subject].emailBody(message)
+                    );
+                    console.log(emailBody)
+                    let details = {};
+                    for (const regexName of Object.keys(
+                      extractionRegex[bankName][subject]
+                    )) {
+                      if (
+                        emailBody.match(
+                          extractionRegex[bankName][subject][regexName]
+                        )
+                      ) {
+                        details = {
+                          ...details,
+                          ...objectify[bankName][subject](
+                            emailBody.match(
+                              extractionRegex[bankName][subject][regexName]
+                            )[0],
+                            regexName,
+                            subject
+                          ),
+                        };
+                      }
                     }
+                    console.log(details)
+                    details = { Transaction_method: subject, ...details };
+                    messages.push(details);
+                  } catch {
+                    console.log(bankName, subject)
+                    const emailBody = decodeBase64Url(
+                      extractionRegex[bankName][subject].emailBody(message)
+                    );
+                    console.log(emailBody)
+                    messages.push(null);
                   }
-                  console.log(details)
-                  details = { Transaction_method: subject, ...details };
-                  messages.push(details);
-                } catch {
-                  console.log(bankName, subject)
-                  const emailBody = decodeBase64Url(
-                    extractionRegex[bankName][subject].emailBody(message)
-                  );
-                  console.log(emailBody)
-                  messages.push(null);
                 }
               }
             }
