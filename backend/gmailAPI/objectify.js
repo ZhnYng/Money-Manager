@@ -119,7 +119,7 @@ const objectify = {
     },
   },
 
-  "Lim Zhen Yang": {
+  "LIM ZHEN YANG": {
     "iBanking Alerts": function(inputString, regexName){
       const keyValue = inputString.split(/:(.*)/s).map((str) => str.trim());
       const outputObject = {};
