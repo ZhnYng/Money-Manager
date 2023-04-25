@@ -15,7 +15,7 @@ const transactionDb = {
             }else if(err) {
                 return callback(err, null);
             }else{
-                db.tx(t => {
+                db.none(t => {
                     const queries = result.map(l => {
                         l['userId'] = userId;
                         return t.none("INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, sender, transaction_type, recorded_with) \
