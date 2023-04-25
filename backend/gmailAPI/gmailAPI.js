@@ -113,7 +113,7 @@ const gmailAPI = {
                   details = { Transaction_method: subject, ...details };
                   messages.push(details);
                 } catch {
-                  console.log(bankName)
+                  console.log(bankName, subject)
                   const emailBody = decodeBase64Url(
                     extractionRegex[bankName][subject].emailBody(message)
                   );
