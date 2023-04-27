@@ -22,8 +22,8 @@ const transactionDb = {
                         VALUES(${userId}, ${Transaction_method}, ${To}, ${Date_of_Transfer}, ${Time_of_Transfer}, ${Amount}, ${From}, ${Type}, 'GmailAPI')\
                         ON CONFLICT (user_id, recipient, date_of_transfer, time_of_transfer, amount) DO NOTHING;", l
                     )
-                        .then(res => callback(null, "Successful"))
-                        .catch(err => callback(err, null));
+                        .then(res => "Successful")
+                        .catch(err => err);
                 });
                 if(result.every(res => res === "Successful")){
                     return callback(null, "Gmail transaction update successful");
