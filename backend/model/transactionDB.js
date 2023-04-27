@@ -9,7 +9,7 @@ pgp.pg.types.setTypeParser(1082, function (value) {
 
 const transactionDb = {
     gmailUpdateTransactions: async function(userId, email, accessToken, callback){
-        await gmailAPI.getAllEmailMessages(accessToken, (err, result) => {
+        await gmailAPI.getAllEmailMessages(accessToken, async (err, result) => {
             if(err?.response?.data.error.code === 401){
                 return callback("Invalid access token", null);
             }else if(err) {
@@ -18,7 +18,7 @@ const transactionDb = {
                 let updateResult = [];
                 for(const transactionDetails of result){
                     transactionDetails['userId'] = userId;
-                    db.none(
+                    await db.none(
                         "INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, sender, transaction_type, recorded_with) \
                         VALUES(${userId}, ${Transaction_method}, ${To}, ${Date_of_Transfer}, ${Time_of_Transfer}, ${Amount}, ${From}, ${Type}, 'GmailAPI')\
                         ON CONFLICT (user_id, recipient, date_of_transfer, time_of_transfer, amount) DO NOTHING;", transactionDetails
