@@ -15,17 +15,19 @@ const transactionDb = {
             }else if(err) {
                 return callback(err, null);
             }else{
-                let updateResult = result.map(async l => {
-                    l['userId'] = userId;
-                    await db.none(
+                let updateResult = [];
+                for(const transactionDetails of result){
+                    transactionDetails['userId'] = userId;
+                    db.none(
                         "INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, sender, transaction_type, recorded_with) \
                         VALUES(${userId}, ${Transaction_method}, ${To}, ${Date_of_Transfer}, ${Time_of_Transfer}, ${Amount}, ${From}, ${Type}, 'GmailAPI')\
-                        ON CONFLICT (user_id, recipient, date_of_transfer, time_of_transfer, amount) DO NOTHING;", l
+                        ON CONFLICT (user_id, recipient, date_of_transfer, time_of_transfer, amount) DO NOTHING;", transactionDetails
                     )
-                        .then(res => "Successful")
-                        .catch(err => err);
-                });
-                if(updateResult.every(res => res === "Successful")){
+                        .then(res => updateResult.push("Success"))
+                        .catch(err => updateResult.push(err));
+                }
+                console.log(updateResult)
+                if(updateResult.every(res => res === "Success")){
                     return callback(null, "Gmail transaction update successful");
                 }else{
                     console.log(updateResult)
