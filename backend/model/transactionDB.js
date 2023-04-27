@@ -15,7 +15,7 @@ const transactionDb = {
             }else if(err) {
                 return callback(err, null);
             }else{
-                result.map(l => {
+                let updateResult = result.map(l => {
                     l['userId'] = userId;
                     db.none(
                         "INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, sender, transaction_type, recorded_with) \
@@ -25,10 +25,10 @@ const transactionDb = {
                         .then(res => "Successful")
                         .catch(err => err);
                 });
-                if(result.every(res => res === "Successful")){
+                if(updateResult.every(res => res === "Successful")){
                     return callback(null, "Gmail transaction update successful");
                 }else{
-                    console.log(result)
+                    console.log(updateResult)
                     return callback("Failed", null);
                 }
             }
