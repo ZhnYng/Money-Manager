@@ -15,9 +15,9 @@ const transactionDb = {
             }else if(err) {
                 return callback(err, null);
             }else{
-                let updateResult = result.map(l => {
+                let updateResult = result.map(async l => {
                     l['userId'] = userId;
-                    return db.none(
+                    await db.none(
                         "INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, sender, transaction_type, recorded_with) \
                         VALUES(${userId}, ${Transaction_method}, ${To}, ${Date_of_Transfer}, ${Time_of_Transfer}, ${Amount}, ${From}, ${Type}, 'GmailAPI')\
                         ON CONFLICT (user_id, recipient, date_of_transfer, time_of_transfer, amount) DO NOTHING;", l
