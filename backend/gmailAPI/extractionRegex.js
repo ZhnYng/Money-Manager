@@ -31,7 +31,7 @@ const extractionRegex = {
     },
   },
 
-  "DBS": {
+  "LIM ZHEN YANG": {
     "iBanking Alerts": {
       "Date & Time": /Date & Time:\s+\d{2} [A-Z][a-z]{2} \d{2}:\d{2} \(SGT\)/,
       "Amount": /Amount:\s+SGD\d+.\d{2}/,
