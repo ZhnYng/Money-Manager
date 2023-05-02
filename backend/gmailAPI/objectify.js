@@ -179,6 +179,7 @@ const objectify = {
           outputObject[regexName] = sentTo;
           break;
         case "Type":
+          console.log(inputString)
           if(inputString.includes(["received", "PayLah!"])){
             outputObject[regexName] = "income";
           }else{
