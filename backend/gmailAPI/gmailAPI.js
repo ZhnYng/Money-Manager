@@ -81,7 +81,7 @@ const gmailAPI = {
                 }catch{
                   console.log(message);
                 }
-                
+                console.log(subject, bankName)
                 // Extraction layer
                 if(extractionRegex[bankName][subject]){
                   try {
