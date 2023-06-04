@@ -2,10 +2,10 @@ const { default: axios } = require("axios");
 const base64url = require("base64url");
 const extractionRegex = require("./extractionRegex");
 let accessToken = 
-  "ya29.a0Ael9sCO7zPpbmJHIZXWIICGCk1lwDkooJ52ooAoVzYIEWpK2n1mJLWuQoN130q2auIShgZxynZwt-FNOa4KHQlgCbPbDDI9YPFzYpVodL-E2oQEJyXK82rxM2_DXUkm28oiBLgXbYa1dXNqzgTJbv0s4S_dgRQaCgYKAQoSARASFQF4udJhYP3VhNJZ31oYT3_s2aYEbQ0165"
+  "ya29.a0AWY7CkmF5WHjBK7RJGPz_8QDvRAkavqiOgsEMc7chkMp1Bo-31fqRzvPNqq_zbDCq3GzN4bTjpd20Sj7VGlaFzDUjmP4hdSXsrB7XGR_NEjFZ9hV1K8bzzJO8PYqLrDBA6Y82c_W9WmKCobHiirgaGHA7nNDvQaCgYKAa0SARASFQG1tDrp8sJiVwhpb0vOYfpTLMByBA0165"
 // Step 1: Read through emails to find the EMAIL ID of the sample transaction detail emails
 // Dario DBS sample id: 187212b5eff46beb
-let sampleId = "1871d4e203c35930";
+let sampleId = "187fadd8148be729";
 function step1() {
   axios
     .get(
@@ -59,7 +59,7 @@ function step2(){
     })
     .catch((err) => console.log(err));
 }
-step2()
+
 // Step 3: Isolate this sample email and identify the location of its main contents
 let location = 'message.payload.parts[0].body.data'
 let emails = [];
@@ -76,7 +76,7 @@ async function step3() {
           buffer = buffer.toString("utf-8");
           return buffer;
         }
-        console.log(decodeBase64Url(message.payload.parts[0].body.data));
+        console.log(decodeBase64Url(message.payload.parts[0].parts[0].body.data));
       }
     })
     .catch((err) => console.log(err));
@@ -101,16 +101,16 @@ function step4() {
           buffer = buffer.toString("utf-8");
           return buffer;
         }
-        let data = decodeBase64Url(message.payload.parts[0].body.data);
+        let data = decodeBase64Url(message.payload.parts[0].parts[0].body.data);
         // data = data.replace(/[\r\n]/gm, ' ');
         // console.log(data.includes("your  account"))
         // console.log(data.match(/(?<=to )\w(?= via)/)[0])
-        console.log(data.match(/received|sent/)[0])
+        console.log(data.match(/sent money to\s+([\w\.\'\"]+\s+)+\busing/)[0])
       }
     })
     .catch((err) => console.log(err));
 }
-
+step4()
 // Step 5: Add this new information into the extractionRegex.js
 
 // Step 6: Test if the regexes can extract out the required information
@@ -191,6 +191,6 @@ async function step7 (inputString, regexName){
 for(const key of Object.keys(strings)){
   step7(strings[key], key);
 }
-console.log(outputObject)
+// console.log(outputObject)
 
 // Step 8: Add this function to objectify.js
