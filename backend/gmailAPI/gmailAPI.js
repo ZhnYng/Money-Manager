@@ -110,7 +110,10 @@ const gmailAPI = {
                   }
                   details = { Transaction_method: subject, ...details };
                   messages.push(details);
-                  console.log(details)
+                  if(!Object.keys(details).includes('Recipient')){
+                    console.log(details)
+                    console.log(message)
+                  }
                 } catch {
                   // console.log(message)
                   messages.push(null);
