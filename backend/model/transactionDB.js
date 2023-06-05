@@ -25,11 +25,11 @@ const transactionDb = {
                     )
                         .then(res => {
                             updateResult.push("Success")
-                            console.log(`${transactionDetails.id}: Success`)
+                            console.log(`${transactionDetails.emailId}: Success`)
                         })
                         .catch(err => {
                             updateResult.push(err)
-                            console.log(`${transactionDetails.id}: Failed`)
+                            console.log(`${transactionDetails.emailId}: Failed`)
                         });
                 }
                 if(updateResult.every(res => res === "Success")){

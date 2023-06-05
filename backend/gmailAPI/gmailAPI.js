@@ -81,7 +81,7 @@ const gmailAPI = {
                 }catch{
                   console.log(`Subject not found in:\n${message}`);
                 }
-                console.log(`Email subject: ${subject}\nEmail bank name: ${bankName}`)
+                console.log({"Email subject": subject, "Email bank name": bankName})
                 // Extraction layer
                 if(extractionRegex[bankName][subject]){
                   try {
@@ -109,6 +109,7 @@ const gmailAPI = {
                         };
                       }
                     }
+                    console.log(message)
                     details = { emailId: message.id, Transaction_method: subject, ...details };
                     messages.push(details);
                   } catch {
