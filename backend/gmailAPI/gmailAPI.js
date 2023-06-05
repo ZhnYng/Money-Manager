@@ -56,7 +56,7 @@ const gmailAPI = {
                     }
                   }
                 }catch{
-                  console.log(message)
+                  console.log(`Bank name not found in:\n${message}`)
                 }
                 if (!bankName) break;
 
@@ -79,9 +79,9 @@ const gmailAPI = {
                     }
                   }
                 }catch{
-                  console.log(message);
+                  console.log(`Subject not found in:\n${message}`);
                 }
-                console.log(subject, bankName)
+                console.log(`Email subject: ${subject}\nEmail bank name: ${bankName}`)
                 // Extraction layer
                 if(extractionRegex[bankName][subject]){
                   try {
@@ -109,7 +109,7 @@ const gmailAPI = {
                         };
                       }
                     }
-                    details = { Transaction_method: subject, ...details };
+                    details = { emailId: message.id, Transaction_method: subject, ...details };
                     messages.push(details);
                   } catch {
                     console.log(bankName, subject)
