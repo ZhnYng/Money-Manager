@@ -5,6 +5,8 @@ var local_render_db_key = process.env.LOCAL_RENDER;
 var local_db_key = process.env.LOCAL_KEY;
 var neon_db_key = process.env.NEON_DB_KEY;
 
-const db = pgp(neon_db_key);
+var NEON_DB_DBS_BRANCH_KEY = process.env.NEON_DB_DBS_BRANCH_KEY;
+
+const db = pgp(NEON_DB_DBS_BRANCH_KEY);
 
 module.exports = db;

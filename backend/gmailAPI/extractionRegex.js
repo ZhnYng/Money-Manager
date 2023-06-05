@@ -6,46 +6,47 @@
 const extractionRegex = {
   OCBC: {
     "Successful NETS Payment": {
-      "Recipient": /Merchant Name\s+:\s+([^\n]+)\s/,
+      "To": /Merchant Name\s+:\s+([^\n]+)\s/,
       "Date_of_Transfer": /Date of Transfer\s+:\s+(\d+\s\w+\s\d{4})\s/,
       "Time_of_Transfer": /Time of Transfer\s+:\s+(\d+:\d+\w+)\s/,
       "Amount": /Amount\s+:\s+(SGD\s[\d.]+)\s/,
-      "Account": /From your account\s+:\s+([^\n]+)\s/,
+      "From": /From your account\s+:\s+([^\n]+)\s/,
       emailBody: message => message.payload.body.data
     },
     "You have sent money via OCBC Pay Anyone": {
-      "Recipient": /PayNow name\s+:\s+([^\n]+)\s/,
+      "To": /PayNow name\s+:\s+([^\n]+)\s/,
       "Date_of_Transfer": /Date of transfer\s+:\s+(\d+\s\w+\s\d{4})\s/,
       "Time_of_Transfer": /Time of transfer\s+:\s+(\d+.\d+\w+)\s/,
       "Amount": /Amount\s+:\s+(SGD\s[\d.]+)\s/,
-      "Account": /From your account\s+:\s+([^\n]+)\s/,
+      "From": /From your account\s+:\s+([^\n]+)\s/,
       emailBody: message => message.payload.body.data
     },
     "You have sent money via PayNow": {
-      "Recipient": /sent money to\s+([\w\.\'\"]+\s+)+\busing/,
+      "To": /sent money to\s+([\w\.\'\"]+\s+)+\busing/,
       "Date_of_Transfer": /Date of Transfer\s+:\s+(\d+\s\w+\s\d{4})\s/,
       "Time_of_Transfer": /Time of Transfer\s+:\s+(\d+:\d+\w+)\s/,
       "Amount": /Amount\s+:\s+(SGD\s[\d.]+)\s/,
-      "Account": /From your account\s+:\s+([^\n]+)\s/,
+      "From": /From your account\s+:\s+([^\n]+)\s/,
       emailBody: message => message.payload.parts[0].parts[0].body.data
     },
   },
 
-  // DBS: {
+  // "DBS": {
   //   "iBanking Alerts": {
   //     "Date & Time": /Date & Time:\s+\d{2} [A-Z][a-z]{2} \d{2}:\d{2} \(SGT\)/,
-  //     "Amount": /received\sSGD\s\d+(?:.\d+)?/,
-  //     "To": /to\syour\saccount/,
-  //     "Recipient": /To:\s+[^()]+\s+\(Mobile no\. ending \d{4}\)/,
+  //     "Amount": /Amount:\s+SGD\d+.\d{2}/,
+  //     "From": /From:\s+My Account A\/C ending \d{4}/,
+  //     "To": /To:\s+[^()]+\s+\(Mobile no\. ending \d{4}\)/,
   //     emailBody: message => message.payload.parts[0].body.data
   //   },
-  //   "Fwd: Transaction Alerts": {
-  //     "Amount": /(?<=received )[\s\S]*(?= on)/,
-  //     "Date & Time": /(?<=on ).*(?= from)/,
-  //     "From": /(?<=from )[A-Z\s]+(?= to)/,
-  //     "To": /(?<=to )[\s\S]*(?= via)/,
-  //     "Method": /(?<=via )\w*/,
-  //     "Type": /received|sent/,
+  //   "Transaction Alerts": {
+  //     // "Information type: DBS PayNow|DBS PayLah!"
+  //     "Amount": /(?<=received )[\s\S]*(?= on)|(?<=Amount:\s)SGD\d+.\d{2}/,
+  //     "Date & Time": /(?<=on )([a-zA-Z0-9\s\n\:\(\)]+)(?= from)|(?<=Date\s&\sTime:\s)\d{2} [A-Z][a-z]{2} \d{2}:\d{2} \(SGT\)/,
+  //     "From": /(?<=from )[A-Z\s]+(?= to)|(?<=From:\s)PayLah!\sWallet\s\(Mobile\sending\s\d{4}\)/,
+  //     "To": /(?<=to )([a-zA-Z0-9\s\n]+)(?= via)|(?<=To:\s)[a-zA-Z0-9\(\) ]+/,
+  //     "Method": /(?<=via )\w*|(?<=From:\s)PayLah!/,
+  //     "Type": /(?<=You have )[a-zA-Z]*|(?<=via )\w*|(?<=From:\s)PayLah!/,
   //     emailBody: message => message.payload.parts[0].body.data
   //   }
   // }
