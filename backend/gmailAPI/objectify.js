@@ -157,6 +157,7 @@ const objectify = {
       }
       return outputObject;
     },
+
     "Transaction Alerts": function(detailsArray) {
       const outputObject = {};
       for(const detail in detailsArray){
@@ -178,6 +179,7 @@ const objectify = {
             outputObject["Time_of_Transfer"] = formattedTime;
             break;
           case "To":
+            console.log(detail)
             outputObject[key] = value;
             break;
           case "From":

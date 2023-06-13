@@ -5,7 +5,7 @@ const objectify = require("./objectify");
 const cheerio = require('cheerio');
 // Saved regex page https://regex101.com/r/r57s02/1
 let accessToken =
-  "ya29.a0AWY7Ckn0kG3hsD_Usn32Xay0wXrjnmb55nR3xrNpC8uxB1iuGmkSXSFn25Ww5EYsb2o-bnUqVV85DFTZgIlfI6VvPm_7kJV9sHSqZgOXqtaNgnCQgOikkbsgUSuwLF9EYEVtU2O-LALNwnU5uBtScv9nqyPNVQaCgYKAbcSARASFQG1tDrpKcoOIH1PpmaawHOZrE-CeA0165"
+  "ya29.a0AWY7CkmlnGMkNJYfCA6_qug_1OfQa1KrM4-JiV-KG7vrnJlEH7BSNG5mZQEzJWxQbsl8qBLafOTa9Sv9OdR5b1DLyaz40aiWSuw-rFH-lvoJQRE6PEYuIybl8Dd33OnbtrMupc4ewA7exqUhndg6hJ5QMY0AagaCgYKAbISARASFQG1tDrpKKHHEG2hK6bfe-dZNrXSrQ0165"
 
 // Step 1: Read through emails to find the EMAIL ID of the sample transaction detail emails
 // Dario DBS sample id: 187212b5eff46beb
@@ -67,7 +67,6 @@ function step2(){
     })
     .catch((err) => console.log(err));
 }
-step2()
 
 // Step 3: Isolate this sample email and identify the location of its main contents
 let location = 'message.payload.parts[1].body.data'
@@ -106,6 +105,7 @@ async function parseHTML(){
     console.log(`ERROR: ${err}`)
   })
 }
+parseHTML()
 
 // Step 4: Use find the regex needed to detect the necessary information
 // Amount: /\bSGD\d+\.\d+\b/
