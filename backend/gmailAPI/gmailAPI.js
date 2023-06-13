@@ -81,7 +81,7 @@ const gmailAPI = {
                 }catch{
                   console.log(`Subject not found in:\n${message}`);
                 }
-                console.log({"Email subject": subject, "Email bank name": bankName})
+
                 // Extraction layer
                 if(extractionRegex[bankName][subject]){
                   try {
@@ -107,22 +107,25 @@ const gmailAPI = {
                             subject
                           ),
                         };
-                      }else{
-                        details = objectify[bankName][subject](
-                          extractionRegex[bankName][subject].extractionFunction(emailBody)
-                        )
-                        console.log(details)
                       }
                     }
                     details = { emailId: message.id, Transaction_method: subject, ...details };
                     messages.push(details);
                   } catch {
-                    console.log(bankName, subject)
-                    const emailBody = decodeBase64Url(
-                      extractionRegex[bankName][subject].emailBody(message)
-                    );
-                    console.log(emailBody)
-                    messages.push(null);
+                    try {
+                      console.log({"Email subject": subject, "Email bank name": bankName})
+                      details = objectify[bankName][subject](
+                        extractionRegex[bankName][subject].extractionFunction(emailBody)
+                      )
+                      console.log(details)
+                    }catch{
+                      console.log({"Email subject": subject, "Email bank name": bankName})
+                      const emailBody = decodeBase64Url(
+                        extractionRegex[bankName][subject].emailBody(message)
+                      );
+                      console.log(emailBody)
+                      messages.push(null);
+                    }
                   }
                 }
               }
