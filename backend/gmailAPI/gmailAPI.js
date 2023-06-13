@@ -107,6 +107,11 @@ const gmailAPI = {
                             subject
                           ),
                         };
+                      }else{
+                        details = objectify[bankName][subject](
+                          extractionRegex[bankName][subject].extractionFunction(emailBody)
+                        )
+                        console.log(details)
                       }
                     }
                     details = { emailId: message.id, Transaction_method: subject, ...details };

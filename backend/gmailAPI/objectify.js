@@ -157,38 +157,46 @@ const objectify = {
       }
       return outputObject;
     },
-    "Transaction Alerts": function(inputString, regexName) {
+    "Transaction Alerts": function(detailsArray) {
       const outputObject = {};
-      switch (regexName) {
-        case "Date & Time": 
-          const keyValue = inputString.split(' ');
-          const dateDetails = keyValue.slice(0, 2);
-          const timeDetails = keyValue.slice(2, 4);
-          const currDate = new Date;
-          const year = currDate.getFullYear();
-          const month = new Date(Date.parse(dateDetails[1] + ` 1, ${year}`)).getMonth() + 1;
-          const date = dateDetails[0];
-          outputObject["Date_of_Transfer"] = `${year}-${month}-${date}`;
-          
-          let time = new Date(`1970-01-01 ${timeDetails[0]}`);
-          let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
-          outputObject["Time_of_Transfer"] = formattedTime;
-          break;
-        case "To":
-          const sentTo = inputString.replace(/\r\n/g, " ");
-          outputObject[regexName] = sentTo;
-          break;
-        case "Type":
-          console.log(inputString)
-          if(inputString.includes(["received", "PayLah!"])){
-            outputObject[regexName] = "income";
-          }else{
-            outputObject[regexName] = "expense";
-          }
-          break;
-        default:
-          outputObject[regexName] = inputString;
-          break;
+      for(const detail in detailsArray){
+        key = detail.split(':')[0]
+        value = detail.split(':')[1]
+        switch (key) {
+          case "Date & Time":
+            const keyValue = value.split(' ');
+            const dateDetails = keyValue.slice(0, 2);
+            const timeDetails = keyValue.slice(2, 4);
+            const currDate = new Date;
+            const year = currDate.getFullYear();
+            const month = new Date(Date.parse(dateDetails[1] + ` 1, ${year}`)).getMonth() + 1;
+            const date = dateDetails[0];
+            outputObject["Date_of_Transfer"] = `${year}-${month}-${date}`;
+            
+            let time = new Date(`1970-01-01 ${timeDetails[0]}`);
+            let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
+            outputObject["Time_of_Transfer"] = formattedTime;
+            break;
+          case "To":
+            outputObject[key] = value;
+            break;
+          case "From":
+            outputObject[key] = value;
+            if(value.includes('PayLah! Wallet')){
+              outputObject['Type'] = 'expense'
+            }else{
+              outputObject['Type'] = 'income'
+            }
+            break;
+          case "Amount": 
+            // Splits 'SGD10.00' to 'SGD 10.00'
+            const spacedStr = value.replace(/([a-zA-Z])(\d)/g, '$1 $2');
+            outputObject["Amount"] = spacedStr;
+            break;
+          default:
+            outputObject[key] = value;
+            break;
+        }
       }
       return outputObject;
     }

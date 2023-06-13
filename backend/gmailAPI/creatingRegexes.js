@@ -2,9 +2,10 @@ const { default: axios } = require("axios");
 const base64url = require("base64url");
 const extractionRegex = require("./extractionRegex");
 const objectify = require("./objectify");
+const cheerio = require('cheerio');
 // Saved regex page https://regex101.com/r/r57s02/1
-let accessToken = 
-  "ya29.a0Ael9sCP5v4_EdPhBItBVws-T3nv5bf08W7LU6uZW2E_QpnF91y81LQH2Q-283__m4tVjt-XETE8sOcxlRMg4LMCsrLTsGOimmxq5Z9A3KaqlxGoBzjCFg4qihLhHjiRN99Y1HAeOip5Lfi7Ay8xaXa-U338XIgaCgYKAT0SARASFQF4udJhIS0UwhvpNt3Gj2k8dzEYdA0165"
+let accessToken =
+  "ya29.a0AWY7CkmO5z9VO85o9SJfn9u-0WlsYL924_RVKrY6XKdBMCbhujhKLZjFxjiy13X-E-z4CiN9rCC0KX93paVv57QjRqPq8ZLaH9fjkkQB6txjJ67b0d0y2HDvtVZeYsJvvW1nwe_FBWoqfhVc_qlpOG8ppkEAaQaCgYKAeUSARASFQG1tDrpE1v-uq2asusxrso9x4egCg0165"
 
 // Step 1: Read through emails to find the EMAIL ID of the sample transaction detail emails
 // Dario DBS sample id: 187212b5eff46beb
@@ -68,14 +69,14 @@ function step2(){
 }
 
 // Step 3: Isolate this sample email and identify the location of its main contents
-let location = 'message.payload.parts[0].body.data'
+let location = 'message.payload.parts[1].body.data'
 let emails = [];
 async function step3() {
-  axios
+  return axios
     .get(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${sampleId}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     })
-    .then((res) => {
+    .then(async (res) => {
       emails = res.data.messages;
       for (const message of res.data.messages) {
         function decodeBase64Url(str) {
@@ -83,15 +84,32 @@ async function step3() {
           buffer = buffer.toString("utf-8");
           return buffer;
         }
-        console.log(decodeBase64Url(message.payload.parts[0].parts[0].body.data));
+        return (decodeBase64Url(message.payload.parts[1].body.data))
       }
     })
     .catch((err) => console.log(err));
 }
+step3().then(res => console.log(res))
+
+async function parseHTML(){
+  step3().then(res => {
+    const $ = cheerio.load(res);
+    $.html();
+    allData = []
+    $('tr').each(function(i, tr){
+      var tr = $(tr).text()
+      allData.push(tr)
+    })
+    data = allData.splice(-4)
+    console.log(data)
+  }).catch(err => {
+    console.log(`ERROR: ${err}`)
+  })
+}
 
 // Step 4: Use find the regex needed to detect the necessary information
-// Amount: /(?<=received ).*(?= on)/
-// Date & Time: /(?<=on ).*(?= from)/
+// Amount: /\bSGD\d+\.\d+\b/
+// Date & Time: /\d{1,2}\s+\w{3}\s+\s*\d{1,2}:\d{1,2}\s*\(\w+\)/
 // From: /(?<=from )[A-Z\s]+(?= to)/
 // To: /(?<=to )[\s\S]*(?= via)/
 // Method: /(?<=via )\w*/
@@ -108,13 +126,12 @@ function step4() {
           buffer = buffer.toString("utf-8");
           return buffer;
         }
-        let data = decodeBase64Url(message.payload.parts[0].body.data);
-        console.log(data.match(/(?<=To:\s)[a-zA-Z0-9\(\) ]+/)[0])
+        let data = decodeBase64Url(message.payload.parts[1].body.data);
+        console.log(data.match(/\d{1,2}\s+\w{3}\s+\s*\d{1,2}:\d{1,2}\s*\(\w+\)/)[0])
       }
     })
     .catch((err) => console.log(err));
 }
-step4()
 
 // Step 5: Add this new information into the extractionRegex.js
 
