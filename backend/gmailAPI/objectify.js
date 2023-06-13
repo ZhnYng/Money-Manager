@@ -158,47 +158,69 @@ const objectify = {
       return outputObject;
     },
 
-    "Transaction Alerts": function(detailsArray) {
+    "Transaction Alerts": function(inputString, regexName, detailsArray=null, type='fromRegex') {
       const outputObject = {};
-      for(const detail of detailsArray){
-        keyValueSplit = detail.split(/:/);
-        key = keyValueSplit.shift();
-        value = keyValueSplit.join(':');
-        switch (key) {
-          case "Date & Time":
-            const keyValue = value.split(' ');
-            const dateDetails = keyValue.slice(0, 2);
-            const timeDetails = keyValue.slice(2, 4);
-            const currDate = new Date;
-            const year = currDate.getFullYear();
-            const month = new Date(Date.parse(dateDetails[1] + ` 1, ${year}`)).getMonth() + 1;
-            const date = dateDetails[0];
-            outputObject["Date_of_Transfer"] = `${year}-${month}-${date}`;
-
-            let time = new Date(`1970-01-01 ${timeDetails[0]}`);
-            let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
-            outputObject["Time_of_Transfer"] = formattedTime;
-            break;
-          case "To":
-            outputObject[key] = value;
-            break;
-          case "From":
-            outputObject[key] = value;
-            if(value.includes('PayLah! Wallet')){
-              outputObject['Type'] = 'expense'
-            }else{
-              outputObject['Type'] = 'income'
+      switch(type){
+        case 'fromRegex':
+          switch(regexName){
+            case "Date & Time":
+              const keyValue = value.split(' ');
+              const dateDetails = keyValue.slice(0, 2);
+              const timeDetails = keyValue.slice(2, 4);
+              const currDate = new Date;
+              const year = currDate.getFullYear();
+              const month = new Date(Date.parse(dateDetails[1] + ` 1, ${year}`)).getMonth() + 1;
+              const date = dateDetails[0];
+              outputObject["Date_of_Transfer"] = `${year}-${month}-${date}`;
+  
+              let time = new Date(`1970-01-01 ${timeDetails[0]}`);
+              let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
+              outputObject["Time_of_Transfer"] = formattedTime;
+              break;
+          }
+          break;
+        case 'fromHtml':
+          for(const detail of detailsArray){
+            keyValueSplit = detail.split(/:/);
+            key = keyValueSplit.shift();
+            value = keyValueSplit.join(':');
+            switch (key) {
+              case "Date & Time":
+                const keyValue = value.split(' ');
+                const dateDetails = keyValue.slice(0, 2);
+                const timeDetails = keyValue.slice(2, 4);
+                const currDate = new Date;
+                const year = currDate.getFullYear();
+                const month = new Date(Date.parse(dateDetails[1] + ` 1, ${year}`)).getMonth() + 1;
+                const date = dateDetails[0];
+                outputObject["Date_of_Transfer"] = `${year}-${month}-${date}`;
+    
+                let time = new Date(`1970-01-01 ${timeDetails[0]}`);
+                let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
+                outputObject["Time_of_Transfer"] = formattedTime;
+                break;
+              case "To":
+                outputObject[key] = value;
+                break;
+              case "From":
+                outputObject[key] = value;
+                if(value.includes('PayLah! Wallet')){
+                  outputObject['Type'] = 'expense'
+                }else{
+                  outputObject['Type'] = 'income'
+                }
+                break;
+              case "Amount": 
+                // Splits 'SGD10.00' to 'SGD 10.00'
+                const spacedStr = value.replace(/([a-zA-Z])(\d)/g, '$1 $2');
+                outputObject["Amount"] = spacedStr;
+                break;
+              default:
+                outputObject[key] = value;
+                break;
             }
-            break;
-          case "Amount": 
-            // Splits 'SGD10.00' to 'SGD 10.00'
-            const spacedStr = value.replace(/([a-zA-Z])(\d)/g, '$1 $2');
-            outputObject["Amount"] = spacedStr;
-            break;
-          default:
-            outputObject[key] = value;
-            break;
-        }
+          }
+          break;
       }
       console.log(outputObject)
       return outputObject;

@@ -101,13 +101,13 @@ const gmailAPI = {
                           emailBody.match(
                             extractionRegex[bankName][subject][regexName]
                           )[0],
-                          regexName,
-                          subject
+                          regexName
                         ),
                       };
                     }else if(bankName === "DBS"){
                       details = objectify[bankName][subject](
-                        extractionRegex[bankName][subject].extractionFunction(emailBody)
+                        extractionRegex[bankName][subject].extractionFunction(emailBody),
+                        'fromHtml'
                       )
                       console.log(details)
                       break;

@@ -3,21 +3,16 @@ const base64url = require("base64url");
 const extractionRegex = require("./extractionRegex");
 const objectify = require("./objectify");
 const cheerio = require('cheerio');
-// Saved regex page https://regex101.com/r/r57s02/1
+
 let accessToken =
-  "ya29.a0AWY7CkmlnGMkNJYfCA6_qug_1OfQa1KrM4-JiV-KG7vrnJlEH7BSNG5mZQEzJWxQbsl8qBLafOTa9Sv9OdR5b1DLyaz40aiWSuw-rFH-lvoJQRE6PEYuIybl8Dd33OnbtrMupc4ewA7exqUhndg6hJ5QMY0AagaCgYKAbISARASFQG1tDrpKKHHEG2hK6bfe-dZNrXSrQ0165"
+  "ya29.a0AWY7CkkrYuTCG424ONzUhmUPcHkd7MF11P_2_-60rfl0py7OJUMfsBEvNEg2Z_sxtygjatl9aOsIgPkpUJ0yVJ09B5tZ1JeF0s4O8rk-outJWfFw7Dn3MOgEkaj10066dJ2K44-2ZTvTC_cvGEqiEHBl0ebpMwaCgYKAWcSARASFQG1tDrpXns8SBDFaCmKLgbQWfZjUw0165"
 
 // Step 1: Read through emails to find the EMAIL ID of the sample transaction detail emails
-// Dario DBS sample id: 187212b5eff46beb
-// Tim DBS sample id: 187b1d37c062edf0
-// 187a85ceb7e7372e
-// 187a85afde0bf98c
-// let sampleId = "1871d4e203c35930";
-let sampleId = "188b3d8e47248dd9";
+let sampleId = "188b4e38c4bf16ed";
 function step1() {
   axios
     .get(
-      "https://gmail.googleapis.com/gmail/v1/users/me/threads?maxResults=2",
+      "https://gmail.googleapis.com/gmail/v1/users/me/threads?maxResults=1",
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       }
@@ -93,9 +88,10 @@ async function step3() {
 async function parseHTML(){
   step3().then(res => {
     const $ = cheerio.load(res);
+    console.log(res)
     $.html();
     allData = []
-    $('tr').each(function(i, tr){
+    $('td').each(function(i, tr){
       var tr = $(tr).text()
       allData.push(tr)
     })
@@ -105,15 +101,15 @@ async function parseHTML(){
     console.log(`ERROR: ${err}`)
   })
 }
-parseHTML()
+// parseHTML()
 
 // Step 4: Use find the regex needed to detect the necessary information
-// Amount: /\bSGD\d+\.\d+\b/
+// Amount: /(?<=received\s)[A-Z]+\s\d+[.]\d{2}(?= on)/
 // Date & Time: /\d{1,2}\s+\w{3}\s+\s*\d{1,2}:\d{1,2}\s*\(\w+\)/
 // From: /(?<=from )[A-Z\s]+(?= to)/
 // To: /(?<=to )[\s\S]*(?= via)/
 // Method: /(?<=via )\w*/
-// Type: /received|sent/
+// Type: (?<=You\shave\s)(received|sent)
 function step4() {
   axios
     .get(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${sampleId}`, {
@@ -127,11 +123,12 @@ function step4() {
           return buffer;
         }
         let data = decodeBase64Url(message.payload.parts[1].body.data);
-        console.log(data.match(/\d{1,2}\s+\w{3}\s+\s*\d{1,2}:\d{1,2}\s*\(\w+\)/)[0])
+        console.log(data.match(/\bSGD\d+\.\d+\b/)[0])
       }
     })
     .catch((err) => console.log(err));
 }
+step4()
 
 // Step 5: Add this new information into the extractionRegex.js
 
