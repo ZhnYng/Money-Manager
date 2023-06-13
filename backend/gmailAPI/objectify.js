@@ -161,8 +161,9 @@ const objectify = {
     "Transaction Alerts": function(detailsArray) {
       const outputObject = {};
       for(const detail of detailsArray){
-        key = detail.split(':')[0]
-        value = detail.split(':')[1]
+        keyValueSplit = detail.split(/:/);
+        key = keyValueSplit.shift();
+        value = keyValueSplit.join(':');
         switch (key) {
           case "Date & Time":
             const keyValue = value.split(' ');
@@ -173,13 +174,12 @@ const objectify = {
             const month = new Date(Date.parse(dateDetails[1] + ` 1, ${year}`)).getMonth() + 1;
             const date = dateDetails[0];
             outputObject["Date_of_Transfer"] = `${year}-${month}-${date}`;
-            
+
             let time = new Date(`1970-01-01 ${timeDetails[0]}`);
             let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
             outputObject["Time_of_Transfer"] = formattedTime;
             break;
           case "To":
-            console.log(detail)
             outputObject[key] = value;
             break;
           case "From":

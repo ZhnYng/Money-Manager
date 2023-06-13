@@ -35,7 +35,6 @@ const transactionDb = {
                 if(updateResult.every(res => res === "Success")){
                     return callback(null, "Gmail transaction update successful");
                 }else{
-                    console.log(updateResult)
                     return callback("Failed", null);
                 }
             }
