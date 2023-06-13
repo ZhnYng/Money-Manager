@@ -111,6 +111,7 @@ const gmailAPI = {
                         extractionRegex[bankName][subject].extractionFunction(emailBody)
                       )
                       console.log(details)
+                      break;
                     }
                   }
                   details = { emailId: message.id, Transaction_method: subject, ...details };

@@ -201,6 +201,7 @@ const objectify = {
             break;
         }
       }
+      console.log(outputObject)
       return outputObject;
     }
   }
