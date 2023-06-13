@@ -49,7 +49,6 @@ function step2(){
     })
     .then((res) => {
       for (const message of res.data.messages) {
-        console.log(message.payload.headers)
         const subject = message.payload.headers.find(
           (header) => header.name === "Subject"
         ).value;
