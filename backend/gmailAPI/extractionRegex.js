@@ -11,8 +11,7 @@ const extractionRegex = {
       "Time_of_Transfer": /Time of Transfer\s+:\s+(\d+:\d+\w+)\s/,
       "Amount": /Amount\s+:\s+(SGD\s[\d.]+)\s/,
       "From": /From your account\s+:\s+([^\n]+)\s/,
-      emailBody: message => message.payload.body.data,
-      extractionFunction: () => null
+      emailBody: message => message.payload.body.data
     },
     "You have sent money via OCBC Pay Anyone": {
       "To": /PayNow name\s+:\s+([^\n]+)\s/,
@@ -20,8 +19,7 @@ const extractionRegex = {
       "Time_of_Transfer": /Time of transfer\s+:\s+(\d+.\d+\w+)\s/,
       "Amount": /Amount\s+:\s+(SGD\s[\d.]+)\s/,
       "From": /From your account\s+:\s+([^\n]+)\s/,
-      emailBody: message => message.payload.body.data,
-      extractionFunction: () => null
+      emailBody: message => message.payload.body.data
     },
     "You have sent money via PayNow": {
       "To": /sent money to\s+([\w\.\'\"]+\s+)+\busing/,
@@ -29,8 +27,7 @@ const extractionRegex = {
       "Time_of_Transfer": /Time of Transfer\s+:\s+(\d+:\d+\w+)\s/,
       "Amount": /Amount\s+:\s+(SGD\s[\d.]+)\s/,
       "From": /From your account\s+:\s+([^\n]+)\s/,
-      emailBody: message => message.payload.parts[0].parts[0].body.data,
-      extractionFunction: () => null
+      emailBody: message => message.payload.parts[0].parts[0].body.data
     },
   },
 
@@ -40,8 +37,7 @@ const extractionRegex = {
       "Amount": /Amount:\s+SGD\d+.\d{2}/,
       "From": /From:\s+My Account A\/C ending \d{4}/,
       "To": /To:\s+[^()]+\s+\(Mobile no\. ending \d{4}\)/,
-      emailBody: message => message.payload.parts[0].body.data,
-      extractionFunction: () => null
+      emailBody: message => message.payload.parts[0].body.data
     },
     // "Transaction Alerts": {
     //   // "Information type: DBS PayNow|DBS PayLah!"
