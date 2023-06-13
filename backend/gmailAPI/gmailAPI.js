@@ -83,50 +83,51 @@ const gmailAPI = {
                 }
 
                 // Extraction layer
+                console.log({"Email subject": subject, "Email bank name": bankName})
                 if(extractionRegex[bankName][subject]){
-                  try {
-                    const emailBody = decodeBase64Url(
-                      extractionRegex[bankName][subject].emailBody(message)
-                    );
-                    let details = {};
-                    for (const regexName of Object.keys(
-                      extractionRegex[bankName][subject]
-                    )) {
-                      if (
-                        emailBody.match(
-                          extractionRegex[bankName][subject][regexName]
-                        )
-                      ) {
-                        details = {
-                          ...details,
-                          ...objectify[bankName][subject](
-                            emailBody.match(
-                              extractionRegex[bankName][subject][regexName]
-                            )[0],
-                            regexName,
-                            subject
-                          ),
-                        };
-                      }
-                    }
-                    details = { emailId: message.id, Transaction_method: subject, ...details };
-                    messages.push(details);
-                  } catch {
-                    try {
-                      console.log({"Email subject": subject, "Email bank name": bankName})
+                  const emailBody = decodeBase64Url(
+                    extractionRegex[bankName][subject].emailBody(message)
+                  );
+                  let details = {};
+                  for (const regexName of Object.keys(
+                    extractionRegex[bankName][subject]
+                  )) {
+                    if (
+                      emailBody.match(
+                        extractionRegex[bankName][subject][regexName]
+                      )
+                    ) {
+                      details = {
+                        ...details,
+                        ...objectify[bankName][subject](
+                          emailBody.match(
+                            extractionRegex[bankName][subject][regexName]
+                          )[0],
+                          regexName,
+                          subject
+                        ),
+                      };
+                    }else{
                       details = objectify[bankName][subject](
                         extractionRegex[bankName][subject].extractionFunction(emailBody)
                       )
                       console.log(details)
-                    }catch{
-                      console.log({"Email subject": subject, "Email bank name": bankName})
-                      const emailBody = decodeBase64Url(
-                        extractionRegex[bankName][subject].emailBody(message)
-                      );
-                      // console.log(emailBody)
-                      messages.push(null)
                     }
                   }
+                  details = { emailId: message.id, Transaction_method: subject, ...details };
+                  messages.push(details);
+                  // try {
+                  // } catch {
+                  //   try {
+                  //   }catch{
+                  //     console.log({"Email subject": subject, "Email bank name": bankName})
+                  //     const emailBody = decodeBase64Url(
+                  //       extractionRegex[bankName][subject].emailBody(message)
+                  //     );
+                  //     // console.log(emailBody)
+                  //     messages.push(null)
+                  //   }
+                  // }
                 }
               }
             }
