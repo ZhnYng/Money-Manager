@@ -159,6 +159,7 @@ const objectify = {
     },
 
     "Transaction Alerts": function(detailsArray) {
+      console.log(detailsArray)
       const outputObject = {};
       for(const detail in detailsArray){
         key = detail.split(':')[0]
