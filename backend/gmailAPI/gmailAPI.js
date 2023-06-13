@@ -124,7 +124,7 @@ const gmailAPI = {
                         extractionRegex[bankName][subject].emailBody(message)
                       );
                       // console.log(emailBody)
-                      messages.push(null);
+                      messages.push(null)
                     }
                   }
                 }
