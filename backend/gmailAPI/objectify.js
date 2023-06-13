@@ -159,9 +159,8 @@ const objectify = {
     },
 
     "Transaction Alerts": function(detailsArray) {
-      console.log(detailsArray)
       const outputObject = {};
-      for(const detail in detailsArray){
+      for(const detail of detailsArray){
         key = detail.split(':')[0]
         value = detail.split(':')[1]
         switch (key) {
