@@ -63,24 +63,27 @@ const gmailAPI = {
                 // Getting email subject
                 let subject;
                 try{
-                  subject = headers.find(
+                  emailSubject = headers.find(
                     (header) => header.name === "Subject"
                   ).value;
                   for (const supportedSubject of Object.keys(extractionRegex[bankName])) {
-                    if (subject === supportedSubject) break;
-                    else {
-                      let subjectIncludesKeywords = [];
-                      for (const supportedSubjectWord of supportedSubject.split(' ')) {
-                        subjectIncludesKeywords.push(subject.includes(supportedSubjectWord));
-                      }
-                      if (subjectIncludesKeywords.every(e => e === true)) {
-                        subject = supportedSubject;
-                      }
-                    }
+                    if (emailSubject === supportedSubject) {
+                      subject = emailSubject
+                    };
+                    // else {
+                    //   let subjectIncludesKeywords = [];
+                    //   for (const supportedSubjectWord of supportedSubject.split(' ')) {
+                    //     subjectIncludesKeywords.push(subject.includes(supportedSubjectWord));
+                    //   }
+                    //   if (subjectIncludesKeywords.every(e => e === true)) {
+                    //     subject = supportedSubject;
+                    //   }
+                    // }
                   }
                 }catch{
                   console.log(`Subject not found in:\n${message}`);
                 }
+                if (!subject) break;
 
                 // Extraction layer
                 console.log({"Email subject": subject, "Email bank name": bankName})
@@ -103,7 +106,7 @@ const gmailAPI = {
                           subject
                         ),
                       };
-                    }else if(bankName === "Lim Zhen Yang"){
+                    }else if(bankName === "DBS"){
                       details = objectify[bankName][subject](
                         extractionRegex[bankName][subject].extractionFunction(emailBody)
                       )
