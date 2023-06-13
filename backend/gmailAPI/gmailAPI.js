@@ -123,7 +123,7 @@ const gmailAPI = {
                       const emailBody = decodeBase64Url(
                         extractionRegex[bankName][subject].emailBody(message)
                       );
-                      console.log(emailBody)
+                      // console.log(emailBody)
                       messages.push(null);
                     }
                   }
