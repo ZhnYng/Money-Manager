@@ -2,6 +2,7 @@
 // The keys are the subject/title of the email
 // emailbody is the location of the email body based on the returned email details from the gmailAPI 
 //    this is because each type of email has its own body location
+const cheerio = require('cheerio');
 
 const extractionRegex = {
   OCBC: {
