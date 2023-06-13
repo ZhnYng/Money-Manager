@@ -92,11 +92,7 @@ const gmailAPI = {
                   for (const regexName of Object.keys(
                     extractionRegex[bankName][subject]
                   )) {
-                    if (
-                      emailBody.match(
-                        extractionRegex[bankName][subject][regexName]
-                      )
-                    ) {
+                    if (emailBody.match(extractionRegex[bankName][subject][regexName])) {
                       details = {
                         ...details,
                         ...objectify[bankName][subject](
