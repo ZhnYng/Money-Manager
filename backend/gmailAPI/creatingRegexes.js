@@ -5,7 +5,7 @@ const objectify = require("./objectify");
 const cheerio = require('cheerio');
 // Saved regex page https://regex101.com/r/r57s02/1
 let accessToken =
-  "ya29.a0AWY7CkmO5z9VO85o9SJfn9u-0WlsYL924_RVKrY6XKdBMCbhujhKLZjFxjiy13X-E-z4CiN9rCC0KX93paVv57QjRqPq8ZLaH9fjkkQB6txjJ67b0d0y2HDvtVZeYsJvvW1nwe_FBWoqfhVc_qlpOG8ppkEAaQaCgYKAeUSARASFQG1tDrpE1v-uq2asusxrso9x4egCg0165"
+  "ya29.a0AWY7Ckn0kG3hsD_Usn32Xay0wXrjnmb55nR3xrNpC8uxB1iuGmkSXSFn25Ww5EYsb2o-bnUqVV85DFTZgIlfI6VvPm_7kJV9sHSqZgOXqtaNgnCQgOikkbsgUSuwLF9EYEVtU2O-LALNwnU5uBtScv9nqyPNVQaCgYKAbcSARASFQG1tDrpKcoOIH1PpmaawHOZrE-CeA0165"
 
 // Step 1: Read through emails to find the EMAIL ID of the sample transaction detail emails
 // Dario DBS sample id: 187212b5eff46beb
@@ -49,6 +49,7 @@ function step2(){
     })
     .then((res) => {
       for (const message of res.data.messages) {
+        console.log(message.payload.headers)
         const subject = message.payload.headers.find(
           (header) => header.name === "Subject"
         ).value;
@@ -67,6 +68,7 @@ function step2(){
     })
     .catch((err) => console.log(err));
 }
+step2()
 
 // Step 3: Isolate this sample email and identify the location of its main contents
 let location = 'message.payload.parts[1].body.data'
@@ -89,7 +91,6 @@ async function step3() {
     })
     .catch((err) => console.log(err));
 }
-step3().then(res => console.log(res))
 
 async function parseHTML(){
   step3().then(res => {

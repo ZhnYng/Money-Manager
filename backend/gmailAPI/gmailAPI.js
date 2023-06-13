@@ -103,7 +103,7 @@ const gmailAPI = {
                           subject
                         ),
                       };
-                    }else if(bankName === "DBS"){
+                    }else if(bankName === "Lim Zhen Yang"){
                       details = objectify[bankName][subject](
                         extractionRegex[bankName][subject].extractionFunction(emailBody)
                       )
