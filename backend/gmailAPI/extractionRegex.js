@@ -49,7 +49,7 @@ const extractionRegex = {
     //   "Type": /(?<=You have )[a-zA-Z]*|(?<=via )\w*|(?<=From:\s)PayLah!/,
     //   emailBody: message => message.payload.parts[0].body.data
     // }
-    "Transaction ALerts": {
+    "Transaction Alerts": {
       extractionFunction: emailBody => {
         const $ = cheerio.load(emailBody);
         $.html();

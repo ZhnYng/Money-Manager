@@ -13,11 +13,11 @@ let accessToken =
 // 187a85ceb7e7372e
 // 187a85afde0bf98c
 // let sampleId = "1871d4e203c35930";
-let sampleId = "187b1d37c062edf0";
+let sampleId = "188b3d8e47248dd9";
 function step1() {
   axios
     .get(
-      "https://gmail.googleapis.com/gmail/v1/users/me/threads?maxResults=1",
+      "https://gmail.googleapis.com/gmail/v1/users/me/threads?maxResults=2",
       {
         headers: { Authorization: `Bearer ${accessToken}` },
       }
