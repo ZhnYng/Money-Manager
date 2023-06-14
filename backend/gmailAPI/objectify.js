@@ -201,8 +201,9 @@ const objectifyObj = {
             outputObject["Amount"] = spacedStr;
             break;
           case "Type":
-            value === 'received' ? value = 'income' : value = 'expense';
-            outputObject[key] = value;
+            let type = ''
+            value === 'received' ? type = 'income' : type = 'expense';
+            outputObject[key] = type;
           default:
             outputObject[key] = value;
             break;
