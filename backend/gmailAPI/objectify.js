@@ -186,9 +186,6 @@ const objectifyObj = {
             break;
           case "To":
             outputObject[key] = value;
-            if(value.includes('your account')){
-              outputObject['Type'] = 'income'
-            }
             break;
           case "From":
             outputObject[key] = value;
@@ -203,6 +200,9 @@ const objectifyObj = {
             const spacedStr = value.replace(/([a-zA-Z])(\d)/g, '$1 $2');
             outputObject["Amount"] = spacedStr;
             break;
+          case "Type":
+            value === 'received' ? value = 'income' : value = 'expense';
+            outputObject[key] = value;
           default:
             outputObject[key] = value;
             break;
