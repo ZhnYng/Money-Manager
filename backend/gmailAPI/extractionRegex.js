@@ -33,23 +33,23 @@ const extractionRegex = {
   },
 
   "DBS": {
-    // "iBanking Alerts": {
-    //   "Date & Time": /Date & Time:\s+\d{2} [A-Z][a-z]{2} \d{2}:\d{2} \(SGT\)/,
-    //   "Amount": /Amount:\s+SGD\d+.\d{2}/,
-    //   "From": /From:\s+My Account A\/C ending \d{4}/,
-    //   "To": /To:\s+[^()]+\s+\(Mobile no\. ending \d{4}\)/,
-    //   emailBody: message => message.payload.parts[0].body.data
-    // },
-    // "Transaction Alerts": {
-    //   // "Information type: DBS PayNow|DBS PayLah!"
-    //   "Amount": /(?<=received )[\s\S]*(?= on)|(?<=Amount:\s)SGD\d+.\d{2}/,
-    //   "Date & Time": /(?<=on )([a-zA-Z0-9\s\n\:\(\)]+)(?= from)|(?<=Date\s&\sTime:\s)\d{2} [A-Z][a-z]{2} \d{2}:\d{2} \(SGT\)/,
-    //   "From": /(?<=from )[A-Z\s]+(?= to)|(?<=From:\s)PayLah!\sWallet\s\(Mobile\sending\s\d{4}\)/,
-    //   "To": /(?<=to )([a-zA-Z0-9\s\n]+)(?= via)|(?<=To:\s)[a-zA-Z0-9\(\) ]+/,
-    //   "Method": /(?<=via )\w*|(?<=From:\s)PayLah!/,
-    //   "Type": /(?<=You have )[a-zA-Z]*|(?<=via )\w*|(?<=From:\s)PayLah!/,
-    //   emailBody: message => message.payload.parts[0].body.data
-    // }
+  //   // "iBanking Alerts": {
+  //   //   "Date & Time": /Date & Time:\s+\d{2} [A-Z][a-z]{2} \d{2}:\d{2} \(SGT\)/,
+  //   //   "Amount": /Amount:\s+SGD\d+.\d{2}/,
+  //   //   "From": /From:\s+My Account A\/C ending \d{4}/,
+  //   //   "To": /To:\s+[^()]+\s+\(Mobile no\. ending \d{4}\)/,
+  //   //   emailBody: message => message.payload.parts[0].body.data
+  //   // },
+  //   // "Transaction Alerts": {
+  //   //   // "Information type: DBS PayNow|DBS PayLah!"
+  //   //   "Amount": /(?<=received )[\s\S]*(?= on)|(?<=Amount:\s)SGD\d+.\d{2}/,
+  //   //   "Date & Time": /(?<=on )([a-zA-Z0-9\s\n\:\(\)]+)(?= from)|(?<=Date\s&\sTime:\s)\d{2} [A-Z][a-z]{2} \d{2}:\d{2} \(SGT\)/,
+  //   //   "From": /(?<=from )[A-Z\s]+(?= to)|(?<=From:\s)PayLah!\sWallet\s\(Mobile\sending\s\d{4}\)/,
+  //   //   "To": /(?<=to )([a-zA-Z0-9\s\n]+)(?= via)|(?<=To:\s)[a-zA-Z0-9\(\) ]+/,
+  //   //   "Method": /(?<=via )\w*|(?<=From:\s)PayLah!/,
+  //   //   "Type": /(?<=You have )[a-zA-Z]*|(?<=via )\w*|(?<=From:\s)PayLah!/,
+  //   //   emailBody: message => message.payload.parts[0].body.data
+  //   // }
     "Transaction Alerts": {
       'Amount': /(?<=received\s)[A-Z]+\s\d+[.]\d{2}(?= on)/,
       'Date & Time': /\d{1,2}\s+\w{3}\s+\s*\d{1,2}:\d{1,2}\s*\(\w+\)/,

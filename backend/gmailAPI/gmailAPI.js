@@ -70,15 +70,6 @@ const gmailAPI = {
                     if (emailSubject === supportedSubject) {
                       subject = emailSubject
                     };
-                    // else {
-                    //   let subjectIncludesKeywords = [];
-                    //   for (const supportedSubjectWord of supportedSubject.split(' ')) {
-                    //     subjectIncludesKeywords.push(subject.includes(supportedSubjectWord));
-                    //   }
-                    //   if (subjectIncludesKeywords.every(e => e === true)) {
-                    //     subject = supportedSubject;
-                    //   }
-                    // }
                   }
                 }catch{
                   console.log(`Subject not found in:\n${message}`);
@@ -90,43 +81,35 @@ const gmailAPI = {
                   const emailBody = decodeBase64Url(
                     extractionRegex[bankName][subject].emailBody(message)
                   );
-                  let details = {};
-                  for (const regexName of Object.keys(
-                    extractionRegex[bankName][subject]
-                  )) {
-                    if (emailBody.match(extractionRegex[bankName][subject][regexName])) {
-                      details = {
-                        ...details,
-                        ...objectify[bankName][subject](
-                          emailBody.match(
-                            extractionRegex[bankName][subject][regexName]
-                          )[0],
-                          regexName
-                        ),
-                      };
-                    }else if(bankName === "DBS"){
-                      details = objectify[bankName][subject](
-                        extractionRegex[bankName][subject].extractionFunction(emailBody),
-                        'fromHtml'
-                      )
-                      console.log(details)
-                      break;
-                    }
-                  }
-                  details = { emailId: message.id, Transaction_method: subject, ...details };
-                  messages.push(details);
-                  // try {
-                  // } catch {
-                  //   try {
-                  //   }catch{
-                  //     console.log({"Email subject": subject, "Email bank name": bankName})
-                  //     const emailBody = decodeBase64Url(
-                  //       extractionRegex[bankName][subject].emailBody(message)
-                  //     );
-                  //     // console.log(emailBody)
-                  //     messages.push(null)
+                  let details = objectify(emailBody, bankName, subject)
+                  // for (const regexName of Object.keys(
+                  //   extractionRegex[bankName][subject]
+                  // )) {
+                  //   if (emailBody.match(extractionRegex[bankName][subject][regexName])) {
+                  //     details = {
+                  //       ...details,
+                  //       ...objectify[bankName][subject](
+                  //         emailBody.match(
+                  //           extractionRegex[bankName][subject][regexName]
+                  //         )[0],
+                  //         regexName
+                  //       ),
+                  //     };
+                  //   }else if(
+                  //     bankName === "DBS" & 
+                  //     Object.keys(extractionRegex[bankName][subject]).length-1 === 
+                  //     Object.keys(extractionRegex[bankName][subject]).indexOf(regexName)
+                  //   ){
+                  //     details = objectify[bankName][subject](
+                  //       extractionRegex[bankName][subject].extractionFunction(emailBody),
+                  //       'fromHtml'
+                  //     )
+                  //     console.log(details)
+                  //     break;
                   //   }
                   // }
+                  details = { emailId: message.id, Transaction_method: subject, ...details };
+                  messages.push(details);
                 }
               }
             }
