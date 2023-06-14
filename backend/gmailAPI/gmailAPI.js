@@ -82,7 +82,11 @@ const gmailAPI = {
                     extractionRegex[bankName][subject].emailBody(message)
                   );
                   let details = objectify(emailBody, bankName, subject)
-                  details = { emailId: message.id, Transaction_method: subject, ...details };
+                  details = { 
+                    emailId: message.id, 
+                    ...details,
+                    category: 'none' 
+                  };
                   messages.push(details);
                 }
               }

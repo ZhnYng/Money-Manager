@@ -4,6 +4,7 @@ const objectifyObj = {
   OCBC: {
     "Successful NETS Payment": function (extractionResults) {
       const outputObject = {};
+      outputObject['method'] = 'NETS';
       for(const [regexName, inputString] of Object.entries(extractionResults)){
         const keyValue = inputString.split(/:(.*)/s).map((str) => str.trim());
         switch (regexName) {
@@ -17,24 +18,35 @@ const objectifyObj = {
             const formattedDate = `${year}-${month
               .toString()
               .padStart(2, "0")}-${day}`;
-            outputObject[regexName] = formattedDate;
+            outputObject['dateOfTransfer'] = formattedDate;
             break;
+
           case "Time_of_Transfer":
             let timeString = keyValue[1].slice(0, -2) + " " + keyValue[1].slice(-2);
             timeString = timeString.replace(".", ":");
             let time = new Date(`1970-01-01 ${timeString}`);
             let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
-            outputObject[regexName] = formattedTime;
+            outputObject['timeOfTransfer'] = formattedTime;
             break;
+
           case "To":
-            outputObject[regexName] = keyValue[1];
             const recipient = keyValue[1]
+            outputObject['recipient'] = recipient;
             if(recipient.toUpperCase().includes("YOUR ACCOUNT")){
-              outputObject["Type"] = 'income';
+              outputObject["transactionType"] = 'income';
             }else{
-              outputObject["Type"] = 'expense';
+              outputObject["transactionType"] = 'expense';
             }
             break;
+
+          case 'Amount':
+            outputObject['amount'] = keyValue[1]
+            break;
+
+          case 'From':
+            outputObject['sender'] = keyValue[1]
+            break;
+
           default:
             outputObject[regexName] = keyValue[1];
         }
@@ -44,6 +56,8 @@ const objectifyObj = {
 
     "You have sent money via OCBC Pay Anyone": function (extractionResults) {
       const outputObject = {};
+      outputObject['method'] = 'OCBC Pay Anyone';
+
       for(const [regexName, inputString] of Object.entries(extractionResults)){
         const keyValue = inputString.split(/:(.*)/s).map((str) => str.trim());
         switch (regexName) {
@@ -57,26 +71,38 @@ const objectifyObj = {
             const formattedDate = `${year}-${month
               .toString()
               .padStart(2, "0")}-${day}`;
-            outputObject[regexName] = formattedDate;
+            outputObject['dataOfTransfer'] = formattedDate;
             break;
+
           case "Time_of_Transfer":
             let timeString = keyValue[1].slice(0, -2) + " " + keyValue[1].slice(-2);
             timeString = timeString.replace(".", ":");
             let time = new Date(`1970-01-01 ${timeString}`);
             let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
-            outputObject[regexName] = formattedTime;
+            outputObject['timeOfTransfer'] = formattedTime;
             break;
+
           case "To":
-            outputObject[regexName] = keyValue[1];
             const recipient = keyValue[1]
+            outputObject['recipient'] = recipient;
             if(recipient.toUpperCase().includes("YOUR ACCOUNT")){
-              outputObject["Type"] = 'income';
+              outputObject["transactionType"] = 'income';
             }else{
-              outputObject["Type"] = 'expense';
+              outputObject["transactionType"] = 'expense';
             }
             break;
+
+          case 'Amount':
+            outputObject['amount'] = keyValue[1]
+            break;
+
+          case 'From':
+            outputObject['sender'] = keyValue[1]
+            break;
+
           default:
             outputObject[regexName] = keyValue[1];
+            break;
         }
       }
       return outputObject;
@@ -84,6 +110,8 @@ const objectifyObj = {
 
     "You have sent money via PayNow": function (extractionResults) {
       const outputObject = {};
+      outputObject['method'] = 'PayNow';
+
       for(const [regexName, inputString] of Object.entries(extractionResults)){
         const keyValue = inputString.split(/:(.*)/s).map((str) => str.trim());
         switch (regexName) {
@@ -92,14 +120,15 @@ const objectifyObj = {
               .split(/(\s+)/)
               .filter((str) => /\S/.test(str));
               const recipient = keyValueSplit.slice(3, -1).join(" ");
-              outputObject[regexName] = recipient;
+              outputObject['recipient'] = recipient;
   
             if(recipient.toUpperCase().includes("YOUR ACCOUNT")){
-              outputObject["Type"] = 'income';
+              outputObject["transactionType"] = 'income';
             }else{
-              outputObject["Type"] = 'expense';
+              outputObject["transactionType"] = 'expense';
             }
             break;
+            
           case "Date_of_Transfer":
             const dateString = keyValue[1];
             const dateParts = dateString.split(" "); // split the string into an array of ["21", "Feb", "2023"]
@@ -110,17 +139,28 @@ const objectifyObj = {
             const formattedDate = `${year}-${month
               .toString()
               .padStart(2, "0")}-${day}`;
-            outputObject[regexName] = formattedDate;
+            outputObject['dateOfTransfer'] = formattedDate;
             break;
+
           case "Time_of_Transfer":
             let timeString = keyValue[1].slice(0, -2) + " " + keyValue[1].slice(-2);
             timeString = timeString.replace(".", ":");
             let time = new Date(`1970-01-01 ${timeString}`);
             let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
-            outputObject[regexName] = formattedTime;
+            outputObject['timeOfTransfer'] = formattedTime;
             break;
+
+          case 'Amount':
+            outputObject['amount'] = keyValue[1]
+            break;
+
+          case 'From':
+            outputObject['sender'] = keyValue[1]
+            break;
+            
           default:
             outputObject[regexName] = keyValue[1];
+            break;
         }
       }
       return outputObject;
@@ -178,39 +218,48 @@ const objectifyObj = {
             const year = currDate.getFullYear();
             const month = new Date(Date.parse(dateDetails[1] + ` 1, ${year}`)).getMonth() + 1;
             const date = dateDetails[0];
-            outputObject["Date_of_Transfer"] = `${year}-${month}-${date}`;
+            outputObject["dateOfTransfer"] = `${year}-${month}-${date}`;
   
             let time = new Date(`1970-01-01 ${timeDetails[0]}`);
             let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
-            outputObject["Time_of_Transfer"] = formattedTime;
+            outputObject["timeOfTransfer"] = formattedTime;
             break;
+
           case "To":
-            outputObject[key] = value;
+            outputObject['recipient'] = value;
             break;
+
           case "From":
-            outputObject[key] = value;
+            outputObject['sender'] = value;
             if(value.includes('PayLah! Wallet')){
-              outputObject['Type'] = 'expense'
+              outputObject['transactionType'] = 'expense'
+              outputObject['method'] = 'PayLah!'
             }else{
-              outputObject['Type'] = 'income'
+              outputObject['transactionType'] = 'income'
             }
             break;
+
           case "Amount": 
             // Splits 'SGD10.00' to 'SGD 10.00'
             const spacedStr = value.replace(/([a-zA-Z])(\d)/g, '$1 $2');
-            outputObject["Amount"] = spacedStr;
+            outputObject["amount"] = spacedStr;
             break;
+
           case "Type":
             let type = ''
             value === 'received' ? type = 'income' : type = 'expense';
-            outputObject[key] = type;
+            outputObject['transactionType'] = type;
             break;
+
+          case "Method":
+            outputObject['method'] = value;
+            break;
+            
           default:
             outputObject[key] = value;
             break;
         }
       }
-      console.log(outputObject)
       return outputObject;
     }
   }
@@ -242,6 +291,7 @@ function objectify(emailBody, bank, subject){
       }
     }
   }
+
   return objectifyObj[bank][subject](extractionResults)
 }
 

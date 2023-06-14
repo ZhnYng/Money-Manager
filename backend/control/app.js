@@ -42,7 +42,7 @@ app.get('/allTransactionDetails', async (req, res) => {
     }
 })
 
-app.get('/getDetails/:id/', async (req, res) => {
+app.get('/getDetails/:id', async (req, res) => {
     const result = await gmailAPI.getDetails(req.headers.authorization.split(' ')[1], req.params.id);
     
     // for(const message of result.data.messages){
@@ -52,17 +52,21 @@ app.get('/getDetails/:id/', async (req, res) => {
     res.status(200).send(result);
 })
 
-app.put('/gmailUpdateTransactions/:userId/', (req, res) => {
-    transactionDb.gmailUpdateTransactions(req.params.userId, req.headers.authorization.split(' ')[1], (err, result) => {
-        if(err === "Invalid access token"){
-            res.status(401).send();
-        }else if(err){
-            console.log(err);
-            res.status(500).send(err);
-        }else{
-            res.status(200).send(result);
+app.put('/gmailUpdateTransactions/:userId', (req, res) => {
+    transactionDb.gmailUpdateTransactions(
+        req.params.userId, 
+        req.headers.authorization.split(' ')[1], 
+        (err, result) => {
+            if(err === "Invalid access token"){
+                res.status(401).send();
+            }else if(err){
+                console.log(err);
+                res.status(500).send(err);
+            }else{
+                res.status(200).send(result);
+            }
         }
-    })
+    )
 })
 
 app.post('/addTransaction', authenticateJWT, (req, res) => {
