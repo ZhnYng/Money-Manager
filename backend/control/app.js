@@ -52,8 +52,8 @@ app.get('/getDetails/:id/', async (req, res) => {
     res.status(200).send(result);
 })
 
-app.put('/gmailUpdateTransactions/:userId/:email', (req, res) => {
-    transactionDb.gmailUpdateTransactions(req.params.userId, req.params.email, req.headers.authorization.split(' ')[1], (err, result) => {
+app.put('/gmailUpdateTransactions/:userId/', (req, res) => {
+    transactionDb.gmailUpdateTransactions(req.params.userId, req.headers.authorization.split(' ')[1], (err, result) => {
         if(err === "Invalid access token"){
             res.status(401).send();
         }else if(err){

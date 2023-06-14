@@ -8,7 +8,7 @@ pgp.pg.types.setTypeParser(1082, function (value) {
 })
 
 const transactionDb = {
-    gmailUpdateTransactions: async function(userId, email, accessToken, callback){
+    gmailUpdateTransactions: async function(userId, accessToken, callback){
         await gmailAPI.getAllEmailMessages(accessToken, async (err, result) => {
             if(err?.response?.data.error.code === 401){
                 return callback("Invalid access token", null);
