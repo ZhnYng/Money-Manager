@@ -76,16 +76,6 @@ const gmailAPI = {
                 }
                 if (!subject) break;
 
-                if(subject === 'iBanking Alerts'){
-                  console.log(subject)
-                  console.log(message.payload.body.data)
-                }
-
-                if(subject === 'Transaction Alerts'){
-                  console.log(subject)
-                  console.log(message.payload.parts[0].body.data)
-                }
-
                 // Extraction layer
                 if(extractionRegex[bankName][subject]){
                   const emailBody = decodeBase64Url(
