@@ -81,6 +81,7 @@ const gmailAPI = {
                   const emailBody = decodeBase64Url(
                     extractionRegex[bankName][subject].emailBody(message)
                   );
+                  if(subject === 'iBanking Alerts') console.log(emailBody);
                   let details = objectify(emailBody, bankName, subject)
                   details = { 
                     emailId: message.id, 
