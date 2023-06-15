@@ -78,7 +78,7 @@ const gmailAPI = {
 
                 // Extraction layer
                 if(extractionRegex[bankName][subject]){
-                  console.log(message.payload.parts[1])
+                  console.log(message.payload)
                   const emailBody = decodeBase64Url(
                     extractionRegex[bankName][subject].emailBody(message)
                   );
