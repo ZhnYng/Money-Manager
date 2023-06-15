@@ -83,7 +83,7 @@ const gmailAPI = {
 
                 if(subject === 'Transaction Alerts'){
                   console.log(subject)
-                  console.log(message.payload.parts[1].body.data)
+                  console.log(message.payload.parts[0].body.data)
                 }
 
                 // Extraction layer
