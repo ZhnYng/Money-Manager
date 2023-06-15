@@ -45,7 +45,7 @@ const extractionRegex = {
       'Amount': /(?<=received\s)[A-Z]+\s\d+[.]\d{2}(?= on)/,
       'Date & Time': /\d{1,2}\s+\w{3}\s+\s*\d{1,2}:\d{1,2}\s*\(\w+\)/,
       'From': /(?<=from )[A-Z\s]+(?= to)/,
-      'To': /(?<=\bto\b )[\s\S]*(?= via)/,
+      'To': /(?<=\bto\b )[^#]*(?= via)/,
       'Method': /(?<=via )\w*/,
       "Type": /(?<=You\shave\s)(received|sent)/,
       extractionFunction: emailBody => {
