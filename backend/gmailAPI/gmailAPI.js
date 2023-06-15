@@ -41,7 +41,7 @@ const gmailAPI = {
             let messages = [];
             if (res.messages) {
               for (const message of res.messages) {
-                console.log(message.payload)
+                console.log(message.payload.body.data)
                 const headers = message.payload.headers;
 
                 // Getting bank name

@@ -39,7 +39,7 @@ const extractionRegex = {
       "From": /(?<=From: )[\s\S]*?(?=<br>)/,
       "To": /(?<=To: )[\s\S]*?(?=<br>)/,
       'Method': /\bPayNow\b/,
-      emailBody: message => message.payload.parts[1].body.data
+      emailBody: message => message.payload.body.data
     },
     "Transaction Alerts": {
       'Amount': /(?<=received\s)[A-Z]+\s\d+[.]\d{2}(?= on)/,
