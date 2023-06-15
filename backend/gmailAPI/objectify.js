@@ -168,43 +168,57 @@ const objectifyObj = {
   },
 
   "DBS": {
-  //   "iBanking Alerts": function(inputString, regexName){
-  //     const keyValue = inputString.split(/:(.*)/s).map((str) => str.trim());
-  //     const outputObject = {};
-  //     switch(regexName){
-  //       case "Date & Time": 
-  //         const dateDetails = keyValue[1].split(' ').slice(0, 2);
-  //         const timeDetails = keyValue[1].split(' ').slice(2);
-  //         const currDate = new Date;
-  //         const year = currDate.getFullYear();
-  //         const month = new Date(Date.parse(dateDetails[1] + ` 1, ${year}`)).getMonth() + 1;
-  //         const date = dateDetails[0];
-  //         outputObject["Date_of_Transfer"] = `${year}-${month}-${date}`;
+    "iBanking Alerts": function (extractionResults) {
+      const outputObject = {};
+      for(const [key, value] of Object.entries(extractionResults)){
+        switch(key){
+          case "Date & Time":
+            const keyValue = value.split(' ');
+            const dateDetails = keyValue.slice(0, 2);
+            const timeDetails = keyValue.slice(2, 4);
+            const currDate = new Date;
+            const year = currDate.getFullYear();
+            const month = new Date(Date.parse(dateDetails[1] + ` 1, ${year}`)).getMonth() + 1;
+            const date = dateDetails[0];
+            outputObject["dateOfTransfer"] = `${year}-${month}-${date}`;
+  
+            let time = new Date(`1970-01-01 ${timeDetails[0]}`);
+            let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
+            outputObject["timeOfTransfer"] = formattedTime;
+            break;
+
+          case "Amount": 
+            // Splits 'SGD10.00' to 'SGD 10.00'
+            const spacedStr = value.replace(/([a-zA-Z])(\d)/g, '$1 $2');
+            outputObject["amount"] = spacedStr;
+            break;
+
+          case "From": 
+            outputObject["sender"] = value;
+            break;
+
+          case "To":
+            outputObject["recipient"] = value;
+            // if(value.toUpperCase().includes("YOUR ACCOUNT")){
+            //   outputObject["Type"] = 'income';
+            // }else{
+            //   outputObject["Type"] = 'expense'
+            // }
+            outputObject['transactionType'] = 'expense';
+            break;
           
-  //         let time = new Date(`1970-01-01 ${timeDetails[0]}`);
-  //         let formattedTime = time.toLocaleTimeString("en-Gb", { hour12: false });
-  //         outputObject["Time_of_Transfer"] = formattedTime;
-  //         break;
-  //       case "Amount": 
-  //         // Splits 'SGD10.00' to 'SGD 10.00'
-  //         const spacedStr = keyValue[1].replace(/([a-zA-Z])(\d)/g, '$1 $2');
-  //         outputObject["Amount"] = spacedStr;
-  //         break;
-  //       case "From": 
-  //         outputObject["From"] = keyValue[1];
-  //         break;
-  //       case "To":
-  //         const name = keyValue[1].split("(")[0].trim();
-  //         outputObject["To"] = name;
-  //         if(name.toUpperCase().includes("YOUR ACCOUNT")){
-  //           outputObject["Type"] = 'income';
-  //         }else{
-  //           outputObject["Type"] = 'expense'
-  //         }
-  //         break;
-  //     }
-  //     return outputObject;
-  //   },
+          case 'Method':
+            outputObject['method'] = value;
+            break;
+
+          default:
+            outputObject[key] = value;
+            break;
+        }
+      }
+      console.log('objectify', outputObject)
+      return outputObject;
+    },
 
     "Transaction Alerts": function (extractionResults) {
       const outputObject = {};
@@ -291,7 +305,7 @@ function objectify(emailBody, bank, subject){
       }
     }
   }
-
+  console.log('extraction', extractionResults)
   return objectifyObj[bank][subject](extractionResults)
 }
 

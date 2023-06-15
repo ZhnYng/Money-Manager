@@ -33,13 +33,14 @@ const extractionRegex = {
   },
 
   "DBS": {
-    // "iBanking Alerts": {
-    //   "Date & Time": /Date & Time:\s+\d{2} [A-Z][a-z]{2} \d{2}:\d{2} \(SGT\)/,
-    //   "Amount": /Amount:\s+SGD\d+.\d{2}/,
-    //   "From": /From:\s+My Account A\/C ending \d{4}/,
-    //   "To": /To:\s+[^()]+\s+\(Mobile no\. ending \d{4}\)/,
-    //   emailBody: message => message.payload.parts[0].body.data
-    // },
+    "iBanking Alerts": {
+      "Date & Time": /(?<=Date\s&amp;\sTime:\s)\d{1,2}\s+\w{3}\s+\s*\d{1,2}:\d{1,2}\s*\(\w+\)/,
+      "Amount": /(?<=Amount: )\bSGD\d+\.\d{2}\b/,
+      "From": /(?<=From: )[\s\S]*?(?=<br>)/,
+      "To": /(?<=To: )[\s\S]*?(?=<br>)/,
+      'Method': /\bPayNow\b/,
+      emailBody: message => message.payload.parts[1].body.data
+    },
     "Transaction Alerts": {
       'Amount': /(?<=received\s)[A-Z]+\s\d+[.]\d{2}(?= on)/,
       'Date & Time': /\d{1,2}\s+\w{3}\s+\s*\d{1,2}:\d{1,2}\s*\(\w+\)/,

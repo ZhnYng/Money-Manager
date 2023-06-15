@@ -1,14 +1,14 @@
-const { default: axios } = require("axios");
+const { default: axios, all } = require("axios");
 const base64url = require("base64url");
 const extractionRegex = require("./extractionRegex");
 const objectify = require("./objectify");
 const cheerio = require('cheerio');
 
 let accessToken =
-  "ya29.a0AWY7CkkrYuTCG424ONzUhmUPcHkd7MF11P_2_-60rfl0py7OJUMfsBEvNEg2Z_sxtygjatl9aOsIgPkpUJ0yVJ09B5tZ1JeF0s4O8rk-outJWfFw7Dn3MOgEkaj10066dJ2K44-2ZTvTC_cvGEqiEHBl0ebpMwaCgYKAWcSARASFQG1tDrpXns8SBDFaCmKLgbQWfZjUw0165"
+  "ya29.a0AWY7Ckkod0FndpWXSLIzZUeuIm8bXBK8c8HoOQ34oXKlJhpukY1-ZHE7kAoQ0MszbPeXbHghSvXC1-ysJrzYNh8yk66mcJEvJSHn23jY2wPbanr0-b_6eM1YuiuGN3x-3IjhWVztVKMImC1HkbzLPy2ySsk2cQaCgYKAfoSARASFQG1tDrpOjba_51GimmsQ1S00lJfHQ0165"
 
 // Step 1: Read through emails to find the EMAIL ID of the sample transaction detail emails
-let sampleId = "188b4e38c4bf16ed";
+let sampleId = "188bd06d9856064b";
 function step1() {
   axios
     .get(
@@ -36,7 +36,7 @@ function step1() {
 }
 
 // Step 2: Find the subject of the sample email
-let subject = 'Transaction Alerts';
+let subject = 'iBanking Alerts';
 function step2(){
   axios
     .get(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${sampleId}`, {
@@ -91,12 +91,12 @@ async function parseHTML(){
     console.log(res)
     $.html();
     allData = []
-    $('td').each(function(i, tr){
+    $('tr').each(function(i, tr){
       var tr = $(tr).text()
       allData.push(tr)
     })
-    data = allData.splice(-4)
-    console.log(data)
+    // data = allData.splice(-4)
+    console.log(allData)
   }).catch(err => {
     console.log(`ERROR: ${err}`)
   })
@@ -104,12 +104,12 @@ async function parseHTML(){
 // parseHTML()
 
 // Step 4: Use find the regex needed to detect the necessary information
-// Amount: /(?<=received\s)[A-Z]+\s\d+[.]\d{2}(?= on)/
-// Date & Time: /\d{1,2}\s+\w{3}\s+\s*\d{1,2}:\d{1,2}\s*\(\w+\)/
-// From: /(?<=from )[A-Z\s]+(?= to)/
-// To: /(?<=to )[\s\S]*(?= via)/
-// Method: /(?<=via )\w*/
-// Type: (?<=You\shave\s)(received|sent)
+// Amount: /(?<=Amount: )\bSGD\d+\.\d{2}\b/
+// Date & Time: (?<=Date\s&amp;\sTime:\s)\d{1,2}\s+\w{3}\s+\s*\d{1,2}:\d{1,2}\s*\(\w+\)
+// From: /(?<=From: )[\s\S]*?(?=<br>)/
+// To: /(?<=To: )[\s\S]*?(?=<br>)/
+// Method: /\bPayNow\b/
+// Type: 
 function step4() {
   axios
     .get(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${sampleId}`, {
@@ -123,12 +123,11 @@ function step4() {
           return buffer;
         }
         let data = decodeBase64Url(message.payload.parts[1].body.data);
-        console.log(data.match(/\bSGD\d+\.\d+\b/)[0])
+        console.log(data.match(/\bPayNow\b/)[0])
       }
     })
     .catch((err) => console.log(err));
 }
-step4()
 
 // Step 5: Add this new information into the extractionRegex.js
 
@@ -166,6 +165,8 @@ async function step6() {
   })
   .catch(err => console.log(err));
 }
+
+step6()
 
 // Step 7: Create function to convert to an object
 let strings = {
