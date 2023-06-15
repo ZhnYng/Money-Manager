@@ -78,7 +78,12 @@ const gmailAPI = {
 
                 if(subject === 'iBanking Alerts'){
                   console.log(subject)
-                  console.log(message.payload)
+                  console.log(message.payload.body.data)
+                }
+
+                if(subject === 'Transaction Alerts'){
+                  console.log(subject)
+                  console.log(message.payload.parts[1].body.data)
                 }
 
                 // Extraction layer
