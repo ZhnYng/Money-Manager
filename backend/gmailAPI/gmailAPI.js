@@ -76,9 +76,13 @@ const gmailAPI = {
                 }
                 if (!subject) break;
 
+                if(subject === 'iBanking Alerts'){
+                  console.log(subject)
+                  console.log(message.payload)
+                }
+
                 // Extraction layer
                 if(extractionRegex[bankName][subject]){
-                  console.log('Subject:', subject, 'Body', message.payload.parts)
                   const emailBody = decodeBase64Url(
                     extractionRegex[bankName][subject].emailBody(message)
                   );

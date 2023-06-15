@@ -59,7 +59,7 @@ const extractionRegex = {
         data = allData.splice(-4);
         return data;
       },
-      emailBody: message => message.payload.body.data
+      emailBody: message => message.payload.parts[1].body.data
     }
   }
 }
