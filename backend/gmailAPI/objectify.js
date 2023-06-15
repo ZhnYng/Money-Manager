@@ -216,7 +216,6 @@ const objectifyObj = {
             break;
         }
       }
-      console.log('objectify', outputObject)
       return outputObject;
     },
 
@@ -305,7 +304,6 @@ function objectify(emailBody, bank, subject){
       }
     }
   }
-  console.log('extraction', extractionResults)
   return objectifyObj[bank][subject](extractionResults)
 }
 
