@@ -189,7 +189,8 @@ const objectifyObj = {
 
           case "Amount": 
             // Splits 'SGD10.00' to 'SGD 10.00'
-            const spacedStr = value.replace(/([a-zA-Z])(\d)/g, '$1 $2');
+            let amt = value.trim();
+            const spacedStr = amt.replace(/([a-zA-Z])(\d)/g, '$1 $2');
             outputObject["amount"] = spacedStr;
             break;
 
@@ -198,7 +199,7 @@ const objectifyObj = {
             break;
 
           case "To":
-            outputObject["recipient"] = value;
+            outputObject["recipient"] = value.trim();
             // if(value.toUpperCase().includes("YOUR ACCOUNT")){
             //   outputObject["Type"] = 'income';
             // }else{
@@ -216,6 +217,7 @@ const objectifyObj = {
             break;
         }
       }
+      console.log(outputObject)
       return outputObject;
     },
 
