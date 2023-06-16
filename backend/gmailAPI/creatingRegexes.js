@@ -5,7 +5,7 @@ const objectify = require("./objectify");
 const cheerio = require('cheerio');
 
 let accessToken =
-  "ya29.a0AWY7Ckkod0FndpWXSLIzZUeuIm8bXBK8c8HoOQ34oXKlJhpukY1-ZHE7kAoQ0MszbPeXbHghSvXC1-ysJrzYNh8yk66mcJEvJSHn23jY2wPbanr0-b_6eM1YuiuGN3x-3IjhWVztVKMImC1HkbzLPy2ySsk2cQaCgYKAfoSARASFQG1tDrpOjba_51GimmsQ1S00lJfHQ0165"
+  "ya29.a0AWY7CkkyzOe9-L1-tn0WuOWIAZH0jM03Z-puWkxTltCn-CsZFNbvKloCaqFsTcJ1cgWXuJLD-L-unHdjP97S6UdWplcn5TxbL-PgdO8CgVw7-0kLwiEWubQIzg7ip8guFVWjyaJ2bsTNUxrBwy263oTocKYTagaCgYKAdwSARASFQG1tDrpbO8jiwmvj0u89ocAvJhsFg0165"
 
 // Step 1: Read through emails to find the EMAIL ID of the sample transaction detail emails
 let sampleId = "188bd06d9856064b";
@@ -79,11 +79,12 @@ async function step3() {
           buffer = buffer.toString("utf-8");
           return buffer;
         }
-        return (decodeBase64Url(message.payload.parts[1].body.data))
+        return (decodeBase64Url(message.payload.parts[0].body.data))
       }
     })
     .catch((err) => console.log(err));
 }
+// step3().then(res => console.log(res))
 
 async function parseHTML(){
   step3().then(res => {
@@ -122,12 +123,13 @@ function step4() {
           buffer = buffer.toString("utf-8");
           return buffer;
         }
-        let data = decodeBase64Url(message.payload.parts[1].body.data);
-        console.log(data.match(/\bPayNow\b/)[0])
+        let data = decodeBase64Url(message.payload.parts[0].body.data);
+        console.log(data.match(/(?<=From:\s)[\s\S]*?(?=\n)/)[0])
       }
     })
     .catch((err) => console.log(err));
 }
+step4()
 
 // Step 5: Add this new information into the extractionRegex.js
 

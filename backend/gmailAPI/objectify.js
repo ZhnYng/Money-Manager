@@ -194,7 +194,7 @@ const objectifyObj = {
             break;
 
           case "From": 
-            outputObject["sender"] = value;
+            outputObject["sender"] = value.trim();
             break;
 
           case "To":

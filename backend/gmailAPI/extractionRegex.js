@@ -34,9 +34,9 @@ const extractionRegex = {
 
   "DBS": {
     "iBanking Alerts": {
-      "Date & Time": /(?<=Date\s&\sTime:\s)\d{1,2}\s+\w{3}\s+\s*\d{1,2}:\d{1,2}\s*\(\w+\)/,
+      "Date & Time": /\d{1,2}\s+\w{3}\s+\s*\d{1,2}:\d{1,2}\s*\(\w+\)/,
       "Amount": /(?<=Amount: )\bSGD\s*\d+\.\d{2}\b/,
-      "From": /(?<=From: )[\s\S]*?(?=\n)/,
+      "From": /(?<=From:)[\s\S]*?(?=\n)/,
       "To": /(?<=To: )[\s\S]*?(?=\n)/,
       'Method': /\bPayNow\b/,
       emailBody: message => message.payload.body.data
