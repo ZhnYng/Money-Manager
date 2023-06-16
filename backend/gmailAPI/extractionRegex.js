@@ -34,12 +34,13 @@ const extractionRegex = {
 
   "DBS": {
     "iBanking Alerts": {
-      "Date & Time": /(?<=Date\s&amp;\sTime:\s)\d{1,2}\s+\w{3}\s+\s*\d{1,2}:\d{1,2}\s*\(\w+\)/,
-      "Amount": /(?<=Amount: )\bSGD\d+\.\d{2}\b/,
-      "From": /(?<=From: )[\s\S]*?(?=<br>)/,
-      "To": /(?<=To: )[\s\S]*?(?=<br>)/,
+      "Date & Time": /(?<=Date\s&\sTime:\s)\d{1,2}\s+\w{3}\s+\s*\d{1,2}:\d{1,2}\s*\(\w+\)/,
+      "Amount": /(?<=Amount: )\bSGD\s*\d+\.\d{2}\b/,
+      "From": /(?<=From: )[\s\S]*?(?=\n)/,
+      "To": /(?<=To: )[\s\S]*?(?=\n)/,
       'Method': /\bPayNow\b/,
       emailBody: message => message.payload.body.data
+      // emailBody: message => message.payload.parts[0].body.data // This is the path to the email body in testing
     },
     "Transaction Alerts": {
       'Amount': /(?<=received\s)[A-Z]+\s\d+[.]\d{2}(?= on)/,
@@ -60,6 +61,7 @@ const extractionRegex = {
         return data;
       },
       emailBody: message => message.payload.parts[0].body.data
+      // emailBody: message => message.payload.parts[1].body.data // This is the path to the email body in testing
     }
   }
 }
