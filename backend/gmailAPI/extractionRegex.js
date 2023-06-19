@@ -27,7 +27,7 @@ const extractionRegex = {
       "Date_of_Transfer": /Date of Transfer\s+:\s+(\d+\s\w+\s\d{4})\s/,
       "Time_of_Transfer": /Time of Transfer\s+:\s+(\d+:\d+\w+)\s/,
       "Amount": /Amount\s+:\s+(SGD\s[\d.]+)\s/,
-      "From": /From your account\s+:\s+([^\n]+)\s/,
+      "From": /From Account No.\s+:\s+([^\n]+)\s/,
       emailBody: message => message.payload.parts[0].parts[0].body.data
     },
   },
