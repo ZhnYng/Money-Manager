@@ -8,7 +8,7 @@ pgp.pg.types.setTypeParser(1082, function (value) {
 })
 
 const transactionDb = {
-    gmailUpdateTransactions: async function(userId, email, accessToken, callback){
+    gmailUpdateTransactions: async function(userId, accessToken, callback){
         await gmailAPI.getAllEmailMessages(accessToken, async (err, result) => {
             if(err?.response?.data.error.code === 401){
                 return callback("Invalid access token", null);
@@ -19,9 +19,48 @@ const transactionDb = {
                 for(const transactionDetails of result){
                     transactionDetails['userId'] = userId;
                     await db.none(
-                        "INSERT INTO transactions(user_id, method, recipient, date_of_transfer, time_of_transfer, amount, sender, transaction_type, recorded_with) \
-                        VALUES(${userId}, ${Transaction_method}, ${To}, ${Date_of_Transfer}, ${Time_of_Transfer}, ${Amount}, ${From}, ${Type}, 'GmailAPI')\
-                        ON CONFLICT (user_id, recipient, date_of_transfer, time_of_transfer, amount) DO NOTHING;", transactionDetails
+                        "INSERT INTO transactions(\
+                            user_id, \
+                            method, \
+                            recipient, \
+                            date_of_transfer, \
+                            time_of_transfer, \
+                            amount, \
+                            sender, \
+                            category, \
+                            transaction_type, \
+                            recorded_with \
+                        ) \
+                        VALUES(\
+                            ${userId}, \
+                            ${method}, \
+                            ${recipient}, \
+                            ${dateOfTransfer}, \
+                            ${timeOfTransfer}, \
+                            ${amount}, \
+                            ${sender}, \
+                            ${category}, \
+                            ${transactionType}, \
+                            'GmailAPI' \
+                        )\
+                        ON CONFLICT (\
+                            user_id, \
+                            recipient, \
+                            date_of_transfer, \
+                            time_of_transfer, \
+                            amount\
+                        ) DO UPDATE SET \
+                            user_id = ${userId}, \
+                            method = ${method}, \
+                            recipient = ${recipient}, \
+                            date_of_transfer = ${dateOfTransfer}, \
+                            time_of_transfer = ${timeOfTransfer}, \
+                            amount = ${amount}, \
+                            sender = ${sender}, \
+                            category = ${category}, \
+                            transaction_type = ${transactionType}, \
+                            recorded_with = 'GmailAPI' \;", 
+                        transactionDetails
                     )
                         .then(res => {
                             updateResult.push("Success")
@@ -35,7 +74,6 @@ const transactionDb = {
                 if(updateResult.every(res => res === "Success")){
                     return callback(null, "Gmail transaction update successful");
                 }else{
-                    console.log(updateResult)
                     return callback("Failed", null);
                 }
             }

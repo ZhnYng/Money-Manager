@@ -63,62 +63,34 @@ const gmailAPI = {
                 // Getting email subject
                 let subject;
                 try{
-                  subject = headers.find(
+                  emailSubject = headers.find(
                     (header) => header.name === "Subject"
                   ).value;
+                  let emailSubjectSplit = emailSubject.split(' ')
                   for (const supportedSubject of Object.keys(extractionRegex[bankName])) {
-                    if (subject === supportedSubject) break;
-                    else {
-                      let subjectIncludesKeywords = [];
-                      for (const supportedSubjectWord of supportedSubject.split(' ')) {
-                        subjectIncludesKeywords.push(subject.includes(supportedSubjectWord));
-                      }
-                      if (subjectIncludesKeywords.every(e => e === true)) {
-                        subject = supportedSubject;
-                      }
-                    }
+                    let supportedSubjectSplit = supportedSubject.split(' ')
+                    if (supportedSubjectSplit.every(val => emailSubjectSplit.includes(val))) {
+                      subject = supportedSubject
+                    };
                   }
                 }catch{
                   console.log(`Subject not found in:\n${message}`);
                 }
-                console.log({"Email subject": subject, "Email bank name": bankName})
+                if (!subject) break;
+
                 // Extraction layer
                 if(extractionRegex[bankName][subject]){
-                  try {
-                    const emailBody = decodeBase64Url(
-                      extractionRegex[bankName][subject].emailBody(message)
-                    );
-                    let details = {};
-                    for (const regexName of Object.keys(
-                      extractionRegex[bankName][subject]
-                    )) {
-                      if (
-                        emailBody.match(
-                          extractionRegex[bankName][subject][regexName]
-                        )
-                      ) {
-                        details = {
-                          ...details,
-                          ...objectify[bankName][subject](
-                            emailBody.match(
-                              extractionRegex[bankName][subject][regexName]
-                            )[0],
-                            regexName,
-                            subject
-                          ),
-                        };
-                      }
-                    }
-                    details = { emailId: message.id, Transaction_method: subject, ...details };
-                    messages.push(details);
-                  } catch {
-                    console.log(bankName, subject)
-                    const emailBody = decodeBase64Url(
-                      extractionRegex[bankName][subject].emailBody(message)
-                    );
-                    console.log(emailBody)
-                    messages.push(null);
-                  }
+                  const emailBody = decodeBase64Url(
+                    extractionRegex[bankName][subject].emailBody(message)
+                  );
+                  if(subject === 'iBanking Alerts') console.log(emailBody);
+                  let details = objectify(emailBody, bankName, subject)
+                  details = { 
+                    emailId: message.id, 
+                    ...details,
+                    category: 'none' 
+                  };
+                  messages.push(details);
                 }
               }
             }
