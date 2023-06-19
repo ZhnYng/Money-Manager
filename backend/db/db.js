@@ -6,6 +6,6 @@ var local_db_key = process.env.LOCAL_KEY;
 var neon_db_key = process.env.NEON_DB_KEY;
 var db_staging_key = process.env.DB_STAGING_KEY;
 
-const db = pgp(db_staging_key);
+const db = pgp(neon_db_key);
 
 module.exports = db;
