@@ -66,9 +66,11 @@ const gmailAPI = {
                   emailSubject = headers.find(
                     (header) => header.name === "Subject"
                   ).value;
+                  let emailSubjectSplit = emailSubject.split(' ')
                   for (const supportedSubject of Object.keys(extractionRegex[bankName])) {
-                    if (emailSubject.includes(supportedSubject)) {
-                      subject = emailSubject
+                    let supportedSubjectSplit = supportedSubject.split(' ')
+                    if (supportedSubjectSplit.every(val => emailSubjectSplit.includes(val))) {
+                      subject = supportedSubject
                     };
                   }
                 }catch{
