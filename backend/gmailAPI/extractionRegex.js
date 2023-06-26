@@ -58,6 +58,7 @@ const extractionRegex = {
           allData.push(tr);
         })
         data = allData.splice(-4);
+        console.log('extractionFunction:', data)
         return data;
       },
       emailBody: message => message.payload.parts[0].body.data
