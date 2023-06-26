@@ -10,8 +10,10 @@ const objectify = require("./objectify");
 function decodeBase64Url(str) {
   let buffer = Buffer.from(base64url.toBase64(str), "base64");
   if(!buffer) return null;
-  buffer = buffer.toString("utf-8");
-  return buffer;
+  else{
+    buffer = buffer.toString("utf-8");
+    return buffer;
+  }
 }
 
 const gmailAPI = {
