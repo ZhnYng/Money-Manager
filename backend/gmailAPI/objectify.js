@@ -307,7 +307,7 @@ function objectify(emailBody, bank, subject){
       }
     }
   }
-  console.log(extractionResults)
+  console.log('extractionResults:', extractionResults)
   return objectifyObj[bank][subject](extractionResults)
 }
 
