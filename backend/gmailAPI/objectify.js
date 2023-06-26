@@ -275,7 +275,7 @@ const objectifyObj = {
             break;
         }
       }
-
+      console.log(outputObject)
       return outputObject;
     }
   }
