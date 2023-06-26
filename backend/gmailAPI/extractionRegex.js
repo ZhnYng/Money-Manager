@@ -55,6 +55,7 @@ const extractionRegex = {
         allData = [];
         $('tr').each(function(i, tr){
           var tr = $(tr).text();
+          tr.replace(/[\r\n]/gm, '')
           allData.push(tr);
         })
         data = allData.splice(-4);
