@@ -9,6 +9,7 @@ const objectify = require("./objectify");
 // Decode a base64url-encoded string to a plaintext string
 function decodeBase64Url(str) {
   let buffer = Buffer.from(base64url.toBase64(str), "base64");
+  if(!buffer) return null;
   buffer = buffer.toString("utf-8");
   return buffer;
 }
@@ -83,6 +84,7 @@ const gmailAPI = {
                   const emailBody = decodeBase64Url(
                     extractionRegex[bankName][subject].emailBody(message)
                   );
+                  if(emailBody === null) break;
                   if(subject === 'iBanking Alerts') console.log(emailBody);
                   let details = objectify(emailBody, bankName, subject)
                   details = { 
