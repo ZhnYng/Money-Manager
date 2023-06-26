@@ -8,12 +8,11 @@ const objectify = require("./objectify");
 
 // Decode a base64url-encoded string to a plaintext string
 function decodeBase64Url(str) {
-  let buffer = Buffer.from(base64url.toBase64(str), "base64");
-  if(!buffer) return null;
-  else{
+  if(str){
+    let buffer = Buffer.from(base64url.toBase64(str), "base64");
     buffer = buffer.toString("utf-8");
     return buffer;
-  }
+  }else return null;
 }
 
 const gmailAPI = {
